@@ -1,6 +1,11 @@
 { config, pkgs, ... }:
 
 {
+  # Import additional configuration modules
+  imports = [
+    ./keybindings.nix  # Keyboard shortcuts
+  ];
+
   # Home Manager needs a bit of information about you and the paths it should manage
   home.username = "krieger";
   home.homeDirectory = "/home/krieger";
@@ -101,19 +106,6 @@
     "org/gnome/desktop/wm/preferences" = {
       button-layout = "appmenu:minimize,maximize,close";
       num-workspaces = 4;
-    };
-
-    # Keyboard shortcuts
-    "org/gnome/desktop/wm/keybindings" = {
-      close = ["<Super>q"];
-      switch-to-workspace-1 = ["<Super>1"];
-      switch-to-workspace-2 = ["<Super>2"];
-      switch-to-workspace-3 = ["<Super>3"];
-      switch-to-workspace-4 = ["<Super>4"];
-      move-to-workspace-1 = ["<Super><Shift>1"];
-      move-to-workspace-2 = ["<Super><Shift>2"];
-      move-to-workspace-3 = ["<Super><Shift>3"];
-      move-to-workspace-4 = ["<Super><Shift>4"];
     };
 
     # Nautilus (file manager) preferences
