@@ -28,18 +28,19 @@
       # minimize = ["<Super>h"];
     };
 
-    # Custom keybindings (optional - add your own shortcuts)
-    # "org/gnome/settings-daemon/plugins/media-keys" = {
-    #   # Example: Launch terminal with Ctrl+Alt+T
-    #   # custom-keybindings = [
-    #   #   "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-    #   # ];
-    # };
+    # Custom keybindings
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      # Define custom keybindings list
+      custom-keybindings = [
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+      ];
+    };
     
-    # "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-    #   binding = "<Ctrl><Alt>t";
-    #   command = "gnome-terminal";
-    #   name = "Open Terminal";
-    # };
+    # Custom keybinding: Open Ghostty with Ctrl+Space
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+      binding = "<Ctrl>space";
+      command = "ghostty";
+      name = "Open Ghostty Terminal";
+    };
   };
 }

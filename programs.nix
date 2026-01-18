@@ -27,17 +27,17 @@
     vscode
     
     # Utilities
-    neofetch
+    fastfetch
     tree
     unzip
     zip
     p7zip
-    
+    ghostty
+    fragments
     # System monitoring
     btop
     
     # Media
-    vlc
     mpv
     
     # Communication

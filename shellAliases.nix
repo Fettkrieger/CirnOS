@@ -29,14 +29,25 @@
     
     # Better cat with bat
     cat = "bat";
-    
-    # Add more aliases below as needed
-    # Examples:
-    # cl = "clear";
-    # .. = "cd ..";
-    # ... = "cd ../..";
-    # mkdir = "mkdir -p";
-    # df = "df -h";
-    # free = "free -h";
   };
+  
+  # Bash functions and custom initialization
+  programs.bash.bashrcExtra = ''
+    # Custom prompt with color
+    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    
+    # Display system info on new terminal (optional, comment out if annoying)
+    # neofetch
+    
+    # Git commit and push function for CirnOS
+    # Usage: gcpCirnOS "your commit message"
+    gcpCirnOS() {
+      if [ -z "$1" ]; then
+        echo "Error: Please provide a commit message"
+        echo "Usage: gcpCirnOS \"your commit message\""
+        return 1
+      fi
+      cd /home/krieger/CirnOS && git add . && git commit -m "$*" && git push
+    }
+  '';
 }

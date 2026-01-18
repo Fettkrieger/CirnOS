@@ -5,6 +5,7 @@
   imports = [
     ./keybindings.nix  # Keyboard shortcuts
     ./shellAliases.nix # Shell aliases
+    ./default-apps.nix # Default applications
   ];
 
   # Home Manager needs a bit of information about you and the paths it should manage
@@ -18,12 +19,6 @@
   # Import user packages from programs.nix
   home.packages = (import ./programs.nix { inherit pkgs; }).userPackages;
 
-  # Home Manager environment variables
-  home.sessionVariables = {
-    EDITOR = "vim";
-    VISUAL = "vim";
-  };
-
   # Let Home Manager install and manage itself
   programs.home-manager.enable = true;
 
@@ -32,7 +27,7 @@
     enable = true;
     settings = {
       user.name = "Krieger";
-      user.email = "your.email@example.com"; # CHANGE THIS to your actual email
+      user.email = "leandro.tiziani@protonmail.com"; # CHANGE THIS to your actual email
       init.defaultBranch = "main";
       pull.rebase = false;
     };
@@ -41,15 +36,6 @@
   # Bash configuration
   programs.bash = {
     enable = true;
-    
-    # Custom bash initialization
-    bashrcExtra = ''
-      # Custom prompt with color
-      PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-      
-      # Display system info on new terminal (optional, comment out if annoying)
-      # neofetch
-    '';
   };
 
   # GNOME-specific settings using dconf
