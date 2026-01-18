@@ -1,6 +1,11 @@
 { config, pkgs, ... }:
 
 {
+  # Import additional configuration modules
+  imports = [
+    ./programs.nix  # User packages list
+  ];
+
   # Home Manager needs a bit of information about you and the paths it should manage
   home.username = "krieger";
   home.homeDirectory = "/home/krieger";
@@ -8,40 +13,6 @@
   # This value determines the Home Manager release that your configuration is compatible with
   # You should not change this value, even if you update Home Manager
   home.stateVersion = "24.11";
-
-  # Packages that should be installed to your user profile
-  home.packages = with pkgs; [
-    # Development tools
-    vscode
-    
-    # Utilities
-    neofetch
-    tree
-    unzip
-    zip
-    p7zip
-    
-    # System monitoring
-    btop
-    
-    # Media
-    vlc
-    mpv
-    
-    # Communication
-    discord
-    
-    # Terminal tools
-    ripgrep # Fast search tool (rg command)
-    fd # Fast find alternative
-    eza # Modern ls replacement
-    bat # Cat with syntax highlighting
-    
-    # File management
-    ranger # Terminal file manager
-    
-    # Add more packages as you need them
-  ];
 
   # Home Manager environment variables
   home.sessionVariables = {
@@ -57,7 +28,7 @@
     enable = true;
     settings = {
       user.name = "Krieger";
-      user.email = "leandro.tiziani@protonmail.com"; # CHANGE THIS to your actual email
+      user.email = "your.email@example.com"; # CHANGE THIS to your actual email
       init.defaultBranch = "main";
       pull.rebase = false;
     };
