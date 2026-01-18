@@ -55,9 +55,9 @@
   # Git configuration
   programs.git = {
     enable = true;
-    userName = "Krieger";
-    userEmail = "leandro.tiziani@protonmail.com"; # CHANGE THIS to your actual email
-    extraConfig = {
+    settings = {
+      user.name = "Krieger";
+      user.email = "leandro.tiziani@protonmail.com"; # CHANGE THIS to your actual email
       init.defaultBranch = "main";
       pull.rebase = false;
     };
@@ -151,7 +151,7 @@
     "org/gnome/nautilus/preferences" = {
       default-folder-viewer = "list-view";
       search-filter-time-type = "last_modified";
-      show-hidden-files = true;
+      show-hidden-files = false;
     };
 
     # Mouse settings
