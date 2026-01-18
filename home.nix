@@ -1,11 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  # Import additional configuration modules
-  imports = [
-    ./programs.nix  # User packages list
-  ];
-
   # Home Manager needs a bit of information about you and the paths it should manage
   home.username = "krieger";
   home.homeDirectory = "/home/krieger";
@@ -13,6 +8,9 @@
   # This value determines the Home Manager release that your configuration is compatible with
   # You should not change this value, even if you update Home Manager
   home.stateVersion = "24.11";
+
+  # Import user packages from programs.nix
+  home.packages = (import ./programs.nix { inherit pkgs; }).userPackages;
 
   # Home Manager environment variables
   home.sessionVariables = {

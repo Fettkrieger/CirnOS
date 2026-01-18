@@ -8,7 +8,6 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./programs.nix 
     ];
 
   # Bootloader.
@@ -152,22 +151,8 @@
   # Optimize nix store automatically
   nix.settings.auto-optimise-store = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    vim # Text editor
-    wget # Download utility
-    curl # Transfer data utility
-    git # Version control
-    htop # Process viewer
-    
-    # GNOME utilities
-    gnome-tweaks # Additional GNOME settings
-    dconf-editor # Low-level GNOME settings editor
-    
-    # NVIDIA tools
-    nvtopPackages.full # GPU monitoring tool (like htop for GPU)
-  ];
+  # Import system packages from programs.nix
+  environment.systemPackages = (import ./programs.nix { inherit pkgs; }).systemPackages;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

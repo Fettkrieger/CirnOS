@@ -1,9 +1,11 @@
 { pkgs, ... }:
 
+# This file contains ALL packages for both system and user
+# It's imported by both configuration.nix and home.nix
 {
-  # System-wide packages (available to all users)
-  environment.systemPackages = with pkgs; [
-    # Essential tools
+  # Define package lists
+  systemPackages = with pkgs; [
+    # Essential system tools
     vim # Text editor
     wget # Download utility
     curl # Transfer data utility
@@ -20,8 +22,7 @@
     # Add more system-wide packages here
   ];
 
-  # User packages (installed for user krieger via Home Manager)
-  home.packages = with pkgs; [
+  userPackages = with pkgs; [
     # Development tools
     vscode
     
