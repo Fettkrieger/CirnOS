@@ -35,7 +35,7 @@
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = builtins.mapAttrs (k: v) {
+  i18n.extraLocaleSettings = {
     LC_ADDRESS = "de_CH.UTF-8";
     LC_IDENTIFICATION = "de_CH.UTF-8";
     LC_MEASUREMENT = "de_CH.UTF-8";

@@ -25,6 +25,7 @@
   userPackages = with pkgs; [
     # Development tools
     vscode
+    direnv
     
     # Utilities
     fastfetch
