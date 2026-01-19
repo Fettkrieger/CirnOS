@@ -4,11 +4,11 @@
   # System-wide packages (available to all users)
   systemPackages = with pkgs; [
     # === Essential Tools ===
-    vim
-    wget
-    curl
-    git
-    
+    vim             # Text editor
+    wget          # Download utility
+    curl        # Data transfer tool
+    git          # Version control system
+
     # === System Monitoring ===
     htop
     nvtopPackages.full # GPU monitoring (like htop for NVIDIA)
@@ -17,8 +17,8 @@
     wmctrl
     
     # === GNOME Utilities ===
-    gnome-tweaks
-    dconf-editor
+    gnome-tweaks         
+    dconf-editor      
   ];
 
   # User packages (krieger user)
@@ -36,14 +36,15 @@
     fd                 # Find alternative
     eza                # Modern ls replacement
     bat                # Syntax highlighted cat
-    yt-dlp             # Video downloader
+    yt-dlp             # YouTube downloader
+    qbittorrent        # Torrent client
 
     # === File Management ===
     ranger             # Terminal file manager
     nautilus           # GNOME file manager
-    unzip
-    zip
-    p7zip
+    unzip                 
+    zip                # Archive tools      
+    p7zip              # Archive tools    
 
     # === System Monitoring ===
     btop               # Better process viewer
