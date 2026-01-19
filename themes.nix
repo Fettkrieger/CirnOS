@@ -1,6 +1,14 @@
 { config, pkgs, ... }:
 
 {
+  # === Theme Packages ===
+  home.packages = with pkgs; [
+    adwaita-qt         # Adwaita theme for Qt5
+    adwaita-qt6        # Adwaita theme for Qt6
+    qgnomeplatform     # Qt5 platform theme for GNOME
+    qgnomeplatform-qt6 # Qt6 platform theme for GNOME
+  ];
+
   # === GTK Theme Configuration ===
   gtk = {
     enable = true;
