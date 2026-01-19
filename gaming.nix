@@ -9,7 +9,7 @@
     protontricks      # Tool to manage Proton prefixes
     
     # Performance and monitoring
-    gamemode
+    gamemode          # Performance management for games
     mangohud          # Performance overlay
     goverlay          # GUI for MangoHUD
     
@@ -30,9 +30,6 @@
     corectrl          # AMD GPU control (useful to have)
     gpu-screen-recorder # Screen recording for gaming
   ];
-
-  # Enable GameMode for better gaming performance
-  services.gamemode.enable = true;
 
   # Wine configuration (optional, mainly for compatibility)
   home.file.".config/wine/user.reg" = {
