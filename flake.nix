@@ -11,6 +11,9 @@
       # Make home-manager use the same nixpkgs as the system
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    catppuccin.url = "github:catppuccin/nix";
+
+
   };
 
   outputs = { self, nixpkgs, home-manager, ... }:

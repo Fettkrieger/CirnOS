@@ -9,12 +9,6 @@
     qgnomeplatform     # Qt5 platform theme for GNOME
     qgnomeplatform-qt6 # Qt6 platform theme for GNOME
     gnome-themes-extra # Extra GNOME themes
-
-    # Popular dark themes
-    dracula-theme      # Dracula dark theme
-    catppuccin         # Catppuccin theme collection
-    catppuccin-cursors # Catppuccin cursor theme
-    yaru-theme         # Ubuntu Yaru theme
     
     # Icon themes
     papirus-icon-theme # Papirus icon theme
