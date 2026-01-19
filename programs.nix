@@ -34,12 +34,17 @@
     p7zip
     ghostty
     fragments
+    gitkraken
+    yt-dlp
+    sushi
     
     # System monitoring
     btop
     
     # Media
-    vlc
+    mpv
+    ffmpegthumbnailer
+    gthumb
     
     # Communication
     discord
@@ -52,7 +57,7 @@
     
     # File management
     ranger # Terminal file manager
-    kdePackages.dolphin # KDE file manager with advanced features
+    nautilus
     
     # Qt/KDE theming for GNOME integration
     adwaita-qt # Adwaita theme for Qt applications
@@ -60,11 +65,6 @@
     qgnomeplatform # Qt platform theme for GNOME
     qgnomeplatform-qt6 # Qt6 platform theme for GNOME
     
-    # Thumbnail generators for video/image previews
-    ffmpegthumbnailer # Video thumbnails
-    kdePackages.kdegraphics-thumbnailers # Additional KDE thumbnailers
-    kdePackages.kimageformats # More image format support
-    libheif # HEIF/HEIC image support
     
     # Add more user packages below as you need them
     # Example categories:
