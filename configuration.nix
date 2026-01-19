@@ -99,6 +99,8 @@
   # Install firefox.
   programs.firefox.enable = true;
 
+  
+
   # Enable Steam
   programs.steam = {
     enable = true;

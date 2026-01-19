@@ -18,7 +18,8 @@
     
     # === GNOME Utilities ===
     gnome-tweaks         
-    dconf-editor      
+    dconf-editor  
+    
   ];
 
   # User packages (krieger user)
@@ -37,7 +38,7 @@
     eza                # Modern ls replacement
     bat                # Syntax highlighted cat
     yt-dlp             # YouTube downloader
-    qbittorrent        # Torrent client
+    fragments       # Torrent client
 
     # === File Management ===
     ranger             # Terminal file manager
