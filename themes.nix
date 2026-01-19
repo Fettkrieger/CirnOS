@@ -13,6 +13,7 @@
     # Popular dark themes
     dracula-theme      # Dracula dark theme
     catppuccin         # Catppuccin theme collection
+    catppuccin-cursors # Catppuccin cursor theme
     yaru-theme         # Ubuntu Yaru theme
     
     # Icon themes
@@ -25,13 +26,13 @@
     enable = true;
     
     theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
+      name = "Catppuccin-Mocha";
+      package = pkgs.catppuccin;
     };
     
     iconTheme = {
-      name = "Adwaita";
-      package = pkgs.adwaita-icon-theme;
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
     };
     
     gtk3.extraConfig = {
@@ -41,8 +42,8 @@
 
   # === Cursor Theme ===
   home.pointerCursor = {
-    name = "Adwaita";
-    package = pkgs.adwaita-icon-theme;
+    name = "Catppuccin-Mocha-Dark";
+    package = pkgs.catppuccin-cursors;
     size = 24;
     gtk.enable = true;
   };
@@ -50,8 +51,8 @@
   # === Qt Theming for GNOME Integration ===
   qt = {
     enable = true;
-    platformTheme.name = "adwaita";
-    style.name = "adwaita-dark";
+    platformTheme.name = "gtk3";
+    style.name = "gtk2";
   };
 
   # === GNOME Desktop Interface Theming ===
