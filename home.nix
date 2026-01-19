@@ -6,6 +6,7 @@
     ./keybindings.nix  # Keyboard shortcuts
     ./shellAliases.nix # Shell aliases
     ./default-apps.nix # Default applications
+    ./gaming.nix       # Gaming configuration (Steam, Proton, GameMode)
   ];
 
   # Home Manager needs a bit of information about you and the paths it should manage
@@ -27,10 +28,16 @@
     enable = true;
     settings = {
       user.name = "Krieger";
-      user.email = "leandro.tiziani@protonmail.com"; # CHANGE THIS to your actual email
+      user.email = "leandro.tiziani@protonmail.com";
       init.defaultBranch = "main";
       pull.rebase = false;
     };
+  };
+
+  # Direnv configuration for environment management
+  programs.direnv = {
+    enable = true;
+    silent = true;
   };
 
   # Bash configuration
@@ -118,7 +125,7 @@
   # Qt theming for GNOME integration (makes Dolphin look like GNOME)
   qt = {
     enable = true;
-    platformTheme.name = "gnome";
+    platformTheme.name = "adwaita";
     style.name = "adwaita-dark";
   };
 }

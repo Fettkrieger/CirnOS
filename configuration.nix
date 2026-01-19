@@ -35,7 +35,7 @@
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = builtins.mapAttrs (k: v) {
+  i18n.extraLocaleSettings = {
     LC_ADDRESS = "de_CH.UTF-8";
     LC_IDENTIFICATION = "de_CH.UTF-8";
     LC_MEASUREMENT = "de_CH.UTF-8";
@@ -99,11 +99,26 @@
   # Install firefox.
   programs.firefox.enable = true;
 
+  # Enable Steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
+    gamescopeSession.enable = true;
+  };
+
+  # Enable GameMode service
+  services.gamemode.enable = true;
+
   # Allow unfree packages (required for NVIDIA drivers)
   nixpkgs.config.allowUnfree = true;
 
   # Enable flakes and the new nix command (modern NixOS features)
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # Set up nix path for easier access to nixpkgs
+  nix.nixPath = [ "nixpkgs=/etc/channels/nixpkgs" ];
 
   # Automatic garbage collection to keep disk usage down
   nix.gc = {

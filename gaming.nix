@@ -1,15 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  # Enable Steam
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-    localNetworkGameTransfers.openFirewall = true;
-  };
-
-  # Gaming packages
+  # Gaming packages for Home Manager
   home.packages = with pkgs; [
     # Steam and related
     steam
@@ -42,12 +34,7 @@
   # Enable GameMode for better gaming performance
   services.gamemode.enable = true;
 
-  # NVIDIA GPU settings (for RTX 5070 Ti)
-  # This should be set in configuration.nix at the system level, but we reference it here
-  # Ensure you have: services.xserver.videoDrivers = [ "nvidia" ];
-  # And: hardware.nvidia.open = false; (for NVIDIA proprietary drivers)
-
-  # Wine configuration
+  # Wine configuration (optional, mainly for compatibility)
   home.file.".config/wine/user.reg" = {
     text = ''
       [Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MenuOrder\\Start Menu]

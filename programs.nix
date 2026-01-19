@@ -11,6 +11,7 @@
     curl # Transfer data utility
     git # Version control
     htop # Process viewer
+    wmctrl # Window management tool (for Ghostty toggle)
     
     # GNOME utilities
     gnome-tweaks # Additional GNOME settings
@@ -33,10 +34,7 @@
     zip
     p7zip
     ghostty
-    fragments
-    gitkraken
     yt-dlp
-    sushi
     
     # System monitoring
     btop
