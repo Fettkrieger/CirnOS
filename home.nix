@@ -118,4 +118,11 @@
     size = 24;
     gtk.enable = true;
   };
+
+  # Qt theming for GNOME integration (makes Dolphin look like GNOME)
+  qt = {
+    enable = true;
+    platformTheme.name = "gnome";
+    style.name = "adwaita-dark";
+  };
 }

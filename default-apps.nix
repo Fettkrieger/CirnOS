@@ -41,6 +41,8 @@
       "video/webm" = "vlc.desktop";
       "video/mpeg" = "vlc.desktop";
       "video/x-msvideo" = "vlc.desktop";
+      "video/quicktime" = "vlc.desktop";
+      "video/x-flv" = "vlc.desktop";
       
       # Audio - VLC
       "audio/mpeg" = "vlc.desktop";
@@ -48,6 +50,8 @@
       "audio/x-wav" = "vlc.desktop";
       "audio/flac" = "vlc.desktop";
       "audio/ogg" = "vlc.desktop";
+      "audio/x-vorbis+ogg" = "vlc.desktop";
+      "audio/x-opus+ogg" = "vlc.desktop";
       
       # PDFs - Default GNOME document viewer (Evince)
       "application/pdf" = "org.gnome.Evince.desktop";
@@ -58,8 +62,8 @@
       "application/x-tar" = "org.gnome.FileRoller.desktop";
       "application/x-rar" = "org.gnome.FileRoller.desktop";
       
-      # File manager - Nautilus
-      "inode/directory" = "org.gnome.Nautilus.desktop";
+      # File manager - Dolphin
+      "inode/directory" = "org.kde.dolphin.desktop";
     };
     
     # Associations for applications that can open these file types
@@ -67,8 +71,8 @@
       "text/plain" = [ "code.desktop" "org.gnome.gedit.desktop" ];
       "image/jpeg" = [ "org.gnome.eog.desktop" "gimp.desktop" ];
       "image/png" = [ "org.gnome.eog.desktop" "gimp.desktop" ];
-      "video/mp4" = [ "vlc.desktop" "mpv.desktop" ];
-      "audio/mpeg" = [ "vlc.desktop" "mpv.desktop" ];
+      "video/mp4" = [ "vlc.desktop" "mpv.desktop" "haruna.desktop" ];
+      "audio/mpeg" = [ "vlc.desktop" "mpv.desktop" "haruna.desktop" ];
     };
   };
   
@@ -80,5 +84,8 @@
     
     # Default browser
     BROWSER = "firefox";
+    
+    # Default file manager
+    FILE_MANAGER = "dolphin";
   };
 }
