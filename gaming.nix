@@ -3,24 +3,13 @@
 {
   # Gaming packages for Home Manager
   home.packages = with pkgs; [
-    # Steam and related
     steam
-    protontricks      # Tool to manage Proton prefixes
-    
-    # Performance and monitoring
-    gamemode          # Performance management for games
-    mangohud          # Performance overlay
-    
-    # Vulkan and graphics
+    protontricks
+    gamemode
+    mangohud
     vulkan-tools
-    vulkan-loader
-    libvulkan
-    
-    # Additional gaming libraries
-    winetricks        # Wine configuration tool
-    
-    # Performance tools
-    gpu-screen-recorder # Screen recording for gaming
+    winetricks
+    gpu-screen-recorder
   ];
 
   # Wine configuration (optional, mainly for compatibility)
