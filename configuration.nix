@@ -108,9 +108,6 @@
     gamescopeSession.enable = true;
   };
 
-  # Enable GameMode service
-  services.gamemode.enable = true;
-
   # Allow unfree packages (required for NVIDIA drivers)
   nixpkgs.config.allowUnfree = true;
 
