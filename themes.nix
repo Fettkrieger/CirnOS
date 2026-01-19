@@ -42,10 +42,11 @@
 
   # === Cursor Theme ===
   home.pointerCursor = {
-    name = "Catppuccin-Mocha-Dark";
+    name = "catppuccin-frappe-blue-cursors";
     package = pkgs.catppuccin-cursors;
     size = 24;
     gtk.enable = true;
+    x11.enable = true;
   };
 
   # === Qt Theming for GNOME Integration ===
