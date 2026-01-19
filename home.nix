@@ -7,6 +7,7 @@
     ./shellAliases.nix # Shell aliases
     ./default-apps.nix # Default applications
     ./gaming.nix       # Gaming configuration (Steam, Proton, GameMode)
+    ./themes.nix       # Theme configuration (GTK, Qt, Cursors, Colors)
   ];
 
   # Home Manager needs a bit of information about you and the paths it should manage
@@ -93,39 +94,5 @@
       sleep-inactive-ac-type = "nothing"; # Never sleep when plugged in
       power-button-action = "interactive"; # Ask what to do on power button
     };
-  };
-
-  # GTK theme configuration
-  gtk = {
-    enable = true;
-    
-    theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
-    };
-    
-    iconTheme = {
-      name = "Adwaita";
-      package = pkgs.adwaita-icon-theme;
-    };
-    
-    gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
-    };
-  };
-
-  # Cursor theme
-  home.pointerCursor = {
-    name = "Adwaita";
-    package = pkgs.adwaita-icon-theme;
-    size = 24;
-    gtk.enable = true;
-  };
-
-  # Qt theming for GNOME integration (makes Dolphin look like GNOME)
-  qt = {
-    enable = true;
-    platformTheme.name = "adwaita";
-    style.name = "adwaita-dark";
   };
 }
