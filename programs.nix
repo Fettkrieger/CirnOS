@@ -1,91 +1,65 @@
 { pkgs, ... }:
 
-# This file contains ALL packages for both system and user
-# It's imported by both configuration.nix and home.nix
 {
-  # Define package lists
+  # System-wide packages (available to all users)
   systemPackages = with pkgs; [
-    # Essential system tools
-    vim # Text editor
-    wget # Download utility
-    curl # Transfer data utility
-    git # Version control
-    htop # Process viewer
-    wmctrl # Window management tool (for Ghostty toggle)
+    # === Essential Tools ===
+    vim
+    wget
+    curl
+    git
     
-    # GNOME utilities
-    gnome-tweaks # Additional GNOME settings
-    dconf-editor # Low-level GNOME settings editor
+    # === System Monitoring ===
+    htop
+    nvtopPackages.full # GPU monitoring (like htop for NVIDIA)
     
-    # NVIDIA tools
-    nvtopPackages.full # GPU monitoring tool (like htop for GPU)
+    # === Window Management ===
+    wmctrl
     
-    # Add more system-wide packages here
+    # === GNOME Utilities ===
+    gnome-tweaks
+    dconf-editor
   ];
 
+  # User packages (krieger user)
   userPackages = with pkgs; [
-    # Development tools
+    # === Development ===
     vscode
-    
-    # Utilities
-    fastfetch
-    tree
+
+    # === Terminal Emulator ===
+    ghostty
+
+    # === CLI Tools & Utilities ===
+    fastfetch          # System info
+    tree               # Directory tree
+    ripgrep            # Fast search (rg)
+    fd                 # Find alternative
+    eza                # Modern ls replacement
+    bat                # Syntax highlighted cat
+    yt-dlp             # Video downloader
+
+    # === File Management ===
+    ranger             # Terminal file manager
+    nautilus           # GNOME file manager
     unzip
     zip
     p7zip
-    ghostty
-    yt-dlp
-    
-    # System monitoring
-    btop
-    
-    # Media
-    mpv
-    ffmpegthumbnailer
-    gthumb
-    
-    # Communication
+
+    # === System Monitoring ===
+    btop               # Better process viewer
+
+    # === Media & Graphics ===
+    mpv                # Video player
+    ffmpegthumbnailer  # Video thumbnails
+    gthumb             # Image viewer
+
+    # === Communication ===
     discord
-    
-    # Terminal tools
-    ripgrep # Fast search tool (rg command)
-    fd # Fast find alternative
-    eza # Modern ls replacement
-    bat # Cat with syntax highlighting
-    
-    # File management
-    ranger # Terminal file manager
-    nautilus
-    
-    # Qt/KDE theming for GNOME integration
-    adwaita-qt # Adwaita theme for Qt applications
-    adwaita-qt6 # Adwaita theme for Qt6 applications
-    qgnomeplatform # Qt platform theme for GNOME
+
+    # === GNOME/Qt Integration ===
+    adwaita-qt         # Adwaita theme for Qt5
+    adwaita-qt6        # Adwaita theme for Qt6
+    qgnomeplatform     # Qt5 platform theme for GNOME
     qgnomeplatform-qt6 # Qt6 platform theme for GNOME
-    
-    
-    # Add more user packages below as you need them
-    # Example categories:
-    
-    # Gaming
-    # steam
-    # lutris
-    
-    # Graphics
-    # gimp
-    # inkscape
-    # blender
-    
-    # Office
-    # libreoffice
-    # obsidian
-    
-    # Browsers
-    # chromium
-    # brave
-    
-    # Network tools
-    # nmap
-    # wireshark
   ];
 }
