@@ -41,16 +41,5 @@
     
     # Log refused packets
     logRefusedConnections = false;
-    
-    # Extra commands to run when setting up the firewall
-    extraCommands = ''
-      # Add custom iptables rules here if needed
-      # Example: iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
-    '';
-    
-    # Extra commands to run when stopping the firewall
-    extraStopCommands = ''
-      # Add cleanup commands here if needed
-    '';
   };
 }

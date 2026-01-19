@@ -8,7 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./firewall.nix  # Firewall configuration
+      ./firewall.nix    # Firewall configuration
+      ./gpu.nix         # GPU (NVIDIA/AMD) configuration
     ];
 
   # Bootloader.
@@ -17,12 +18,6 @@
 
   # Kernel - use latest for best hardware support (NVIDIA 5070 Ti and AMD 7800X3D)
   boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # Kernel parameters for NVIDIA
-  boot.kernelParams = [ 
-    "nvidia.NVreg_PreserveVideoMemoryAllocations=1" # For suspend/resume support
-    "nvidia_drm.modeset=1" # Enable modesetting for Wayland
-  ];
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -40,7 +35,7 @@
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = {
+  i18n.extraLocaleSettings = builtins.mapAttrs (k: v) {
     LC_ADDRESS = "de_CH.UTF-8";
     LC_IDENTIFICATION = "de_CH.UTF-8";
     LC_MEASUREMENT = "de_CH.UTF-8";
@@ -86,39 +81,7 @@
     #media-session.enable = true;
   };
 
-  # NVIDIA GPU configuration
-  services.xserver.videoDrivers = [ "nvidia" ];
 
-  # Enable OpenGL and graphics support
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true; # Enable 32-bit support for gaming and compatibility
-  };
-
-  hardware.nvidia = {
-    # Modesetting is required for Wayland compositors
-    modesetting.enable = true;
-
-    # Enable power management (set to false for desktops usually)
-    powerManagement.enable = false;
-    powerManagement.finegrained = false;
-
-    # Use the proprietary NVIDIA driver (open source version not ready for RTX 5070 Ti yet)
-    open = true;
-
-    # Enable the NVIDIA settings menu (accessible via `nvidia-settings` command)
-    nvidiaSettings = true;
-
-    # Select the appropriate driver version
-    # Using beta for newest GPU support (RTX 5070 Ti)
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
-  };
-
-  # CPU microcode updates for AMD Ryzen 7800X3D
-  hardware.cpu.amd.updateMicrocode = true;
-
-  # GDM Wayland support with NVIDIA
-  services.displayManager.gdm.wayland = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;

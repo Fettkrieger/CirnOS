@@ -29,7 +29,7 @@
       
       # Images - Default GNOME image viewer (gthumb)
       "image/jpeg" = "gthumb.desktop";
-      "image/png" = ".gthumb.desktop";
+      "image/png" = "gthumb.desktop";
       "image/gif" = "gthumb.desktop";
       "image/bmp" = "gthumb.desktop";
       "image/webp" = "gthumb.desktop";
@@ -69,10 +69,10 @@
     # Associations for applications that can open these file types
     associations.added = {
       "text/plain" = [ "code.desktop" "org.gnome.gedit.desktop" ];
-      "image/jpeg" = [ "gthumb.desktop" "gthumb.desktop" ];
-      "image/png" = [ "gthumb.desktop" "gthumb.desktop" ];
-      "video/mp4" = [ "mpv.desktop" "mpv.desktop" ];
-      "audio/mpeg" = [ "mpv.desktop" "mpv.desktop" ];
+      "image/jpeg" = [ "gthumb.desktop" ];
+      "image/png" = [ "gthumb.desktop" ];
+      "video/mp4" = [ "mpv.desktop" ];
+      "audio/mpeg" = [ "mpv.desktop" ];
     };
   };
   
