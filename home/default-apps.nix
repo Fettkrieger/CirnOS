@@ -1,11 +1,10 @@
+# Default applications configuration using XDG MIME types
 { ... }:
 
 {
-  # Default applications configuration using XDG MIME types
   xdg.mimeApps = {
     enable = true;
     
-    # Set default applications for file types
     defaultApplications = {
       # Text files - Visual Studio Code
       "text/plain" = "code.desktop";
@@ -27,7 +26,7 @@
       "x-scheme-handler/about" = "firefox.desktop";
       "x-scheme-handler/unknown" = "firefox.desktop";
       
-      # Images - Default GNOME image viewer (gthumb)
+      # Images - gthumb
       "image/jpeg" = "gthumb.desktop";
       "image/png" = "gthumb.desktop";
       "image/gif" = "gthumb.desktop";
@@ -35,7 +34,7 @@
       "image/webp" = "gthumb.desktop";
       "image/svg+xml" = "gthumb.desktop";
       
-      # Videos - VLC
+      # Videos - mpv
       "video/mp4" = "mpv.desktop";
       "video/x-matroska" = "mpv.desktop";
       "video/webm" = "mpv.desktop";
@@ -44,46 +43,21 @@
       "video/quicktime" = "mpv.desktop";
       "video/x-flv" = "mpv.desktop";
       
-      # Audio - VLC
+      # Audio - mpv
       "audio/mpeg" = "mpv.desktop";
       "audio/mp4" = "mpv.desktop";
       "audio/x-wav" = "mpv.desktop";
       "audio/flac" = "mpv.desktop";
       "audio/ogg" = "mpv.desktop";
-      "audio/x-vorbis+ogg" = "mpv.desktop";
-      "audio/x-opus+ogg" = "mpv.desktop";
       
-      # PDFs - Default GNOME document viewer (Evince)
-      "application/pdf" = "org.gnome.Evince.desktop";
+      # Archives - Nautilus
+      "application/zip" = "org.gnome.Nautilus.desktop";
+      "application/x-tar" = "org.gnome.Nautilus.desktop";
+      "application/x-7z-compressed" = "org.gnome.Nautilus.desktop";
+      "application/x-rar" = "org.gnome.Nautilus.desktop";
       
-      # Archives - Default GNOME archive manager
-      "application/zip" = "org.gnome.FileRoller.desktop";
-      "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
-      "application/x-tar" = "org.gnome.FileRoller.desktop";
-      "application/x-rar" = "org.gnome.FileRoller.desktop";
-      
-      # File manager - Nautilus (GNOME Files)
+      # Directories
       "inode/directory" = "org.gnome.Nautilus.desktop";
     };
-    
-    # Associations for applications that can open these file types
-    associations.added = {
-      "text/plain" = [ "code.desktop" "org.gnome.gedit.desktop" ];
-      "image/jpeg" = [ "gthumb.desktop" ];
-      "image/png" = [ "gthumb.desktop" ];
-      "video/mp4" = [ "mpv.desktop" ];
-      "audio/mpeg" = [ "mpv.desktop" ];
-    };
-  };
-  
-  # Environment variables for default applications
-  home.sessionVariables = {
-    # Default editor for terminal
-    EDITOR = "code --wait";
-    VISUAL = "code --wait";
-    
-    # Default browser
-    BROWSER = "firefox";
- 
   };
 }

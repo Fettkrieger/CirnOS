@@ -1,5 +1,5 @@
 {
-  description = "CirnOS - NixOS configuration with Home Manager";
+  description = "CirnOS - Multi-host NixOS configuration with Home Manager";
 
   inputs = {
     # NixOS unstable channel for latest packages and NVIDIA drivers
@@ -8,47 +8,62 @@
     # Home Manager for user-level configuration
     home-manager = {
       url = "github:nix-community/home-manager";
-      # Make home-manager use the same nixpkgs as the system
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    catppuccin.url = "github:catppuccin/nix";
-
-
+    
+    # Catppuccin theming for NixOS and Home Manager
+    catppuccin = {
+      url = "github:catppuccin/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, catppuccin, ... }@inputs:
     let
-      # System architecture (x86_64 for your AMD/NVIDIA setup)
       system = "x86_64-linux";
       
-      # Import nixpkgs with configuration
-      pkgs = import nixpkgs {
+      # Shared configuration function for all hosts
+      mkHost = { hostname, hostConfig, enableGaming ? true }: nixpkgs.lib.nixosSystem {
         inherit system;
-        config.allowUnfree = true; # Allow proprietary packages like NVIDIA drivers
+        specialArgs = { inherit inputs hostname enableGaming; };
+        
+        modules = [
+          # Catppuccin NixOS module
+          catppuccin.nixosModules.catppuccin
+          
+          # Common configuration shared across all hosts
+          ./modules/common.nix
+          
+          # Host-specific configuration
+          hostConfig
+          
+          # Home Manager as a NixOS module
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = { inherit inputs hostname enableGaming; };
+              users.krieger = import ./home;
+            };
+          }
+        ];
       };
     in
     {
-      # NixOS system configuration
       nixosConfigurations = {
-        # Your hostname (must match networking.hostName in configuration.nix)
-        nixos = nixpkgs.lib.nixosSystem {
-          inherit system;
-          
-          modules = [
-            # Main system configuration (located in /home/krieger/CirnOS/)
-            ./configuration.nix
-            
-            # Home Manager as a NixOS module
-            home-manager.nixosModules.home-manager
-            {
-              # Use system-level pkgs for home-manager
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              
-              # Point to your home manager configuration (located in /home/krieger/CirnOS/)
-              home-manager.users.krieger = import ./home.nix;
-            }
-          ];
+        # Desktop PC (NZXT case with NVIDIA RTX 5070 Ti + AMD 7800X3D)
+        nzxt-nix = mkHost {
+          hostname = "nzxt-nix";
+          hostConfig = ./hosts/nzxt-nix;
+          enableGaming = true;
+        };
+        
+        # HP Convertible Laptop (placeholder - configure hardware-configuration.nix after install)
+        hp-laptop = mkHost {
+          hostname = "hp-laptop";
+          hostConfig = ./hosts/hp-laptop;
+          enableGaming = false;  # Change to true if needed
         };
       };
     };
