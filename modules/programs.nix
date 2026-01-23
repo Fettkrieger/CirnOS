@@ -2,6 +2,14 @@
 { pkgs, ... }:
 
 {
+  # Fonts (needed for waybar and other UI elements)
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+    noto-fonts
+    noto-fonts-color-emoji
+  ];
+
   environment.systemPackages = with pkgs; [
     # === Essential Tools ===
     vim

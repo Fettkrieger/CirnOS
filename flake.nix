@@ -16,9 +16,15 @@
       url = "github:catppuccin/nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Niri scrollable tiling Wayland compositor
+    niri = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, catppuccin, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, catppuccin, niri, ... }@inputs:
     let
       system = "x86_64-linux";
       
@@ -30,6 +36,10 @@
         modules = [
           # Catppuccin NixOS module
           catppuccin.nixosModules.catppuccin
+
+          # Niri compositor NixOS module (includes home-manager integration)
+          niri.nixosModules.niri
+          { nixpkgs.overlays = [ niri.overlays.niri ]; }
           
           # Common configuration shared across all hosts
           ./modules/common.nix

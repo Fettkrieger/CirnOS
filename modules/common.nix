@@ -5,6 +5,7 @@
   imports = [
     ./firewall.nix
     ./programs.nix
+    ./niri.nix
   ];
 
   # Set hostname from flake

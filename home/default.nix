@@ -10,6 +10,7 @@
     ./shellAliases.nix
     ./default-apps.nix
     ./themes.nix
+    ./niri.nix
   ] ++ (if enableGaming then [ ./gaming.nix ] else []);
 
   home.username = "krieger";
