@@ -10,6 +10,22 @@
   # Set hostname from flake
   networking.hostName = hostname;
 
+  # Catppuccin system-wide theming (for GDM login screen)
+  catppuccin = {
+    enable = true;
+    flavor = "mocha";
+    accent = "blue";
+    
+    # Cursors for GDM
+    cursors = {
+      enable = true;
+      accent = "blue";
+    };
+    
+    # Icons for GDM
+    gtk.icon.enable = true;
+  };
+
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

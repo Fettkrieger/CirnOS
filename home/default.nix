@@ -21,16 +21,11 @@
     # === Development ===
     vscode
 
-    # === Terminal Emulator ===
-    ghostty
-
     # === CLI Tools & Utilities ===
     fastfetch
     tree
     ripgrep
     fd
-    eza
-    bat
     yt-dlp
     fragments
 
@@ -41,11 +36,7 @@
     zip
     p7zip
 
-    # === System Monitoring ===
-    btop
-
     # === Media & Graphics ===
-    mpv
     ffmpegthumbnailer
     gthumb
 
@@ -73,6 +64,41 @@
     silent = true;
   };
 
+  # === Catppuccin-themed Applications ===
+  
+  # Ghostty terminal
+  programs.ghostty = {
+    enable = true;
+  };
+
+  # Btop system monitor
+  programs.btop = {
+    enable = true;
+  };
+
+  # Bat (cat replacement with syntax highlighting)
+  programs.bat = {
+    enable = true;
+  };
+
+  # Eza (ls replacement)
+  programs.eza = {
+    enable = true;
+    icons = "auto";
+    git = true;
+  };
+
+  # Fzf (fuzzy finder)
+  programs.fzf = {
+    enable = true;
+    enableBashIntegration = true;
+  };
+
+  # MPV media player
+  programs.mpv = {
+    enable = true;
+  };
+
   # Bash
   programs.bash.enable = true;
 
@@ -81,6 +107,15 @@
     enable = true;
     flavor = "mocha";
     accent = "blue";
+    
+    # Cursor theme
+    cursors = {
+      enable = true;
+      accent = "blue";
+    };
+    
+    # GTK icon theme (Papirus with catppuccin colors)
+    gtk.icon.enable = true;
   };
 
   # GNOME settings via dconf
