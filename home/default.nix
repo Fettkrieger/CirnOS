@@ -103,15 +103,19 @@
   programs.bash.enable = true;
 
   # Enable Catppuccin theming globally
+  # Available flavors: "latte", "frappe", "macchiato", "mocha"
+  # Available accents: "rosewater", "flamingo", "pink", "mauve", "red",
+  #                    "maroon", "peach", "yellow", "green", "teal",
+  #                    "sky", "sapphire", "blue", "lavender"
   catppuccin = {
     enable = true;
-    flavor = "mocha";
-    accent = "blue";
+    flavor = "mocha";   # dark themes: mocha (darkest), macchiato, frappe | light: latte
+    accent = "mauve";    # accent color for highlights
     
     # Cursor theme
     cursors = {
       enable = true;
-      accent = "blue";
+      accent = "mauve";
     };
     
     # GTK icon theme (Papirus with catppuccin colors)

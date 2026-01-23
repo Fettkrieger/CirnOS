@@ -11,15 +11,19 @@
   networking.hostName = hostname;
 
   # Catppuccin system-wide theming (for GDM login screen)
+  # Available flavors: "latte", "frappe", "macchiato", "mocha"
+  # Available accents: "rosewater", "flamingo", "pink", "mauve", "red",
+  #                    "maroon", "peach", "yellow", "green", "teal",
+  #                    "sky", "sapphire", "blue", "lavender"
   catppuccin = {
     enable = true;
-    flavor = "mocha";
-    accent = "blue";
+    flavor = "mocha";   # dark themes: mocha (darkest), macchiato, frappe | light: latte
+    accent = "mauve";    # accent color for highlights
     
     # Cursors for GDM
     cursors = {
       enable = true;
-      accent = "blue";
+      accent = "mauve";
     };
     
     # Icons for GDM
