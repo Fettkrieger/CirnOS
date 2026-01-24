@@ -1,5 +1,4 @@
-# Theme configuration (GTK, Qt, Cursors)
-# Note: Most theming is handled by the catppuccin module in default.nix
+# Theme configuration (GTK, Qt, Cursors, Catppuccin)
 { config, pkgs, lib, ... }:
 
 {
@@ -32,5 +31,25 @@
     enable = true;
     platformTheme.name = "kvantum";
     style.name = "kvantum";
+  };
+
+  # Catppuccin theming
+  # Available flavors: "latte", "frappe", "macchiato", "mocha"
+  # Available accents: "rosewater", "flamingo", "pink", "mauve", "red",
+  #                    "maroon", "peach", "yellow", "green", "teal",
+  #                    "sky", "sapphire", "blue", "lavender"
+  catppuccin = {
+    enable = true;
+    flavor = "mocha";   # dark themes: mocha (darkest), macchiato, frappe | light: latte
+    accent = "lavender";    # accent color for highlights
+    
+    # Cursor theme
+    cursors = {
+      enable = true;
+      accent = "lavender";
+    };
+    
+    # GTK icon theme (Papirus with catppuccin colors)
+    gtk.icon.enable = true;
   };
 }

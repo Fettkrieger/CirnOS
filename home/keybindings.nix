@@ -31,5 +31,11 @@
       command = "ghostty";
       name = "Open Ghostty Terminal";
     };
+
+    # Set Catppuccin cursor theme and size
+    "org/gnome/desktop/interface" = {
+      cursor-theme = "Catppuccin";
+      cursor-size = 24;
+    };
   };
 }

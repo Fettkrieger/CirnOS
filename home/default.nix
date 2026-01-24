@@ -10,7 +10,6 @@
     ./shellAliases.nix
     ./default-apps.nix
     ./themes.nix
-    ./niri.nix
   ] ++ (if enableGaming then [ ./gaming.nix ] else []);
 
   home.username = "krieger";
@@ -28,7 +27,7 @@
     ripgrep
     fd
     yt-dlp
-    fragments
+    
 
     # === File Management ===
     ranger
@@ -42,7 +41,7 @@
     gthumb
 
     # === Communication ===
-    discord
+    
   ];
 
   # Let Home Manager manage itself
@@ -102,26 +101,6 @@
 
   # Bash
   programs.bash.enable = true;
-
-  # Enable Catppuccin theming globally
-  # Available flavors: "latte", "frappe", "macchiato", "mocha"
-  # Available accents: "rosewater", "flamingo", "pink", "mauve", "red",
-  #                    "maroon", "peach", "yellow", "green", "teal",
-  #                    "sky", "sapphire", "blue", "lavender"
-  catppuccin = {
-    enable = true;
-    flavor = "mocha";   # dark themes: mocha (darkest), macchiato, frappe | light: latte
-    accent = "mauve";    # accent color for highlights
-    
-    # Cursor theme
-    cursors = {
-      enable = true;
-      accent = "mauve";
-    };
-    
-    # GTK icon theme (Papirus with catppuccin colors)
-    gtk.icon.enable = true;
-  };
 
   # GNOME settings via dconf
   dconf.settings = {
