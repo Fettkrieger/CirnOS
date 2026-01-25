@@ -10,6 +10,11 @@
   # Use latest kernel for best hardware support
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Bluetooth
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
+
   # Enable Steam (system-wide for better integration)
   programs.steam = {
     enable = true;

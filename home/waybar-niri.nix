@@ -1,6 +1,36 @@
 # Waybar configuration for Niri
 { config, pkgs, lib, ... }:
 
+let
+  # Script for CPU usage % + temp (using k10temp for AMD)
+  cpuScript = pkgs.writeShellScript "waybar-cpu" ''
+    # Calculate CPU usage from /proc/stat
+    read -r cpu user nice system idle iowait irq softirq _ < /proc/stat
+    total1=$((user + nice + system + idle + iowait + irq + softirq))
+    idle1=$idle
+    sleep 0.2
+    read -r cpu user nice system idle iowait irq softirq _ < /proc/stat
+    total2=$((user + nice + system + idle + iowait + irq + softirq))
+    idle2=$idle
+    usage=$((100 * (total2 - total1 - (idle2 - idle1)) / (total2 - total1)))
+    
+    # Find k10temp hwmon dynamically
+    for hwmon in /sys/class/hwmon/hwmon*; do
+      if [ "$(cat "$hwmon/name" 2>/dev/null)" = "k10temp" ]; then
+        temp=$(cat "$hwmon/temp1_input" 2>/dev/null)
+        break
+      fi
+    done
+    temp_c=$((temp / 1000))
+    echo "$usage% $temp_c°C"
+  '';
+
+  # Script for GPU load + VRAM (in GB) + temp
+  gpuScript = pkgs.writeShellScript "waybar-gpu" ''
+    nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader,nounits 2>/dev/null | \
+      awk -F', ' '{printf "%d%% %.1fGB/%.1fGB %d°C", $1, $2/1024, $3/1024, $4}' || echo "N/A"
+  '';
+in
 {
   programs.waybar = {
     enable = true;
@@ -26,8 +56,20 @@
         ];
         
         modules-right = [
+          "gamemode"
+          "privacy"
+          "custom/cpu"
+          "memory"
+          "disk"
+          "custom/gpu"
+          "backlight"
+          "wireplumber"
+          "bluetooth"
+          "battery"
+          "keyboard-state"
+          "power-profiles-daemon"
+          "tray"
           "idle_inhibitor"
-          
         ];
 
         # === Niri Workspaces ===
@@ -131,22 +173,14 @@
           tooltip-format = "{desc}: {volume}%";
         };
 
-        # === Network ===
-        network = {
-          format-wifi = "󰤨 {signalStrength}%";
-          format-ethernet = "󰈀 {bandwidthDownBytes}";
-          format-linked = "󰈀 (No IP)";
-          format-disconnected = "󰤭 ";
-          format-alt = "{ifname}: {ipaddr}/{cidr}";
-          tooltip-format = "{ifname} via {gwaddr}\n{ipaddr}/{cidr}\n\n⬇️ {bandwidthDownBytes} ⬆️ {bandwidthUpBytes}";
-          interval = 2;
-        };
+        
 
-        # === CPU ===
-        cpu = {
-          format = "󰻠 {usage}%";
-          tooltip = true;
+        # === CPU (Load + Temp grouped) ===
+        "custom/cpu" = {
+          exec = "${cpuScript}";
+          format = "󰻠 {}";
           interval = 2;
+          tooltip = false;
         };
 
         # === Memory ===
@@ -156,22 +190,117 @@
           interval = 2;
         };
 
-        # === Temperature (CPU) ===
-        temperature = {
-          hwmon-path-abs = "/sys/devices/pci0000:00/0000:00:18.3/hwmon";
-          input-filename = "temp1_input";
-          critical-threshold = 90;
-          format = " {temperatureC}°C";
-          format-critical = " {temperatureC}°C";
+        # === GPU (Load + VRAM + Temp grouped) ===
+        "custom/gpu" = {
+          exec = "${gpuScript}";
+          format = "󰢮 {}";
           interval = 2;
+          tooltip = false;
         };
 
-        # === GPU Temperature (Custom) ===
-        "custom/gpu-temp" = {
-          exec = "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null || echo 'N/A'";
-          format = "󰢮 {}°C";
-          interval = 5;
-          tooltip = false;
+        # === Disk ===
+        disk = {
+          format = "󰋊 {free}";
+          path = "/";
+          interval = 30;
+          unit = "GB";
+          tooltip-format = "Free: {free} / {total}\nUsed: {used} ({percentage_used}%)";
+        };
+
+        # === Wireplumber (PipeWire volume) ===
+        wireplumber = {
+          format = "{icon} {volume}%";
+          format-muted = "󰝟 ";
+          format-icons = [ "󰕿" "󰖀" "󰕾" ];
+          on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          on-click-right = "pavucontrol";
+          on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+";
+          on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-";
+          tooltip-format = "{node_name}: {volume}%";
+        };
+
+        # === Backlight ===
+        backlight = {
+          format = "{icon} {percent}%";
+          format-icons = [ "󰃞" "󰃟" "󰃠" ];
+          on-scroll-up = "brightnessctl set 5%+";
+          on-scroll-down = "brightnessctl set 5%-";
+          tooltip-format = "Brightness: {percent}%";
+        };
+
+        # === Battery (shows only if present) ===
+        battery = {
+          states = {
+            warning = 30;
+            critical = 15;
+          };
+          format = "{icon} {capacity}%";
+          format-charging = "󰂄 {capacity}%";
+          format-plugged = "󰚥 {capacity}%";
+          format-full = "󰁹 Full";
+          format-icons = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+          tooltip-format = "{timeTo}\n{power}W";
+        };
+
+        # === Bluetooth ===
+        bluetooth = {
+          format = "󰂯";
+          format-disabled = "󰂲";
+          format-connected = "󰂱 {num_connections}";
+          format-connected-battery = "󰂱 {device_battery_percentage}%";
+          tooltip-format = "{controller_alias}\n{status}";
+          tooltip-format-connected = "{controller_alias}\n{num_connections} connected\n\n{device_enumerate}";
+          tooltip-format-enumerate-connected = "{device_alias}";
+          tooltip-format-enumerate-connected-battery = "{device_alias}: {device_battery_percentage}%";
+          on-click = "blueman-manager";
+        };
+
+        # === Privacy (camera/mic in use) ===
+        privacy = {
+          icon-spacing = 4;
+          icon-size = 14;
+          transition-duration = 250;
+          modules = [
+            {
+              type = "screenshare";
+              tooltip = true;
+              tooltip-icon-size = 24;
+            }
+            {
+              type = "audio-in";
+              tooltip = true;
+              tooltip-icon-size = 24;
+            }
+            {
+              type = "audio-out";
+              tooltip = true;
+              tooltip-icon-size = 24;
+            }
+          ];
+        };
+
+        # === Keyboard State ===
+        keyboard-state = {
+          capslock = true;
+          numlock = true;
+          format = "{icon}";
+          format-icons = {
+            locked = "󰪛";
+            unlocked = "";
+          };
+        };
+
+        # === Power Profiles Daemon ===
+        power-profiles-daemon = {
+          format = "{icon}";
+          tooltip-format = "Power profile: {profile}\nDriver: {driver}";
+          tooltip = true;
+          format-icons = {
+            default = "󰗑";
+            performance = "󰓅";
+            balanced = "󰾅";
+            power-saver = "󰾆";
+          };
         };
       };
     };
@@ -232,11 +361,18 @@
       #idle_inhibitor,
       #gamemode,
       #pulseaudio,
+      #wireplumber,
       #network,
-      #cpu,
+      #custom-cpu,
       #memory,
-      #temperature,
-      #custom-gpu-temp {
+      #disk,
+      #custom-gpu,
+      #backlight,
+      #battery,
+      #bluetooth,
+      #privacy,
+      #keyboard-state,
+      #power-profiles-daemon {
         padding: 0 12px;
         margin: 4px 2px;
         background: @surface0;
@@ -335,7 +471,7 @@
       }
 
       /* === CPU === */
-      #cpu {
+      #custom-cpu {
         color: @blue;
       }
 
@@ -354,9 +490,82 @@
         animation: blink 0.5s linear infinite alternate;
       }
 
-      /* === GPU Temperature === */
-      #custom-gpu-temp {
+      /* === GPU === */
+      #custom-gpu {
         color: @peach;
+      }
+
+      /* === Disk === */
+      #disk {
+        color: @flamingo;
+      }
+
+      /* === Wireplumber === */
+      #wireplumber {
+        color: @sapphire;
+      }
+
+      #wireplumber.muted {
+        color: @overlay0;
+      }
+
+      /* === Backlight === */
+      #backlight {
+        color: @yellow;
+      }
+
+      /* === Battery === */
+      #battery {
+        color: @green;
+      }
+
+      #battery.charging {
+        color: @green;
+      }
+
+      #battery.warning:not(.charging) {
+        color: @yellow;
+      }
+
+      #battery.critical:not(.charging) {
+        color: @red;
+        animation: blink 0.5s linear infinite alternate;
+      }
+
+      /* === Bluetooth === */
+      #bluetooth {
+        color: @blue;
+      }
+
+      #bluetooth.disabled {
+        color: @overlay0;
+      }
+
+      #bluetooth.connected {
+        color: @sapphire;
+      }
+
+      /* === Privacy === */
+      #privacy {
+        color: @red;
+      }
+
+      #privacy-item {
+        padding: 0 4px;
+      }
+
+      /* === Keyboard State === */
+      #keyboard-state {
+        color: @yellow;
+      }
+
+      #keyboard-state label.locked {
+        color: @peach;
+      }
+
+      /* === Power Profiles === */
+      #power-profiles-daemon {
+        color: @teal;
       }
 
       /* === Animation === */
