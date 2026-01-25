@@ -9,7 +9,7 @@
       mainBar = {
         layer = "top";
         position = "top";
-        height = 0;
+        height = 32;
         spacing = 0;
         margin-top = 0;
         margin-left = 0;
@@ -27,14 +27,7 @@
         
         modules-right = [
           "idle_inhibitor"
-          "tray"
-          "gamemode"
-          "pulseaudio"
-          "network"
-          "cpu"
-          "memory"
-          "temperature"
-          "custom/gpu-temp"
+          
         ];
 
         # === Niri Workspaces ===

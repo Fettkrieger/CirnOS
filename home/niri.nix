@@ -8,7 +8,8 @@
     rofi                      # App launcher (wayland support built-in)
     mako                      # Notifications
     swaylock-effects          # Screen locker with effects
-    swayidle                  # Idle management
+    swayidle                # Idle management (screen locking, power saving)
+    swaybg             # Wallpaper setter for Wayland                            
     
     # === Screenshots ===
     grim                      # Screenshot tool
@@ -75,7 +76,7 @@
           mode = {
             width = 2560;
             height = 1440;
-            refresh = 154.94;
+            refresh = 155.000;
           };
           scale = 1.0;
           transform = {
@@ -90,24 +91,24 @@
           mode = {
             width = 2560;
             height = 1440;
-            refresh = 179.85;
+            refresh = 179.952;
           };
           scale = 1.0;
           position = {
             x = 1440;  # After vertical monitor (1440 wide when rotated)
-            y = 560;   # Centered vertically (2560-1440)/2
+            y = 790;   # Centered vertically (2560-1440)/2
           };
         };
         "DP-6" = {
           mode = {
             width = 2560;
             height = 1440;
-            refresh = 154.94;
+            refresh = 155.000;
           };
           scale = 1.0;
           position = {
             x = 4000;  # After DP-4 (1440 + 2560)
-            y = 560;   # Aligned with center monitor
+            y = 790;   # Aligned with center monitor
           };
         };
       };
@@ -136,7 +137,7 @@
 
       # === Layout Configuration ===
       layout = {
-        gaps = 0;
+        gaps = 2;
         
         center-focused-column = "never";
         
@@ -165,7 +166,7 @@
         
         # Struts (reserved space for bars)
         struts = {
-          top = 32;  # Space for waybar
+          top = 0;  # Space for waybar
         };
       };
 
@@ -389,7 +390,7 @@
       listview = {
         lines = 8;
         columns = 1;
-        fixed-height = true;
+        fixed-height = false;
         spacing = mkLiteral "5px";
         padding = mkLiteral "10px 0 0 0";
       };
