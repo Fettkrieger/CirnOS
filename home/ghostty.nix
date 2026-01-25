@@ -1,4 +1,5 @@
 # Ghostty terminal configuration
+
 { config, pkgs, lib, ... }:
 
 {

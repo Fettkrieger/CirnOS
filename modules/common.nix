@@ -1,5 +1,5 @@
 # Common NixOS configuration shared across all hosts
-{ config, pkgs, inputs, hostname, ... }:
+{ config, pkgs, lib, inputs, hostname, ... }:
 
 {
   imports = [
@@ -34,10 +34,9 @@
     LC_TIME = "de_CH.UTF-8";
   };
 
-  # Enable X11 and GNOME
+  # GDM Display Manager
   services.xserver.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
 
   # Enable Niri compositor (niri-flake module handles session registration)
   programs.niri.enable = true;
@@ -45,8 +44,18 @@
   # XDG Desktop Portal for Niri (file dialogs, screen sharing)
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+      xdg-desktop-portal-gnome  # For file picker dialogs
+    ];
   };
+
+  # Power management (can be overridden by hosts using TLP)
+  services.power-profiles-daemon.enable = lib.mkDefault true;
+
+  # GNOME Keyring for credential storage (used by apps like VS Code, browsers)
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.gdm.enableGnomeKeyring = true;
 
   # Configure keymap
   services.xserver.xkb = {
