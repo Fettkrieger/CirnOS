@@ -3,6 +3,8 @@
 
 {
   imports = [
+    # Niri Home Manager module from niri-flake
+    inputs.niri.homeModules.niri
     # Catppuccin Home Manager module
     inputs.catppuccin.homeModules.catppuccin
     
@@ -10,6 +12,8 @@
     ./shellAliases.nix
     ./default-apps.nix
     ./themes.nix
+    ./niri.nix
+    ./waybar-niri.nix
   ] ++ (if enableGaming then [ ./gaming.nix ] else []);
 
   home.username = "krieger";
@@ -41,7 +45,15 @@
     gthumb
 
     # === Communication ===
-    
+
+    # === GNOME Extensions ===
+    gnomeExtensions.caffeine
+    gnomeExtensions.vitals
+    gnomeExtensions.tiling-shell
+    gnomeExtensions.clipboard-indicator
+
+    # === Clipboard (for scripts/CLI) ===
+    wl-clipboard
   ];
 
   # Let Home Manager manage itself
@@ -113,6 +125,63 @@
         "discord.desktop"
         "org.gnome.Settings.desktop"
       ];
+      enabled-extensions = [
+        "caffeine@pataber.dev"
+        "Vitals@CoreCoding.com"
+        "tilingshell@ferrarodomenico.com"
+        "clipboard-indicator@tudmotu.com"
+      ];
+    };
+
+    # === Vitals Extension Settings ===
+    "org/gnome/shell/extensions/vitals" = {
+      hot-sensors = [
+        "_temperature_gpu 0_"           # GPU temp (your 5070 Ti)
+        "_temperature_processor 0_"     # CPU temp
+        "_memory_usage_"                # RAM usage %
+        "_network-rx_max_"              # Download speed
+        "_network-tx_max_"              # Upload speed
+      ];
+      show-temperature = true;
+      show-memory = true;
+      show-network = true;
+      show-processor = false;           # Disable CPU load (you want temp only)
+      show-voltage = false;
+      show-fan = false;
+      show-storage = false;
+      show-system = false;
+      show-battery = false;
+      show-gpu = true;
+      position-in-panel = 2;            # 0=left, 1=center, 2=right
+      update-time = 2;                  # Refresh every 2 seconds
+      unit = 0;                         # 0=Celsius, 1=Fahrenheit
+      network-speed-format = 0;         # 0=bytes, 1=bits
+      alphabetize = false;
+      hide-zeros = true;
+      fixed-widths = true;
+      hide-icons = false;
+      include-static-gpu-info = false;
+    };
+
+    # === Caffeine Extension Settings ===
+    "org/gnome/shell/extensions/caffeine" = {
+      show-indicator = "always";        # "always", "only-active", "never"
+      show-notifications = false;
+    };
+
+    # === Tiling Shell Extension Settings ===
+    "org/gnome/shell/extensions/tilingshell" = {
+      enable-tiling-system = true;
+      show-indicator = true;            # Shows toggle in Quick Settings
+    };
+
+    # === Clipboard Indicator Extension Settings ===
+    "org/gnome/shell/extensions/clipboard-indicator" = {
+      toggle-menu = ["<Super>v"];
+      history-size = 50;
+      display-mode = 0;                 # 0=icon only
+      disable-down-arrow = true;
+      enable-keybindings = true;
     };
 
     "org/gnome/desktop/interface" = {

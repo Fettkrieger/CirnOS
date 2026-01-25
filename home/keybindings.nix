@@ -18,6 +18,10 @@
       move-to-workspace-4 = ["<Super><Shift>4"];
     };
 
+    "org/gnome/shell/keybindings" = {
+      toggle-message-tray = [];  # Disable Super+V notification tray
+    };
+
     # Custom keybindings
     "org/gnome/settings-daemon/plugins/media-keys" = {
       custom-keybindings = [

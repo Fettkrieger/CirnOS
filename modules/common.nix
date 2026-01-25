@@ -39,6 +39,15 @@
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
+  # Enable Niri compositor (niri-flake module handles session registration)
+  programs.niri.enable = true;
+
+  # XDG Desktop Portal for Niri (file dialogs, screen sharing)
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+  };
+
   # Configure keymap
   services.xserver.xkb = {
     layout = "ch";

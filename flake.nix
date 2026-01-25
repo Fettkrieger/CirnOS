@@ -16,9 +16,15 @@
       url = "github:catppuccin/nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Niri scrolling tiling Wayland compositor
+    niri = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, catppuccin, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, catppuccin, niri, ... }@inputs:
     let
       system = "x86_64-linux";
       
@@ -28,8 +34,8 @@
         specialArgs = { inherit inputs hostname enableGaming; };
         
         modules = [
-          # Catppuccin NixOS module
-          catppuccin.nixosModules.catppuccin
+          # Niri NixOS module (provides session in GDM)
+          niri.nixosModules.niri
           
           # Common configuration shared across all hosts
           ./modules/common.nix
