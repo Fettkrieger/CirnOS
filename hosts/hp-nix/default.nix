@@ -1,5 +1,5 @@
-# HP Convertible Laptop Configuration
-# TODO: Run `nixos-generate-config` on the laptop and copy hardware-configuration.nix here
+# HP Envy x360 Convertible 13-bd0xxx Configuration
+# Intel 11th Gen (Tiger Lake) with Iris Xe Graphics
 { config, pkgs, lib, ... }:
 
 {
