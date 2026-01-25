@@ -36,7 +36,7 @@
 
   # GDM Display Manager
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
+  services.displayManager.gdm.enable = true;
 
   # Enable Niri compositor (niri-flake module handles session registration)
   programs.niri.enable = true;
@@ -56,6 +56,9 @@
   # GNOME Keyring for credential storage (used by apps like VS Code, browsers)
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.gdm.enableGnomeKeyring = true;
+
+  # GVFS for Nautilus (trash, network mounts, MTP devices)
+  services.gvfs.enable = true;
 
   # Configure keymap
   services.xserver.xkb = {

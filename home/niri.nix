@@ -61,7 +61,7 @@
         { command = [ "mako" ]; }
         { command = [ "nm-applet" "--indicator" ]; }
         { command = [ "wl-paste" "--watch" "cliphist" "store" ]; }
-        { command = [ "waybar" ]; }
+        # waybar is started via systemd user service (programs.waybar.systemd.enable)
         { command = [ "swayidle" "-w"
             "timeout" "300" "swaylock -f"
             "timeout" "600" "niri msg action power-off-monitors"

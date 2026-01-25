@@ -34,6 +34,7 @@ in
 {
   programs.waybar = {
     enable = true;
+    systemd.enable = true;  # Enables StatusNotifierWatcher for tray support
     
     settings = {
       mainBar = {
