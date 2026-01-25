@@ -29,10 +29,11 @@
     ripgrep
     fd
     yt-dlp
+    libreoffice-fresh
+
     
 
     # === File Management ===
-    ranger
     nautilus
     unzip
     zip
@@ -43,8 +44,6 @@
     gthumb
 
     # === System Utilities (replacing GNOME apps) ===
-    gnome-control-center       # Settings app (works standalone)
-    gnome-disk-utility         # Disk management
     pavucontrol                # Audio control (replaces GNOME sound settings)
     wdisplays                  # Display configuration for Wayland
 
@@ -106,4 +105,12 @@
 
   # Bash
   programs.bash.enable = true;
+
+  # Force dark mode system-wide (GNOME apps, portals, freedesktop apps)
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      gtk-theme = "Adwaita-dark";
+    };
+  };
 }

@@ -219,11 +219,18 @@
         "Super+Ctrl+Up".action.focus-window-up = [];
         "Super+Ctrl+Down".action.focus-window-down = [];
         
+        # === Focus Window or Workspace (Super+Up/Down) ===
+        "Super+Up".action.focus-window-or-workspace-up = [];
+        "Super+Down".action.focus-window-or-workspace-down = [];
+        
         # === Move Windows (Super+Shift+Arrows) ===
         "Super+Shift+Left".action.move-column-left = [];
         "Super+Shift+Right".action.move-column-right = [];
-        "Super+Shift+Up".action.move-window-up = [];
-        "Super+Shift+Down".action.move-window-down = [];
+        "Super+Shift+Up".action.move-window-to-workspace-up = [];
+        "Super+Shift+Down".action.move-window-to-workspace-down = [];
+        
+        # === Overview ===
+        "Super+F15".action.toggle-overview = [];
         
         # === Scroll View (Super+Arrows) ===
         "Super+Left".action.focus-column-left = [];
