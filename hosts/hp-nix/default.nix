@@ -10,10 +10,17 @@
   # Use latest kernel for laptop hardware support
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Early KMS for Intel graphics (prevents black screen on boot)
+  boot.initrd.kernelModules = [ "i915" ];
+
   # Intel/AMD integrated graphics (adjust based on your laptop)
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
+    extraPackages = with pkgs; [
+      intel-media-driver  # VAAPI for hardware video acceleration
+      vpl-gpu-rt          # QSV for Intel Quick Sync Video
+    ];
   };
 
   # Intel CPU microcode (change to hardware.cpu.amd.updateMicrocode if AMD)

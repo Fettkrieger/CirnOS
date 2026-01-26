@@ -11,6 +11,8 @@
     gnome-themes-extra
     libsForQt5.qtstyleplugin-kvantum  # Kvantum for Qt5
     kdePackages.qtstyleplugin-kvantum # Kvantum for Qt6
+    swaybg
+    swww
   ];
 
   # GTK configuration (let catppuccin handle the theme)

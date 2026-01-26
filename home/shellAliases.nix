@@ -12,7 +12,7 @@
       # NixOS specific - dynamic hostname detection
       rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/CirnOS#$(hostname)";
       update = "cd ${config.home.homeDirectory}/CirnOS && sudo nix flake update && sudo nixos-rebuild switch --flake .#$(hostname)";
-      cleanup = "sudo nix-collect-garbage -d && nix-collect-garbage -d";
+      cleanup = "sudo nix-collect-garbage -d";
       
       # Git shortcuts for CirnOS
       gaaCirnOS = "cd ${config.home.homeDirectory}/CirnOS && git add .";

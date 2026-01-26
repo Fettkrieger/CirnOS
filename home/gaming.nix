@@ -13,5 +13,6 @@
     gpu-screen-recorder
     lutris
     heroic  # Epic Games / GOG launcher
+    vintagestory
   ];
 }

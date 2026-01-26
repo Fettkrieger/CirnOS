@@ -8,8 +8,8 @@
     rofi                      # App launcher (wayland support built-in)
     mako                      # Notifications
     swaylock-effects          # Screen locker with effects
-    swayidle                # Idle management (screen locking, power saving)
-    swaybg             # Wallpaper setter for Wayland                            
+    swayidle                  # Idle management (screen locking, power saving)
+                      # Wallpaper setter for Wayland                            
     
     # === Screenshots ===
     grim                      # Screenshot tool
@@ -35,6 +35,8 @@
     polkit_gnome              # Polkit authentication agent
   ];
 
+  # Use swaybg via a startup command to set the wallpaper on Wayland
+
   # Niri compositor configuration using niri-flake settings
   programs.niri = {
     settings = {
@@ -57,6 +59,8 @@
       spawn-at-startup = [
         { command = [ "xwayland-satellite" ]; }
         { command = [ "swww-daemon" ]; }
+        # Set wallpaper (change the path to your image)
+        { command = [ "sh" "-c" "sleep 1 && swww img ~/Pictures/wallpapers/nix.svg --transition-type fade --transition-duration 1" ]; }
         { command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ]; }
         { command = [ "mako" ]; }
         { command = [ "nm-applet" "--indicator" ]; }
@@ -230,7 +234,7 @@
         "Super+Shift+Down".action.move-window-to-workspace-down = [];
         
         # === Overview ===
-        "Super+F15".action.toggle-overview = [];
+        "Super+F18".action.toggle-overview = [];
         
         # === Scroll View (Super+Arrows) ===
         "Super+Left".action.focus-column-left = [];

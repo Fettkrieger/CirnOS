@@ -12,7 +12,7 @@
     ./ghostty.nix
     ./niri.nix
     ./waybar-niri.nix
-  ] ++ (if enableGaming then [ ./gaming.nix ] else []);
+  ] ++ (if enableGaming then [ ./gaming.nix ./comfyui.nix ] else []);
 
   home.username = "krieger";
   home.homeDirectory = "/home/krieger";

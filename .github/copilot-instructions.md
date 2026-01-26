@@ -58,7 +58,7 @@ rebuild = "sudo nixos-rebuild switch --flake .../CirnOS#$(hostname)";
 - **Adding user packages**: Edit `home.packages` in [home/default.nix](home/default.nix#L20-L44)
 - **Adding gaming packages**: Edit [home/gaming.nix](home/gaming.nix) (desktop only)
 - **Adding a new host**: Create `hosts/<name>/default.nix` + `hardware-configuration.nix`, add `mkHost` entry in flake.nix
-- **GNOME settings**: Use `dconf.settings` in [home/default.nix](home/default.nix#L125-L163)
+-im usung niri windowmanager
 - **Keybindings**: Edit [home/keybindings.nix](home/keybindings.nix)
 
 ## Nix Conventions
