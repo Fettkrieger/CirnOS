@@ -43,12 +43,12 @@
   catppuccin = {
     enable = true;
     flavor = "mocha";   # dark themes: mocha (darkest), macchiato, frappe | light: latte
-    accent = "lavender";    # accent color for highlights
+    accent = "blue";    # accent color for highlights
     
     # Cursor theme
     cursors = {
       enable = true;
-      accent = "lavender";
+      accent = "blue";
     };
     
     # GTK icon theme (Papirus with catppuccin colors)

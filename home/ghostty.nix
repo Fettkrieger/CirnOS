@@ -8,7 +8,7 @@
     
     settings = {
       # === Transparency ===
-      background-opacity = 0.85;
+      background-opacity = 0.0s;
       
       # === Font Settings ===
       # font-family = "JetBrains Mono";

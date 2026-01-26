@@ -53,16 +53,18 @@ in
         ];
         
         modules-center = [
+          "privacy"
           "clock"
+          "idle_inhibitor"
         ];
         
         modules-right = [
           "gamemode"
-          "privacy"
+          
           "custom/cpu"
           "memory"
-          "disk"
           "custom/gpu"
+          "disk"
           "backlight"
           "wireplumber"
           "bluetooth"
@@ -70,7 +72,6 @@ in
           "keyboard-state"
           "power-profiles-daemon"
           "tray"
-          "idle_inhibitor"
         ];
 
         # === Niri Workspaces ===
@@ -109,7 +110,7 @@ in
             weeks-pos = "right";
             on-scroll = 1;
             format = {
-              months = "<span color='#cba6f7'><b>{}</b></span>";
+              months = "<span color='#89b4fa'><b>{}</b></span>";
               days = "<span color='#cdd6f4'><b>{}</b></span>";
               weeks = "<span color='#94e2d5'><b>W{}</b></span>";
               weekdays = "<span color='#f9e2af'><b>{}</b></span>";
@@ -365,9 +366,9 @@ in
       #wireplumber,
       #network,
       #custom-cpu,
+      #custom-gpu,
       #memory,
       #disk,
-      #custom-gpu,
       #backlight,
       #battery,
       #bluetooth,
@@ -394,14 +395,14 @@ in
       }
 
       #workspaces button:hover {
-        color: @mauve;
+        color: @blue;
         background: @surface1;
       }
 
       #workspaces button.focused,
       #workspaces button.active {
         color: @base;
-        background: @mauve;
+        background: @blue;
       }
 
       #workspaces button.urgent {
@@ -411,13 +412,13 @@ in
 
       /* === Window Title === */
       #window {
-        color: @text;
+        color: @sapphire;
         font-weight: bold;
       }
 
       /* === Clock === */
       #clock {
-        color: @mauve;
+        color: @sapphire;
         font-weight: bold;
       }
 
@@ -437,11 +438,11 @@ in
 
       /* === Idle Inhibitor (Caffeine) === */
       #idle_inhibitor {
-        color: @overlay1;
+        color: @blue;
       }
 
       #idle_inhibitor.activated {
-        color: @green;
+        color: @sky;
       }
 
       /* === GameMode === */
@@ -455,7 +456,7 @@ in
 
       /* === PulseAudio === */
       #pulseaudio {
-        color: @sapphire;
+        color: @sky;
       }
 
       #pulseaudio.muted {
@@ -473,12 +474,12 @@ in
 
       /* === CPU === */
       #custom-cpu {
-        color: @blue;
+        color: @sapphire;
       }
 
       /* === Memory === */
       #memory {
-        color: @lavender;
+        color: @sapphire;
       }
 
       /* === Temperature === */
@@ -493,12 +494,12 @@ in
 
       /* === GPU === */
       #custom-gpu {
-        color: @peach;
+        color: @sapphire;
       }
 
       /* === Disk === */
       #disk {
-        color: @flamingo;
+        color: @blue;
       }
 
       /* === Wireplumber === */
@@ -543,12 +544,12 @@ in
       }
 
       #bluetooth.connected {
-        color: @sapphire;
+        color: @sky;
       }
 
       /* === Privacy === */
       #privacy {
-        color: @red;
+        color: @blue;
       }
 
       #privacy-item {
@@ -566,7 +567,7 @@ in
 
       /* === Power Profiles === */
       #power-profiles-daemon {
-        color: @teal;
+        color: @sky;
       }
 
       /* === Animation === */
@@ -580,7 +581,7 @@ in
       /* === Tooltip === */
       tooltip {
         background: @base;
-        border: 1px solid @mauve;
+        border: 1px solid @blue;
         border-radius: 8px;
       }
 

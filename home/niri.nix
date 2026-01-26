@@ -159,7 +159,7 @@
         focus-ring = {
           enable = true;
           width = 2;
-          active.color = "#cba6f7";   # Catppuccin Mauve
+          active.color = "#89b4fa";   # Catppuccin Blue
           inactive.color = "#45475a"; # Catppuccin Surface1
         };
         
@@ -176,7 +176,7 @@
 
       # === Cursor ===
       cursor = {
-        theme = "catppuccin-mocha-mauve-cursors";
+        theme = "catppuccin-mocha-blue-cursors";
         size = 24;
       };
 
@@ -324,11 +324,11 @@
       border-radius = 8;
       border-size = 2;
       padding = "12";
-      # Catppuccin Mocha colors
+      # Catppuccin Mocha colors (blue accent)
       background-color = "#1e1e2e";
       text-color = "#cdd6f4";
-      border-color = "#cba6f7";
-      progress-color = "#cba6f7";
+      border-color = "#89b4fa";
+      progress-color = "#89b4fa";
     };
   };
 
@@ -372,7 +372,7 @@
       "*" = {
         bg = mkLiteral "#1e1e2e";
         fg = mkLiteral "#cdd6f4";
-        accent = mkLiteral "#cba6f7";
+        accent = mkLiteral "#89b4fa";
         surface = mkLiteral "#585b70";
         background-color = mkLiteral "@bg";
         text-color = mkLiteral "@fg";
@@ -417,8 +417,18 @@
         size = mkLiteral "24px";
       };
       element-text = {
-        highlight = mkLiteral "bold #cba6f7";
+        highlight = mkLiteral "bold #89b4fa";
       };
+    };
+  };
+
+  # Ghostty configuration
+  programs.ghostty = {
+    enable = true;
+    settings = {
+      background-opacity = 0.8;  # Background transparency (0.0 = fully transparent, 1.0 = opaque)
+      # Optional: blur behind the terminal (if compositor supports it)
+      # background-blur-radius = 20;
     };
   };
 }

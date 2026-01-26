@@ -42,6 +42,7 @@
     # === Media & Graphics ===
     ffmpegthumbnailer
     gthumb
+    inkscape
 
     # === System Utilities (replacing GNOME apps) ===
     pavucontrol                # Audio control (replaces GNOME sound settings)
