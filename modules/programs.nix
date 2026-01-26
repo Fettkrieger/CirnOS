@@ -28,6 +28,7 @@
     python3
     chromium
     qbittorrent
+    popsicle
 
 
     # === Window Management ===
