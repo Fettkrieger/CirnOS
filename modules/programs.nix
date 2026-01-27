@@ -29,6 +29,7 @@
     chromium
     qbittorrent
     popsicle
+    haruna
 
 
     # === Window Management ===
