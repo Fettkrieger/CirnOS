@@ -14,14 +14,45 @@ let
     idle2=$idle
     usage=$((100 * (total2 - total1 - (idle2 - idle1)) / (total2 - total1)))
     
-    # Find k10temp hwmon dynamically
+    # Find all temp*_input values from preferred sensors, show highest (for multi-core CPUs)
+    max_temp=""
+    found=0
     for hwmon in /sys/class/hwmon/hwmon*; do
-      if [ "$(cat "$hwmon/name" 2>/dev/null)" = "k10temp" ]; then
-        temp=$(cat "$hwmon/temp1_input" 2>/dev/null)
-        break
+      name=$(cat "$hwmon/name" 2>/dev/null || true)
+      if [ "$name" = "k10temp" ] || [ "$name" = "coretemp" ] || [ "$name" = "acpitz" ]; then
+        for f in "$hwmon"/temp*_input; do
+          [ -r "$f" ] || continue
+          t=$(cat "$f" 2>/dev/null)
+          if [ -n "$t" ]; then
+            if [ -z "$max_temp" ] || [ "$t" -gt "$max_temp" ]; then
+              max_temp="$t"
+              found=1
+            fi
+          fi
+        done
       fi
     done
-    temp_c=$((temp / 1000))
+    # Fallback: any hwmon temp*_input
+    if [ "$found" -eq 0 ]; then
+      for hwmon in /sys/class/hwmon/hwmon*; do
+        for f in "$hwmon"/temp*_input; do
+          [ -r "$f" ] || continue
+          t=$(cat "$f" 2>/dev/null)
+          if [ -n "$t" ]; then
+            if [ -z "$max_temp" ] || [ "$t" -gt "$max_temp" ]; then
+              max_temp="$t"
+            fi
+          fi
+        done
+      done
+    fi
+
+    if [ -z "$max_temp" ]; then
+      temp_c="N/A"
+    else
+      temp_c=$((max_temp / 1000))
+    fi
+
     echo "$usage% $temp_c°C"
   '';
 
