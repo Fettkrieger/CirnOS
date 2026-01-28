@@ -40,6 +40,8 @@
   # Niri compositor configuration using niri-flake settings
   programs.niri = {
     settings = {
+      
+      
       # === Environment Variables (NVIDIA) ===
       environment = {
         "NIXOS_OZONE_WL" = "1";
@@ -90,6 +92,7 @@
             x = 0;
             y = 0;
           };
+          variable-refresh-rate = true;
         };
         "DP-4" = {
           mode = {
@@ -102,6 +105,7 @@
             x = 1440;  # After vertical monitor (1440 wide when rotated)
             y = 790;   # Centered vertically (2560-1440)/2
           };
+          variable-refresh-rate = true;
         };
         "DP-6" = {
           mode = {
@@ -114,6 +118,7 @@
             x = 4000;  # After DP-4 (1440 + 2560)
             y = 790;   # Aligned with center monitor
           };
+          variable-refresh-rate = true;
         };
       };
 
@@ -194,6 +199,7 @@
 
       # === Window Rules ===
       window-rules = [
+        
         # Picture-in-picture
         {
           matches = [{ title = "Picture-in-Picture"; }];
@@ -217,11 +223,7 @@
         "Super+Q".action.close-window = [];
         "Super+F".action.maximize-column = [];
         
-        # === Focus (Super+Ctrl+Arrows) ===
-        "Super+Ctrl+Left".action.focus-column-left = [];
-        "Super+Ctrl+Right".action.focus-column-right = [];
-        "Super+Ctrl+Up".action.focus-window-up = [];
-        "Super+Ctrl+Down".action.focus-window-down = [];
+        
         
         # === Focus Window or Workspace (Super+Up/Down) ===
         "Super+Up".action.focus-window-or-workspace-up = [];
@@ -234,7 +236,7 @@
         "Super+Shift+Down".action.move-window-to-workspace-down = [];
         
         # === Overview ===
-        "Super+F18".action.toggle-overview = [];
+        "Super+X".action.toggle-overview = [];
         
         # === Scroll View (Super+Arrows) ===
         "Super+Left".action.focus-column-left = [];
@@ -272,12 +274,12 @@
         "Super+Shift+9".action.move-column-to-workspace = 9;
         
         # === Monitor Focus ===
-        "Super+Comma".action.focus-monitor-left = [];
-        "Super+Period".action.focus-monitor-right = [];
+        "Super+Ctrl+Left".action.focus-monitor-left = [];
+        "Super+Ctrl+Right".action.focus-monitor-right = [];
         
         # === Move to Monitor ===
-        "Super+Shift+Comma".action.move-column-to-monitor-left = [];
-        "Super+Shift+Period".action.move-column-to-monitor-right = [];
+        "Super+Shift+Ctrl+Left".action.move-column-to-monitor-left = [];
+        "Super+Shift+Ctrl+Right".action.move-column-to-monitor-right = [];
         
         # === Scroll/Navigation ===
         "Super+Home".action.focus-column-first = [];
@@ -431,4 +433,6 @@
       # background-blur-radius = 20;
     };
   };
+
+  
 }

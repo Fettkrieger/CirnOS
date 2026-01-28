@@ -30,6 +30,7 @@
     fd
     yt-dlp
     libreoffice-fresh
+    brave
 
     
 
