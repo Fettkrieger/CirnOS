@@ -60,7 +60,7 @@
         { command = [ "xwayland-satellite" ]; }
         { command = [ "swww-daemon" ]; }
         # Set wallpaper (change the path to your image)
-        { command = [ "sh" "-c" "sleep 1 && swww img ~/Pictures/wallpapers/nix.svg --transition-type fade --transition-duration 1" ]; }
+        { command = [ "sh" "-c" "sleep 1 && swww img ~/Pictures/Wallpapers/nix.png --transition-type fade --transition-duration 1" ]; }
         { command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ]; }
         { command = [ "mako" ]; }
         { command = [ "nm-applet" "--indicator" ]; }
