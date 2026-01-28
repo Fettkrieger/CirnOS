@@ -598,7 +598,7 @@ in
 
       /* === Power Profiles === */
       #power-profiles-daemon {
-        color: @green;
+        color: @teal;
       }
 
       /* === Animation === */
