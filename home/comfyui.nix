@@ -81,8 +81,8 @@ let
     echo "╔════════════════════════════════════════════════════════════╗"
     echo "║                     ComfyUI Starting                       ║"
     echo "╠════════════════════════════════════════════════════════════╣"
-    echo "║  URL: http://127.0.0.1:$COMFYUI_PORT                            ║"
-    echo "║  Models: $COMFYUI_DIR/models/"
+    echo "║  URL: http://127.0.0.1:$COMFYUI_PORT                       ║"
+    echo "║  Models: $COMFYUI_DIR/models/                              ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
     

@@ -98,7 +98,7 @@ in
           "disk"
           "backlight"
           "wireplumber"
-          "bluetooth"
+          
           "battery"
           "keyboard-state"
           "power-profiles-daemon"
@@ -383,7 +383,7 @@ in
       }
 
       window#waybar.hidden {
-        opacity: 0.2;
+        opacity: 0.1;
       }
 
       /* === Module Styling === */
@@ -426,14 +426,14 @@ in
       }
 
       #workspaces button:hover {
-        color: @blue;
+        color: @mauve;
         background: @surface1;
       }
 
       #workspaces button.focused,
       #workspaces button.active {
         color: @base;
-        background: @blue;
+        background: @mauve;
       }
 
       #workspaces button.urgent {
@@ -443,13 +443,13 @@ in
 
       /* === Window Title === */
       #window {
-        color: @sapphire;
+        color: @lavender;
         font-weight: bold;
       }
 
       /* === Clock === */
       #clock {
-        color: @sapphire;
+        color: @lavender;
         font-weight: bold;
       }
 
@@ -469,11 +469,11 @@ in
 
       /* === Idle Inhibitor (Caffeine) === */
       #idle_inhibitor {
-        color: @blue;
+        color: @pink;
       }
 
       #idle_inhibitor.activated {
-        color: @sky;
+        color: @red;
       }
 
       /* === GameMode === */
@@ -487,7 +487,7 @@ in
 
       /* === PulseAudio === */
       #pulseaudio {
-        color: @sky;
+        color: @mauve;
       }
 
       #pulseaudio.muted {
@@ -505,12 +505,12 @@ in
 
       /* === CPU === */
       #custom-cpu {
-        color: @sapphire;
+        color: @pink;
       }
 
       /* === Memory === */
       #memory {
-        color: @sapphire;
+        color: @mauve;
       }
 
       /* === Temperature === */
@@ -525,17 +525,17 @@ in
 
       /* === GPU === */
       #custom-gpu {
-        color: @sapphire;
+        color: @red;
       }
 
       /* === Disk === */
       #disk {
-        color: @blue;
+        color: @maroon;
       }
 
       /* === Wireplumber === */
       #wireplumber {
-        color: @sapphire;
+        color: @peach;
       }
 
       #wireplumber.muted {
@@ -567,7 +567,7 @@ in
 
       /* === Bluetooth === */
       #bluetooth {
-        color: @blue;
+        color: @pink;
       }
 
       #bluetooth.disabled {
@@ -575,12 +575,12 @@ in
       }
 
       #bluetooth.connected {
-        color: @sky;
+        color: @mauve;
       }
 
       /* === Privacy === */
       #privacy {
-        color: @blue;
+        color: @red;
       }
 
       #privacy-item {
@@ -598,7 +598,7 @@ in
 
       /* === Power Profiles === */
       #power-profiles-daemon {
-        color: @sky;
+        color: @green;
       }
 
       /* === Animation === */
@@ -612,7 +612,7 @@ in
       /* === Tooltip === */
       tooltip {
         background: @base;
-        border: 1px solid @blue;
+        border: 1px solid @mauve;
         border-radius: 8px;
       }
 

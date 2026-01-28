@@ -164,7 +164,7 @@
         focus-ring = {
           enable = true;
           width = 2;
-          active.color = "#89b4fa";   # Catppuccin Blue
+          active.color = "#cba6f7";   # Catppuccin Mauve
           inactive.color = "#45475a"; # Catppuccin Surface1
         };
         
@@ -181,7 +181,7 @@
 
       # === Cursor ===
       cursor = {
-        theme = "catppuccin-mocha-blue-cursors";
+        theme = "catppuccin-mocha-mauve-cursors";
         size = 24;
       };
 
