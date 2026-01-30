@@ -61,8 +61,35 @@ let
     nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader,nounits 2>/dev/null | \
       awk -F', ' '{printf "%d%% %.1fGB/%.1fGB %d°C", $1, $2/1024, $3/1024, $4}' || echo "N/A"
   '';
+
+  # Script for network upload/download speeds in MB/s
+  networkScript = pkgs.writeShellScript "waybar-network" ''
+    # Get primary interface (first non-lo interface that's up)
+    iface=$(ip -o link show | awk -F': ' '$2 != "lo" && /state UP/ {print $2; exit}')
+
+    if [ -z "$iface" ]; then
+      echo '{"text": "󰖪 offline", "tooltip": "No network connection", "class": "disconnected"}'
+      exit 0
+    fi
+
+    # Read initial bytes
+    rx1=$(cat /sys/class/net/$iface/statistics/rx_bytes 2>/dev/null || echo 0)
+    tx1=$(cat /sys/class/net/$iface/statistics/tx_bytes 2>/dev/null || echo 0)
+    sleep 1
+    rx2=$(cat /sys/class/net/$iface/statistics/rx_bytes 2>/dev/null || echo 0)
+    tx2=$(cat /sys/class/net/$iface/statistics/tx_bytes 2>/dev/null || echo 0)
+
+    # Calculate speed in MB/s (bytes diff / 1024 / 1024)
+    rx_speed=$(awk "BEGIN {printf \"%.2f\", ($rx2 - $rx1) / 1048576}")
+    tx_speed=$(awk "BEGIN {printf \"%.2f\", ($tx2 - $tx1) / 1048576}")
+
+    echo "{\"text\": \"󰇚 ''${rx_speed} 󰕒 ''${tx_speed} MB/s\", \"tooltip\": \"Interface: $iface\\nDownload: ''${rx_speed} MB/s\\nUpload: ''${tx_speed} MB/s\", \"class\": \"connected\"}"
+  '';
 in
 {
+  # Cava is needed for the audio visualizer module
+  home.packages = with pkgs; [ cava ];
+
   programs.waybar = {
     enable = true;
     systemd.enable = true;  # Enables StatusNotifierWatcher for tray support
@@ -91,14 +118,15 @@ in
         
         modules-right = [
           "gamemode"
-          
+          "cava"
+          "custom/network"
           "custom/cpu"
           "memory"
           "custom/gpu"
           "disk"
           "backlight"
           "wireplumber"
-          
+
           "battery"
           "keyboard-state"
           "power-profiles-daemon"
@@ -184,6 +212,36 @@ in
           icon-size = 16;
           tooltip = true;
           tooltip-format = "Games running: {count}";
+        };
+
+        # === Cava Audio Visualizer ===
+        cava = {
+          framerate = 60;
+          autosens = 1;
+          bars = 14;
+          lower_cutoff_freq = 50;
+          higher_cutoff_freq = 10000;
+          method = "pipewire";
+          source = "auto";
+          stereo = true;
+          reverse = false;
+          bar_delimiter = 0;
+          monstercat = false;
+          waves = false;
+          noise_reduction = 0.77;
+          input_delay = 2;
+          format-icons = [ "▁" "▂" "▃" "▄" "▅" "▆" "▇" "█" ];
+          actions = {
+            on-click-right = "mode";
+          };
+        };
+
+        # === Network Speed ===
+        "custom/network" = {
+          exec = "${networkScript}";
+          return-type = "json";
+          interval = 2;
+          tooltip = true;
         };
 
         # === PulseAudio ===
@@ -377,9 +435,8 @@ in
       }
 
       window#waybar {
-        background: alpha(@base, 0.9);
+        background: transparent;
         color: @text;
-        border-radius: 0 0 8px 8px;
       }
 
       window#waybar.hidden {
@@ -398,6 +455,8 @@ in
       #network,
       #custom-cpu,
       #custom-gpu,
+      #custom-network,
+      #cava,
       #memory,
       #disk,
       #backlight,
@@ -408,7 +467,7 @@ in
       #power-profiles-daemon {
         padding: 0 12px;
         margin: 4px 2px;
-        background: @surface0;
+        background: alpha(@surface0, 0.8);
         border-radius: 8px;
       }
 
@@ -483,6 +542,22 @@ in
 
       #gamemode.running {
         color: @green;
+      }
+
+      /* === Cava Audio Visualizer === */
+      #cava {
+        color: @mauve;
+        font-family: "JetBrainsMono Nerd Font";
+        font-weight: bold;
+      }
+
+      /* === Network Speed === */
+      #custom-network {
+        color: @teal;
+      }
+
+      #custom-network.disconnected {
+        color: @overlay0;
       }
 
       /* === PulseAudio === */
