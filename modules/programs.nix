@@ -8,6 +8,7 @@
     nerd-fonts.fira-code
     noto-fonts
     noto-fonts-color-emoji
+    corefonts  # Windows fonts (Arial, Times, etc.) - needed for Steam/Proton games
   ];
 
   # Chromium browser
