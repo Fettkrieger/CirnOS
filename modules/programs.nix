@@ -30,6 +30,7 @@
     qbittorrent
     popsicle
     haruna
+    logiops
 
 
     # === Window Management ===

@@ -54,4 +54,6 @@
     # GTK icon theme (Papirus with catppuccin colors)
     gtk.icon.enable = true;
   };
+
+ 
 }

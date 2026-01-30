@@ -9,13 +9,10 @@
     mako                      # Notifications
     swaylock-effects          # Screen locker with effects
     swayidle                  # Idle management (screen locking, power saving)
-                      # Wallpaper setter for Wayland                            
-    
     # === Screenshots ===
     grim                      # Screenshot tool
     slurp                     # Area selector
-    swappy                    # Screenshot editor
-    
+    swappy                    # Screenshot editor      
     # === Wallpaper ===
     swww                      # Animated wallpaper daemon
     
@@ -24,7 +21,7 @@
     
     # === Utilities ===
     brightnessctl             # Brightness control
-    playerctl                 # Media player control<
+    playerctl                 # Media player control
     pamixer                   # PulseAudio mixer CLI
     networkmanagerapplet      # Network tray icon
     
@@ -34,9 +31,6 @@
     # === Authentication ===
     polkit_gnome              # Polkit authentication agent
   ];
-
-  # Use swaybg via a startup command to set the wallpaper on Wayland
-
   # Niri compositor configuration using niri-flake settings
   programs.niri = {
     settings = {
@@ -62,7 +56,7 @@
         { command = [ "xwayland-satellite" ]; }
         { command = [ "swww-daemon" ]; }
         # Set wallpaper (change the path to your image)
-        { command = [ "sh" "-c" "sleep 1 && swww img ~/Pictures/Wallpapers/nix.png --transition-type fade --transition-duration 1" ]; }
+        { command = [ "sh" "-c" "sleep 1 && swww img ~/Pictures/Wallpapers/nixx.png --transition-type fade --transition-duration 1" ]; }
         { command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ]; }
         { command = [ "mako" ]; }
         { command = [ "nm-applet" "--indicator" ]; }
@@ -146,7 +140,9 @@
 
       # === Layout Configuration ===
       layout = {
-        gaps = 2;
+        gaps = 3;  # Gap between windows and screen edges
+        
+        
         
         center-focused-column = "never";
         
@@ -163,8 +159,8 @@
         # Focus ring (border around focused window)
         focus-ring = {
           enable = true;
-          width = 2;
-          active.color = "#cba6f7";   # Catppuccin Mauve
+          width = 3;
+          active.color = "#cba6f7";   # Catppuccin 
           inactive.color = "#45475a"; # Catppuccin Surface1
         };
         
@@ -172,12 +168,14 @@
         border = {
           enable = false;
         };
+
+
+  
         
-        # Struts (reserved space for bars)
-        struts = {
-          top = 0;  # Space for waybar
-        };
+        
+        
       };
+      
 
       # === Cursor ===
       cursor = {
@@ -199,6 +197,8 @@
 
       # === Window Rules ===
       window-rules = [
+        
+        
         
         # Picture-in-picture
         {
@@ -318,6 +318,8 @@
     };
   };
 
+  
+
   # Mako notification daemon configuration
   services.mako = {
     enable = true;
@@ -422,17 +424,6 @@
         highlight = mkLiteral "bold #89b4fa";
       };
     };
-  };
-
-  # Ghostty configuration
-  programs.ghostty = {
-    enable = true;
-    settings = {
-      background-opacity = 0.8;  # Background transparency (0.0 = fully transparent, 1.0 = opaque)
-      # Optional: blur behind the terminal (if compositor supports it)
-      # background-blur-radius = 20;
-    };
-  };
-
+  };  
   
 }

@@ -66,7 +66,7 @@
           enableGaming = true;
         };
         
-        # HP Convertible Laptop (placeholder - configure hardware-configuration.nix after install)
+        
         hp-nix = mkHost {
           hostname = "hp-nix";
           hostConfig = ./hosts/hp-nix;

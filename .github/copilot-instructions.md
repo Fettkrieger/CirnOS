@@ -68,4 +68,3 @@ rebuild = "sudo nixos-rebuild switch --flake .../CirnOS#$(hostname)";
 - Steam is system-level (`programs.steam`) for better integration; gaming tools are user-level
 - Home Manager uses `useGlobalPkgs = true` - no separate nixpkgs instance
 
-always rebuild and debug when you do something never say i should do something myself

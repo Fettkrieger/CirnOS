@@ -30,6 +30,7 @@
     fd
     yt-dlp
     libreoffice-fresh
+    claude-code
     
 
     
@@ -115,4 +116,6 @@
       gtk-theme = "Adwaita-dark";
     };
   };
+
+  
 }
