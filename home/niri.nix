@@ -55,8 +55,7 @@
       spawn-at-startup = [
         { command = [ "xwayland-satellite" ]; }
         { command = [ "swww-daemon" ]; }
-        # Set wallpaper (change the path to your image)
-        { command = [ "sh" "-c" "sleep 1 && swww img ~/Pictures/Wallpapers/nixx.png --transition-type fade --transition-duration 1" ]; }
+        # Wallpaper is now managed by niri-wallpaper.nix systemd service
         { command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ]; }
         { command = [ "mako" ]; }
         { command = [ "nm-applet" "--indicator" ]; }

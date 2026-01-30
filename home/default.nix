@@ -11,6 +11,7 @@
     ./themes.nix
     ./ghostty.nix
     ./niri.nix
+    ./niri-wallpaper.nix
     ./waybar-niri.nix
   ] ++ (if enableGaming then [ ./gaming.nix ./comfyui.nix ] else []);
 
