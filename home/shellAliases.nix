@@ -30,12 +30,15 @@
       
       # System info
       sysinfo = "fastfetch";
-      
+
       # Better ls with eza
       ls = "eza";
-      
+
       # Better cat with bat
       cat = "bat";
+
+      # ComfyUI update (force reinstall dependencies)
+      comfyui-update = "rm -f ~/.local/share/comfyui/.deps-installed-v4 && comfyui";
     };
   };
 }

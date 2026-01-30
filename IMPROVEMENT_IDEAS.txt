@@ -1,0 +1,525 @@
+================================================================================
+                    CIRNOS IMPROVEMENT IDEAS & CUSTOMIZATION GUIDE
+================================================================================
+
+This document contains all potential improvements, customizations, and
+enhancements for your NixOS setup organized by category and priority.
+
+Generated: 2026-01-30
+
+================================================================================
+                              TABLE OF CONTENTS
+================================================================================
+
+1. ANIMATIONS & VISUAL EFFECTS
+2. THEMING ENHANCEMENTS
+3. NIRI COMPOSITOR IMPROVEMENTS
+4. WAYBAR CUSTOMIZATIONS
+5. KEYBINDING ADDITIONS
+6. WINDOW RULES
+7. CLI TOOLS & PACKAGES
+8. SYSTEM SERVICES
+9. PERFORMANCE OPTIMIZATIONS
+10. SECURITY IMPROVEMENTS
+11. BACKUP SOLUTIONS
+12. DEVELOPMENT ENVIRONMENT
+13. FLAKE INPUTS & MODULES
+14. QUICK WINS (Easy to implement)
+
+================================================================================
+1. ANIMATIONS & VISUAL EFFECTS
+================================================================================
+
+CURRENT STATE:
+- Slowdown factor: 1.0 (standard speed)
+- Focus ring: 3px with Catppuccin colors
+- Swaylock: Blur 7x5, vignette 0.5:0.5
+- Ghostty: 80% opacity (blur disabled)
+
+POTENTIAL IMPROVEMENTS:
+
+[ ] Window Animations
+    - Add custom open/close animation duration
+    - Configure workspace switch animation speed
+    - Add spring physics for snappy feel
+    - Custom easing curves for smooth motion
+
+[ ] Blur Effects
+    - Enable Ghostty terminal blur (currently commented out)
+    - Add blur to Rofi application launcher
+    - Add backdrop blur to Waybar (if supported)
+    - Blur behind floating windows
+
+[ ] Transparency Options
+    - Dynamic transparency based on window focus
+    - Per-application transparency rules
+    - Transparency profiles (reading vs. gaming mode)
+
+[ ] Window Shadows
+    - Configure shadow blur radius
+    - Shadow offset and color
+    - Shadow opacity settings
+
+[ ] Rounded Corners
+    - Window corner radius configuration
+    - Different radius for floating vs tiled windows
+
+================================================================================
+2. THEMING ENHANCEMENTS
+================================================================================
+
+CURRENT STATE:
+- Theme: Catppuccin Mocha (darkest)
+- Accent: Blue (#89b4fa)
+- Cursor: catppuccin-mocha-mauve-cursors (24px)
+- Icons: Papirus-Dark
+- GTK/Qt: Kvantum with dark preference
+
+CATPPUCCIN COVERAGE (65/100):
+✓ Niri compositor (90%)
+✓ Waybar (95%)
+✓ Mako notifications (75%)
+✓ Rofi launcher (85%)
+✓ Swaylock (80%)
+✓ GTK/Qt system (70%)
+✗ VSCode (0%) - needs theme extension
+✗ Firefox (0%) - needs userChrome.css
+✗ Terminal colors (30%) - only opacity set
+✗ CLI tools (40%) - bat, fzf, btop unconfigured
+✗ Shell prompt (0%) - no PS1 customization
+
+IMPROVEMENTS TO ADD:
+
+[ ] Application Theming
+    - VSCode: Add Catppuccin extension configuration
+    - Firefox: Add userChrome.css with Catppuccin colors
+    - Ghostty: Add full color scheme (not just opacity)
+    - mpv: Add Catppuccin colors to mpv.conf
+
+[ ] CLI Tool Theming
+    - Bat: Set theme to "Catppuccin Mocha"
+    - Fzf: Configure FZF_DEFAULT_OPTS with colors
+    - Btop: Set color scheme to Catppuccin
+    - Delta (git diff): Add Catppuccin colors
+
+[ ] Shell Prompt
+    - Add Starship prompt with Catppuccin preset
+    - Or custom PS1 with Catppuccin colors
+    - Add git status indicators
+
+[ ] Alternative Themes to Consider
+    - Catppuccin Macchiato (slightly lighter dark)
+    - Catppuccin Frappé (medium dark)
+    - Catppuccin Latte (light mode for daytime)
+    - Create theme switcher script
+
+[ ] Cursor Alternatives
+    - catppuccin-mocha-lavender-cursors
+    - catppuccin-mocha-pink-cursors
+    - Phinger Cursors (minimal)
+
+[ ] Icon Alternatives
+    - Tela Icon Theme (Catppuccin colors available)
+    - Colloid Icon Theme
+    - Fluent Icon Theme
+
+================================================================================
+3. NIRI COMPOSITOR IMPROVEMENTS
+================================================================================
+
+CURRENT STATE:
+- Focus follows mouse enabled
+- 3px gaps between windows
+- Preset column widths (1/3, 1/2, 2/3)
+- 3 window rules (PiP, file dialogs, polkit)
+- VRR enabled on all monitors
+
+IMPROVEMENTS TO ADD:
+
+[ ] Layout Enhancements
+    - Smart gaps (disable gaps when single window)
+    - Different gaps for edges vs between windows
+    - New window position setting (after focused column)
+    - Auto-tile configuration
+
+[ ] Workspace Features
+    - Custom workspace names
+    - Workspace cycling (wrap around)
+    - Per-workspace layout preferences
+
+[ ] Input Improvements
+    - Keyboard repeat rate/delay settings
+    - Focus delay before following mouse
+    - Advanced touchpad gestures (pinch, swipe)
+    - Caps Lock remap options
+
+[ ] Cursor Enhancements
+    - Cursor acceleration threshold tuning
+    - Mouse button remapping
+    - Pointer confinement settings
+
+================================================================================
+4. WAYBAR CUSTOMIZATIONS
+================================================================================
+
+CURRENT STATE:
+- Height: 32px, Position: top
+- Background: 90% opacity with 8px rounded corners
+- Modules: workspaces, window, clock, privacy, cava, network,
+           cpu, memory, gpu, disk, backlight, volume, battery,
+           keyboard-state, power-profiles, tray
+
+IMPROVEMENTS TO ADD:
+
+[ ] Additional Modules
+    - mpris: Media player controls (Spotify, etc.)
+    - bluetooth: Bluetooth status (already defined, add to bar)
+    - network (built-in): WiFi/Ethernet with SSID
+    - user: Username and uptime
+    - systemd-failed-units: Failed service alerts
+    - custom/updates: Package update count
+    - custom/weather: Weather information
+
+[ ] Visual Enhancements
+    - Add blur background (if GTK supports backdrop-filter)
+    - Floating bar style with margins
+    - Pill-shaped modules with more padding
+    - Gradient backgrounds
+    - Icon-only mode option
+
+[ ] Module Improvements
+    - Clock: Add seconds option, world clock tooltip
+    - Workspaces: Named icons (browser, terminal, code, etc.)
+    - Battery: Time remaining, power draw
+    - GPU: Click to open nvidia-settings
+
+[ ] Multiple Bars
+    - Bottom bar for media controls
+    - Per-monitor bar configuration
+    - Minimal bar mode toggle
+
+================================================================================
+5. KEYBINDING ADDITIONS
+================================================================================
+
+CURRENT: 25 keybindings configured
+
+MISSING KEYBINDINGS TO ADD:
+
+[ ] Window Management
+    - Super+T: Toggle floating
+    - Super+F11 or Super+Alt+F: Toggle fullscreen
+    - Super+Tab: Cycle through windows
+    - Alt+Tab: System window switcher
+    - Super+Z: Minimize/hide window
+
+[ ] Workspace Navigation
+    - Super+Ctrl+Up/Down: Move workspace up/down
+    - Super+N: Create new workspace
+    - Super+Shift+N: Delete empty workspace
+    - Super+Scroll: Cycle workspaces
+
+[ ] Screen Recording
+    - Super+Ctrl+R: Start/stop screen recording
+    - Super+Shift+R: Record region
+    - Super+Alt+R: Record window
+
+[ ] Screenshots to Clipboard
+    - Super+Shift+C: Screenshot to clipboard
+    - Super+Shift+A: Region to clipboard
+    - Super+Alt+S: Screen to clipboard
+
+[ ] Utilities
+    - Super+Period: Emoji picker
+    - Super+?: Show keybinding help
+    - Super+Ctrl+Q: Lock and suspend
+
+================================================================================
+6. WINDOW RULES
+================================================================================
+
+CURRENT: 3 rules (PiP, file dialogs, polkit)
+
+ADDITIONAL RULES TO ADD:
+
+[ ] Floating Windows
+    - All dialog windows (window-type = "dialog")
+    - Settings apps (app-id = ".*settings")
+    - Search windows (title = "Search")
+    - System monitor (app-id = ".*monitor")
+    - Calculator
+    - Color picker
+    - Password prompts
+
+[ ] Video/Media Players
+    - mpv, vlc, celluloid: floating or inhibit-idle
+    - Picture-in-picture: always on top, floating
+
+[ ] Development Tools
+    - DevTools windows: floating
+    - IDE settings: floating
+    - Terminal preferences: floating
+
+[ ] Specific Applications
+    - Steam: floating for small windows
+    - Discord: specific workspace
+    - Spotify: specific workspace
+    - Browsers: prefer no CSD
+
+[ ] XWayland Compatibility
+    - Rules for common XWayland apps
+    - Size constraints for legacy apps
+
+================================================================================
+7. CLI TOOLS & PACKAGES
+================================================================================
+
+RECOMMENDED ADDITIONS:
+
+[ ] System Monitoring
+    - nvtop: NVIDIA GPU monitoring in terminal
+    - gpustat: Lightweight GPU stats
+    - s-tui: CPU stress testing
+    - glances: System monitoring dashboard
+    - inxi: Hardware information
+
+[ ] File Management
+    - yazi or ranger: Terminal file manager
+    - broot: Tree-based navigation
+    - ncdu or dust: Disk space analysis
+    - difftastic: Better file diffs
+
+[ ] Development Tools
+    - jq: JSON processor (essential)
+    - yq: YAML processor
+    - httpie: User-friendly HTTP client
+    - gh: GitHub CLI
+    - delta: Better git diffs
+    - mise: Tool version manager
+    - uv: Fast Python package installer
+
+[ ] Network Tools
+    - mtr: Network diagnostics
+    - iftop: Network bandwidth monitor
+    - nethogs: Network by process
+    - nmap: Network scanning
+
+[ ] Shell Enhancements
+    - starship: Modern shell prompt
+    - zoxide: Smarter cd command
+    - atuin: Shell history search
+    - tldr: Simplified man pages
+
+[ ] Productivity
+    - pandoc: Document converter
+    - imagemagick: Image manipulation
+    - poppler-utils: PDF tools
+
+================================================================================
+8. SYSTEM SERVICES
+================================================================================
+
+SERVICES TO ENABLE:
+
+[ ] Storage & Mounting
+    - udisks2: Automatic disk mounting
+    - fstrim: SSD TRIM (weekly timer)
+
+[ ] Location & Time
+    - geoclue2: Location services
+    - chrony or systemd-timesyncd: Time sync
+
+[ ] System Management
+    - earlyoom: Early out-of-memory killer
+    - irqbalance: Distribute hardware interrupts
+    - thermald: Thermal management (laptop)
+
+[ ] Network
+    - avahi: Zero-configuration networking (mDNS)
+
+[ ] Security
+    - fail2ban: SSH brute-force protection
+
+================================================================================
+9. PERFORMANCE OPTIMIZATIONS
+================================================================================
+
+[ ] Kernel Parameters
+    - vm.swappiness = 10 (for gaming, reduce swap usage)
+    - vm.max_map_count = 2147483642 (for games like Valheim)
+    - TCP BBR congestion control
+
+[ ] I/O Optimizations
+    - Enable SSD TRIM: services.fstrim.enable = true
+    - Journal size limit: SystemMaxUse = "100M"
+
+[ ] Gaming Specific (nzxt-nix)
+    - CPU core affinity for 7800X3D (3D V-Cache optimization)
+    - NVIDIA power limit settings
+    - Game-specific environment variables
+
+[ ] Laptop Specific (hp-nix)
+    - TLP turbo boost settings for AC power
+    - Aggressive power saving on battery
+    - Display power management
+
+================================================================================
+10. SECURITY IMPROVEMENTS
+================================================================================
+
+[ ] SSH Hardening
+    - Disable password authentication (after SSH keys setup)
+    - PermitEmptyPasswords = false
+    - X11Forwarding = false (unless needed)
+    - Add rate limiting
+
+[ ] Boot Security
+    - UEFI Secure Boot (if available)
+    - TPM 2.0 support (if available)
+
+[ ] Firewall
+    - Add SSH rate limiting
+    - Connection tracking module
+
+[ ] System
+    - Limit NixOS generations: configurationLimit = 50
+    - Regular security updates
+
+================================================================================
+11. BACKUP SOLUTIONS
+================================================================================
+
+RECOMMENDED OPTIONS:
+
+[ ] File Sync
+    - Syncthing: Decentralized file sync between devices
+
+[ ] Backup Tools
+    - Restic: Efficient, encrypted backups with deduplication
+    - Borg: Space-efficient, encrypted archives
+    - Duplicati: Cross-platform with cloud support
+
+[ ] System Snapshots
+    - Snapper: If using Btrfs filesystem
+    - Timeshift: System restore points
+
+[ ] NixOS Specific
+    - Already have generations for rollback
+    - Increase configurationLimit for more history
+    - Flake provides reproducibility
+
+================================================================================
+12. DEVELOPMENT ENVIRONMENT
+================================================================================
+
+[ ] Container Tools
+    - Docker or Podman
+    - docker-compose / podman-compose
+    - Distrobox (for other distro environments)
+
+[ ] Language Support
+    - Node.js with nvm/mise
+    - Python with uv/poetry
+    - Rust toolchain
+    - Go toolchain
+
+[ ] Database Tools
+    - PostgreSQL client tools
+    - Redis CLI
+    - DBeaver or similar GUI
+
+[ ] API Development
+    - Postman or Insomnia
+    - Local web server (nginx/caddy)
+
+[ ] Code Quality
+    - Pre-commit hooks
+    - Linters per language
+    - Formatters (prettier, black, rustfmt)
+
+================================================================================
+13. FLAKE INPUTS & MODULES
+================================================================================
+
+RECOMMENDED ADDITIONS:
+
+[ ] NixOS Hardware
+    - github:nixos/nixos-hardware
+    - Optimizations for specific hardware
+
+[ ] Development
+    - devenv: Better dev environments than direnv
+    - flake-utils: Utility functions
+
+[ ] System Tools
+    - disko: Declarative disk partitioning
+    - nix-index: Faster package finding
+    - impermanence: Ephemeral root filesystem
+
+[ ] Theming Alternative
+    - stylix: Alternative theming system
+
+================================================================================
+14. QUICK WINS (Easy to implement)
+================================================================================
+
+These are simple changes with high impact:
+
+1. [5 min] Enable Ghostty blur
+   - Uncomment blur setting in ghostty.nix
+
+2. [5 min] Add floating toggle keybind
+   - Add "Super+T".action.toggle-floating = [];
+
+3. [10 min] Configure bat theme
+   - programs.bat.config.theme = "Catppuccin Mocha";
+
+4. [10 min] Configure fzf colors
+   - Add Catppuccin color scheme to fzf settings
+
+5. [10 min] Add bluetooth to Waybar
+   - Already defined, just add "bluetooth" to modules-right
+
+6. [15 min] Add Starship prompt
+   - programs.starship.enable = true;
+   - Use Catppuccin preset
+
+7. [15 min] Add more window rules
+   - Add rules for settings, dialogs, terminals
+
+8. [15 min] Enable useful services
+   - services.fstrim.enable = true;
+   - services.earlyoom.enable = true;
+
+9. [20 min] Add screen recording keybind
+   - Install wl-screenrec
+   - Add keybinding for recording
+
+10. [30 min] Add Syncthing for backups
+    - services.syncthing.enable = true;
+    - Configure sync folders
+
+================================================================================
+                              PRIORITY MATRIX
+================================================================================
+
+HIGH PRIORITY (Do First):
+- Security: Disable SSH password auth after key setup
+- Backup: Set up Syncthing or Restic
+- Gaming: Add vm.max_map_count kernel parameter
+
+MEDIUM PRIORITY (Good Improvements):
+- Theming: Complete Catppuccin coverage (VSCode, Firefox, CLI tools)
+- Keybindings: Add floating toggle, screen recording
+- Services: Enable fstrim, earlyoom
+- Tools: Add jq, yazi, starship
+
+LOW PRIORITY (Nice to Have):
+- Animations: Custom animation curves
+- Multiple Waybar bars
+- Advanced window rules
+- Development containers
+
+================================================================================
+                                  END
+================================================================================

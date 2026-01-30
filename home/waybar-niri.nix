@@ -435,8 +435,9 @@ in
       }
 
       window#waybar {
-        background: transparent;
+        background: alpha(@base, 0.9);
         color: @text;
+        border-radius: 0 0 8px 8px;
       }
 
       window#waybar.hidden {
@@ -467,7 +468,7 @@ in
       #power-profiles-daemon {
         padding: 0 12px;
         margin: 4px 2px;
-        background: alpha(@surface0, 0.8);
+        background: @surface0;
         border-radius: 8px;
       }
 
