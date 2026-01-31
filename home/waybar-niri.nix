@@ -92,7 +92,8 @@ in
 
   programs.waybar = {
     enable = true;
-    systemd.enable = true;  # Enables StatusNotifierWatcher for tray support
+    systemd.enable = true;  # Runs waybar as a systemd user service
+    systemd.target = "niri.service";  # Start after Niri is ready (not just graphical-session)
     
     settings = {
       mainBar = {
@@ -111,12 +112,14 @@ in
         ];
         
         modules-center = [
-          "privacy"
-          "clock"
-          "idle_inhibitor"
+          
+          
+         
         ];
         
         modules-right = [
+          "privacy"
+          "idle_inhibitor"
           "gamemode"
           "cava"
           "custom/network"
@@ -131,6 +134,7 @@ in
           "keyboard-state"
           "power-profiles-daemon"
           "tray"
+          "clock"
         ];
 
         # === Niri Workspaces ===
@@ -547,14 +551,14 @@ in
 
       /* === Cava Audio Visualizer === */
       #cava {
-        color: @mauve;
+        color: @rosewater;
         font-family: "JetBrainsMono Nerd Font";
         font-weight: bold;
       }
 
       /* === Network Speed === */
       #custom-network {
-        color: @teal;
+        color: @flamingo;
       }
 
       #custom-network.disconnected {

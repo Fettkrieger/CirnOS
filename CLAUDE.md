@@ -97,6 +97,13 @@ CPU and GPU monitoring use custom shell scripts defined in `waybar-niri.nix` (cp
 | Startup apps | `home/niri.nix` → `spawn-at-startup` |
 | Workspace wallpapers | `wallpapers/` directory (files named 1, 2, 3, FALLBACK) |
 
+## Flake Inputs
+
+- `nixpkgs`: nixos-unstable channel
+- `home-manager`: User environment management
+- `catppuccin`: Theming module for NixOS and Home Manager
+- `niri`: Scrolling tiling Wayland compositor flake
+
 ## Nix Conventions
 
 - Uses `nixos-unstable` channel for latest packages

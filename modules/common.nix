@@ -60,6 +60,7 @@
   # GVFS for Nautilus (trash, network mounts, MTP devices)
   services.gvfs.enable = true;
 
+
   # Configure keymap
   services.xserver.xkb = {
     layout = "ch";

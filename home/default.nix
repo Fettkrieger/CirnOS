@@ -13,7 +13,8 @@
     ./niri.nix
     ./niri-wallpaper.nix
     ./waybar-niri.nix
-  ] ++ (if enableGaming then [ ./gaming.nix ./comfyui.nix ] else []);
+  ] ++ (if enableGaming then [ ./gaming.nix ./comfyui.nix ] else [])
+    ++ (if hostname == "nzxt-nix" then [ ./defaultwindows.nix ] else []);
 
   home.username = "krieger";
   home.homeDirectory = "/home/krieger";

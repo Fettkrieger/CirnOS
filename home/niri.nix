@@ -1,9 +1,73 @@
 # Niri compositor configuration
 { config, pkgs, lib, inputs, ... }:
 
+let
+  # Clipboard script with image preview - Windows+V style (auto-paste)
+  # 1. Shows clipboard history with image thumbnails
+  # 2. On selection: copies to clipboard AND pastes into focused window
+  clipboardScript = pkgs.writeShellScript "clipboard-rofi" ''
+    # Cache directory for image thumbnails
+    CACHE_DIR="$HOME/.cache/cliphist-thumbs"
+    mkdir -p "$CACHE_DIR"
+
+    # Generate thumbnails for image entries
+    generate_thumbs() {
+      cliphist list | while IFS= read -r line; do
+        # Check if this is a binary/image entry
+        if echo "$line" | grep -q '\[\[ binary'; then
+          # Get the ID (first field)
+          id=$(echo "$line" | cut -f1)
+          thumb="$CACHE_DIR/$id.png"
+
+          # Generate thumbnail if it doesn't exist
+          if [ ! -f "$thumb" ]; then
+            cliphist decode <<< "$line" | ${pkgs.imagemagick}/bin/convert - -resize 200x200 "$thumb" 2>/dev/null
+          fi
+        fi
+      done
+    }
+
+    # Show rofi with clipboard entries
+    show_clipboard() {
+      # Build entries with icons for images
+      cliphist list | while IFS= read -r line; do
+        id=$(echo "$line" | cut -f1)
+        thumb="$CACHE_DIR/$id.png"
+
+        if [ -f "$thumb" ]; then
+          # Image entry - show with icon
+          echo -en "$line\0icon\x1f$thumb\n"
+        else
+          # Text entry - show normally
+          echo "$line"
+        fi
+      done
+    }
+
+    # Generate thumbnails in background
+    generate_thumbs &
+
+    # Show rofi and get selection
+    selected=$(show_clipboard | rofi -dmenu -i -p "Clipboard" -display-columns 2 -theme-str 'element-icon { size: 64px; }')
+
+    # If something was selected, decode it, copy to clipboard, and paste
+    if [ -n "$selected" ]; then
+      # Copy to clipboard
+      cliphist decode <<< "$selected" | wl-copy
+
+      # Small delay to let rofi close and focus return to previous window
+      sleep 0.1
+
+      # Simulate Ctrl+V to paste (wtype is a Wayland keyboard input tool)
+      ${pkgs.wtype}/bin/wtype -M ctrl v -m ctrl
+    fi
+  '';
+in
 {
   # Niri packages and tools
   home.packages = with pkgs; [
+    imagemagick                # For generating clipboard image thumbnails
+    wtype                      # For simulating keyboard input (auto-paste)
     # === Core Niri Tools ===
     rofi                      # App launcher (wayland support built-in)
     mako                      # Notifications
@@ -59,7 +123,9 @@
         { command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ]; }
         { command = [ "mako" ]; }
         { command = [ "nm-applet" "--indicator" ]; }
-        { command = [ "wl-paste" "--watch" "cliphist" "store" ]; }
+        # Clipboard history - store both text and images
+        { command = [ "wl-paste" "--type" "text" "--watch" "cliphist" "store" ]; }
+        { command = [ "wl-paste" "--type" "image" "--watch" "cliphist" "store" ]; }
         # waybar is started via systemd user service (programs.waybar.systemd.enable)
         { command = [ "swayidle" "-w"
             "timeout" "300" "swaylock -f"
@@ -96,9 +162,10 @@
           scale = 1.0;
           position = {
             x = 1440;  # After vertical monitor (1440 wide when rotated)
-            y = 790;   # Centered vertically (2560-1440)/2
+            y = 810;   # Centered vertically (2560-1440)/2
           };
           variable-refresh-rate = true;
+          focus-at-startup = true;  # Start with cursor/focus on this monitor
         };
         "DP-6" = {
           mode = {
@@ -109,7 +176,7 @@
           scale = 1.0;
           position = {
             x = 4000;  # After DP-4 (1440 + 2560)
-            y = 790;   # Aligned with center monitor
+            y = 810;   # Aligned with center monitor
           };
           variable-refresh-rate = true;
         };
@@ -221,6 +288,7 @@
         # === Window Management ===
         "Super+Q".action.close-window = [];
         "Super+F".action.maximize-column = [];
+        "Super+T".action.toggle-window-floating = [];  # Toggle floating mode
         
         
         
@@ -311,8 +379,8 @@
         "XF86MonBrightnessUp".action.spawn = ["brightnessctl" "set" "+5%"];
         "XF86MonBrightnessDown".action.spawn = ["brightnessctl" "set" "5%-"];
         
-        # === Clipboard History ===
-        "Super+V".action.spawn = ["sh" "-c" "cliphist list | rofi -dmenu | cliphist decode | wl-copy"];
+        # === Clipboard History (with image preview) ===
+        "Super+V".action.spawn = ["${clipboardScript}"];
       };
     };
   };

@@ -32,24 +32,14 @@
       # Discord launches first (no delay)
       { command = [ "discord" ]; }
 
-      # Firefox launches second (0.5s delay to ensure Discord opens first)
-      { command = [ "sh" "-c" "sleep 0.5 && firefox" ]; }
-
-      # --- CENTER MONITOR (DP-4) - Workspace 2 ---
-      # VS Code (1s delay)
-      { command = [ "sh" "-c" "sleep 1 && code" ]; }
-
-      # Ghostty terminal (1.5s delay to open after VS Code)
-      { command = [ "sh" "-c" "sleep 1.5 && ghostty" ]; }
+      
 
       # --- LEFT MONITOR (DP-5) - Workspace 1 ---
-      # Nautilus file manager (2s delay)
-      { command = [ "sh" "-c" "sleep 2 && nautilus --new-window" ]; }
+      # Nautilus file manager (0.6s delay)
+      { command = [ "sh" "-c" "sleep 0.6 && nautilus --new-window" ]; }
 
       # --- RIGHT MONITOR (DP-6) - Workspace 1 ---
-      # Second Firefox with custom class so window-rules can distinguish it
-      # --class sets the app-id to "firefox-right" instead of "firefox"
-      { command = [ "sh" "-c" "sleep 2.5 && firefox --class firefox-right" ]; }
+      { command = [ "sh" "-c" "sleep 0.5 && firefox" ]; }
     ];
 
     # ============================================================
@@ -73,36 +63,15 @@
       {
         matches = [{ app-id = "^discord$"; }];
         open-on-output = "DP-4";       # Center monitor
-        open-on-workspace = 1;          # First workspace
+        open-on-workspace = "1";          # First workspace
         open-maximized = true;          # Full width (maximized column)
       }
 
-      # --- Firefox (main): Workspace 1, Fullscreen ---
-      # app-id "firefox" - standard Firefox window
-      {
-        matches = [{ app-id = "^firefox$"; }];
-        open-on-output = "DP-4";       # Center monitor
-        open-on-workspace = 1;          # First workspace
-        open-maximized = true;          # Full width
-      }
+      
 
-      # --- VS Code: Workspace 2, Fullscreen ---
-      # app-id "code" - Visual Studio Code
-      {
-        matches = [{ app-id = "^code$"; }];
-        open-on-output = "DP-4";       # Center monitor
-        open-on-workspace = 2;          # Second workspace
-        open-maximized = true;          # Full width
-      }
+      
 
-      # --- Ghostty: Workspace 2, Half-screen ---
-      # app-id "com.mitchellh.ghostty" - Ghostty terminal
-      {
-        matches = [{ app-id = "^com\\.mitchellh\\.ghostty$"; }];
-        open-on-output = "DP-4";       # Center monitor
-        open-on-workspace = 2;          # Second workspace
-        # No open-maximized = uses default half-screen width
-      }
+      
 
       # ============================================================
       # LEFT MONITOR (DP-5, vertical)
@@ -113,22 +82,25 @@
       {
         matches = [{ app-id = "^org\\.gnome\\.Nautilus$"; }];
         open-on-output = "DP-5";       # Left vertical monitor
-        open-on-workspace = 1;          # First workspace
+        open-on-workspace = "1";          # First workspace
         open-maximized = true;          # Full width
       }
 
       # ============================================================
       # RIGHT MONITOR (DP-6)
       # ============================================================
+      
 
-      # --- Firefox (right): Workspace 1, Fullscreen ---
-      # app-id "firefox-right" - Firefox launched with --class firefox-right
+      # --- Firefox (main): Workspace 1, Fullscreen ---
+      # app-id "firefox" - standard Firefox window
       {
-        matches = [{ app-id = "^firefox-right$"; }];
-        open-on-output = "DP-6";       # Right monitor
-        open-on-workspace = 1;          # First workspace
+        matches = [{ app-id = "^firefox$"; }];
+        open-on-output = "DP-6";       # Center monitor
+        open-on-workspace = "1";          # First workspace
         open-maximized = true;          # Full width
       }
+
+      
     ];
   };
 }
