@@ -33,6 +33,24 @@
     yt-dlp
     libreoffice-fresh
     claude-code
+    # Footage wrapped to use X11 (crashes on Wayland with NVIDIA due to Vulkan bug)
+    (pkgs.symlinkJoin {
+      name = "footage-x11";
+      paths = [ pkgs.footage ];
+      buildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/footage --set GDK_BACKEND x11
+      '';
+    })
+    ffmpeg
+
+    # === GStreamer plugins (needed for Footage and video apps) ===
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gst-libav
     
 
     

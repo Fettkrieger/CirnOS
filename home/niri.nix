@@ -381,6 +381,7 @@ in
         
         # === Clipboard History (with image preview) ===
         "Super+V".action.spawn = ["${clipboardScript}"];
+        
       };
     };
   };

@@ -20,6 +20,9 @@
     KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="3434", MODE="0660", TAG+="uaccess"
   '';
 
+  
+
+
   environment.systemPackages = with pkgs; [
     # === Essential Tools ===
     vim
@@ -32,6 +35,11 @@
     popsicle
     haruna
     logiops
+    pkgs.gst_all_1.gstreamer
+    pkgs.gst_all_1.gst-plugins-base
+    pkgs.gst_all_1.gst-plugins-good
+    pkgs.gst_all_1.gst-plugins-bad
+    pkgs.gst_all_1.gst-plugins-ugly
 
 
     # === Window Management ===

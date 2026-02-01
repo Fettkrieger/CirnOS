@@ -3,16 +3,17 @@
 #
 # HOW IT WORKS:
 # 1. spawn-at-startup: Launches apps when Niri starts
-# 2. window-rules: Places windows on specific monitors/workspaces based on app-id
+# 2. window-rules with at-startup=true: ONLY places startup windows on specific monitors
+#    (windows opened later are NOT affected by these rules)
 #
 # CUSTOMIZING:
-# - To add an app: Add to spawn-at-startup AND create a matching window-rule
+# - To add an app: Add to spawn-at-startup AND create a matching window-rule with at-startup=true
 # - To find an app's app-id: Run 'niri msg --json event-stream' while launching it
 # - Sleep delays ensure apps launch in the correct order
 #
 # YOUR MONITORS:
 # - DP-5: Left (vertical) - Nautilus
-# - DP-4: Center (primary) - Discord, Firefox, VS Code, Ghostty
+# - DP-4: Center (primary) - Discord
 # - DP-6: Right - Firefox
 #
 { config, pkgs, lib, ... }:
@@ -32,8 +33,6 @@
       # Discord launches first (no delay)
       { command = [ "discord" ]; }
 
-      
-
       # --- LEFT MONITOR (DP-5) - Workspace 1 ---
       # Nautilus file manager (0.6s delay)
       { command = [ "sh" "-c" "sleep 0.6 && nautilus --new-window" ]; }
@@ -43,64 +42,41 @@
     ];
 
     # ============================================================
-    # WINDOW RULES
+    # WINDOW RULES (STARTUP ONLY)
     # ============================================================
-    # Rules that place windows on specific monitors and workspaces
+    # These rules ONLY apply to windows spawned at startup (at-startup=true)
+    # Windows opened manually later will open on whatever monitor has focus
     #
-    # matches: Which windows this rule applies to (by app-id or title)
+    # matches: Which windows this rule applies to (by app-id, at-startup)
     # open-on-output: Which monitor to open on (DP-4, DP-5, DP-6)
     # open-on-workspace: Which workspace number (1-9, per-monitor)
     # open-maximized: true = fullscreen width, false/omit = half-screen
 
     window-rules = [
 
-      # ============================================================
-      # CENTER MONITOR (DP-4)
-      # ============================================================
-
-      # --- Discord: Workspace 1, Fullscreen ---
-      # app-id "discord" - the Discord desktop app
+      # --- Discord: Center monitor (DP-4), Workspace 1 ---
       {
-        matches = [{ app-id = "^discord$"; }];
-        open-on-output = "DP-4";       # Center monitor
-        open-on-workspace = "1";          # First workspace
-        open-maximized = true;          # Full width (maximized column)
+        matches = [{ app-id = "^discord$"; at-startup = true; }];
+        open-on-output = "DP-4";
+        open-on-workspace = "1";
+        open-maximized = true;
       }
 
-      
-
-      
-
-      
-
-      # ============================================================
-      # LEFT MONITOR (DP-5, vertical)
-      # ============================================================
-
-      # --- Nautilus: Workspace 1, Fullscreen ---
-      # app-id "org.gnome.Nautilus" - GNOME Files
+      # --- Nautilus: Left monitor (DP-5), Workspace 1 ---
       {
-        matches = [{ app-id = "^org\\.gnome\\.Nautilus$"; }];
-        open-on-output = "DP-5";       # Left vertical monitor
-        open-on-workspace = "1";          # First workspace
-        open-maximized = true;          # Full width
+        matches = [{ app-id = "^org\\.gnome\\.Nautilus$"; at-startup = true; }];
+        open-on-output = "DP-5";
+        open-on-workspace = "1";
+        open-maximized = true;
       }
 
-      # ============================================================
-      # RIGHT MONITOR (DP-6)
-      # ============================================================
-      
-
-      # --- Firefox (main): Workspace 1, Fullscreen ---
-      # app-id "firefox" - standard Firefox window
+      # --- Firefox: Right monitor (DP-6), Workspace 1 ---
       {
-        matches = [{ app-id = "^firefox$"; }];
-        open-on-output = "DP-6";       # Center monitor
-        open-on-workspace = "1";          # First workspace
-        open-maximized = true;          # Full width
+        matches = [{ app-id = "^firefox$"; at-startup = true; }];
+        open-on-output = "DP-6";
+        open-on-workspace = "1";
+        open-maximized = true;
       }
-
-      
     ];
   };
 }
