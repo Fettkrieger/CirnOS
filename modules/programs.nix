@@ -24,31 +24,52 @@
 
 
   environment.systemPackages = with pkgs; [
-    # === Essential Tools ===
-    vim
-    wget
-    curl
-    git
-    python3
-    chromium
-    qbittorrent
-    popsicle
-    haruna
-    logiops
-    pkgs.gst_all_1.gstreamer
-    pkgs.gst_all_1.gst-plugins-base
-    pkgs.gst_all_1.gst-plugins-good
-    pkgs.gst_all_1.gst-plugins-bad
-    pkgs.gst_all_1.gst-plugins-ugly
-
-
-    # === Window Management ===
-    wmctrl
-
-    # === GNOME Utilities ===
-    dconf-editor
+    wget                              #CLI downloader for files over HTTP/HTTPS
+    curl                              #CLI tool for transferring data with URLs  
+    git                               #Version control system
+    python3                           #Python programming language interpreter  
+    chromium                          #Web browser
+    qbittorrent                       #Torrent client
+    popsicle                          #USB image writer
+    kicad                             #PCB design software
+    dconf-editor                      #GNOME configuration editor
+    discord                           #Chat and communication platform  
+    vscode                            #Source-code editor
+    fastfetch                         #System information tool
+    tree                              #Directory listing tool
+    ripgrep                           #Search tool
+    fd                                #Find alternative
+    yt-dlp                            #YouTube downloader
+    libreoffice-fresh                 #Office suite
+    claude-code                       #AI assistant
+    ffmpeg                            #Multimedia framework  
+    nautilus                          #File manager
+    unzip                             #Archive extractor
+    zip                               #Archive creator
+    p7zip                             #7z archive support
+    ffmpegthumbnailer                 #Thumbnail generator for video files
+    gthumb                            #Image viewer and organizer  
+    inkscape                          #Vector graphics editor
+    pavucontrol                       #PulseAudio volume control
+    wdisplays                         #Wayland display configuration tool
+    wl-clipboard                      #Wayland clipboard utilities
     
-    # === Communication ===
-    discord
+    #GStreamer plugins (needed for Footage and video apps)
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gst-libav
+   
+    # Footage wrapped to use X11 (crashes on Wayland with NVIDIA due to Vulkan bug)
+    (pkgs.symlinkJoin {
+      name = "footage-x11";
+      paths = [ pkgs.footage ];
+      buildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/footage --set GDK_BACKEND x11
+      '';
+    })
   ];
 }

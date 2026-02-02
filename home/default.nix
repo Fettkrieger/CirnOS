@@ -22,58 +22,7 @@
 
   # User packages
   home.packages = with pkgs; [
-    # === Development ===
-    vscode
-
-    # === CLI Tools & Utilities ===
-    fastfetch
-    tree
-    ripgrep
-    fd
-    yt-dlp
-    libreoffice-fresh
-    claude-code
-    # Footage wrapped to use X11 (crashes on Wayland with NVIDIA due to Vulkan bug)
-    (pkgs.symlinkJoin {
-      name = "footage-x11";
-      paths = [ pkgs.footage ];
-      buildInputs = [ pkgs.makeWrapper ];
-      postBuild = ''
-        wrapProgram $out/bin/footage --set GDK_BACKEND x11
-      '';
-    })
-    ffmpeg
-
-    # === GStreamer plugins (needed for Footage and video apps) ===
-    gst_all_1.gstreamer
-    gst_all_1.gst-plugins-base
-    gst_all_1.gst-plugins-good
-    gst_all_1.gst-plugins-bad
-    gst_all_1.gst-plugins-ugly
-    gst_all_1.gst-libav
-    
-
-    
-
-    # === File Management ===
-    nautilus
-    unzip
-    zip
-    p7zip
-
-    # === Media & Graphics ===
-    ffmpegthumbnailer
-    gthumb
-    inkscape
-
-    # === System Utilities (replacing GNOME apps) ===
-    pavucontrol                # Audio control (replaces GNOME sound settings)
-    wdisplays                  # Display configuration for Wayland
-
-    # === Communication ===
-
-    # === Clipboard (for scripts/CLI) ===
-    wl-clipboard
+      
   ];
 
   # Let Home Manager manage itself
