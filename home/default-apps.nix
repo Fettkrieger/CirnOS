@@ -27,12 +27,12 @@
       "x-scheme-handler/unknown" = "firefox.desktop";
       
       # Images - gthumb
-      "image/jpeg" = "gthumb.desktop";
-      "image/png" = "gthumb.desktop";
-      "image/gif" = "gthumb.desktop";
-      "image/bmp" = "gthumb.desktop";
-      "image/webp" = "gthumb.desktop";
-      "image/svg+xml" = "gthumb.desktop";
+      "image/jpeg" = "org.gnome.gThumb.desktop";
+      "image/png" = "org.gnome.gThumb.desktop";
+      "image/gif" = "org.gnome.gThumb.desktop";
+      "image/bmp" = "org.gnome.gThumb.desktop";
+      "image/webp" = "org.gnome.gThumb.desktop";
+      "image/svg+xml" = "org.gnome.gThumb.desktop";
       
       # Videos - mpv
       "video/mp4" = "mpv.desktop";
