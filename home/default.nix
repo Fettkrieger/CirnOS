@@ -85,6 +85,4 @@
       gtk-theme = "Adwaita-dark";
     };
   };
-
-  
 }
