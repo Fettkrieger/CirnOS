@@ -34,6 +34,8 @@
     kicad                             #PCB design software
     dconf-editor                      #GNOME configuration editor
     discord                           #Chat and communication platform  
+    discord-ptb                       #preview version of Discord (for testing new features)
+    discord-canary                    #canary version of Discord (bleeding edge, may be unstable)
     vscode                            #Source-code editor
     fastfetch                         #System information tool
     tree                              #Directory listing tool

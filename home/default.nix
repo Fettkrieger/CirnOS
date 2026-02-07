@@ -5,7 +5,7 @@
   imports = [
     # Catppuccin Home Manager module
     inputs.catppuccin.homeModules.catppuccin
-    
+
     ./shellAliases.nix
     ./default-apps.nix
     ./themes.nix

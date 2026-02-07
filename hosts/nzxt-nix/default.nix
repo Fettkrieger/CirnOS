@@ -10,30 +10,45 @@
   # Use latest kernel for best hardware support
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # MediaTek MT7921 Bluetooth support (NZXT N7 motherboard WiFi/BT combo chip)
+  boot.kernelModules = [ "btusb" "btmtk" ];
+  boot.extraModprobeConfig = ''
+    # MT7921 Bluetooth can fail USB enumeration on some boards when autosuspend is on.
+    options btusb enable_autosuspend=n
+  '';
+  hardware.enableAllFirmware = true;
+
   # Bluetooth
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
 
-  # RØDE NT-USB Mini as default audio device
+  # Prefer RØDE NT-USB Mini as the default microphone source
   services.pipewire.wireplumber.extraConfig = {
-    "10-default-audio" = {
+    "10-default-audio-input" = {
       "monitor.alsa.rules" = [
         {
-          matches = [{ "node.name" = "alsa_output.usb-R__DE_Microphones_R__DE_NT-USB_Mini_84630635-00.analog-stereo"; }];
+          # Match the mic source even if ALSA USB serial/id changes.
+          matches = [{ "node.name" = "~alsa_input\\.usb-R__DE_Microphones_R__DE_NT-USB_Mini_.*\\.mono-fallback"; }];
           actions = {
             update-props = {
-              "priority.session" = 9000;
-              "priority.driver" = 9000;
+              "priority.session" = 20000;
+              "priority.driver" = 20000;
             };
           };
         }
         {
-          matches = [{ "node.name" = "alsa_input.usb-R__DE_Microphones_R__DE_NT-USB_Mini_84630635-00.mono-fallback"; }];
+          # Prevent output monitor sources from becoming the default microphone.
+          matches = [
+            {
+              "media.class" = "Audio/Source";
+              "node.name" = "~alsa_output\\..*\\.monitor";
+            }
+          ];
           actions = {
             update-props = {
-              "priority.session" = 9000;
-              "priority.driver" = 9000;
+              "priority.session" = 1;
+              "priority.driver" = 1;
             };
           };
         }
