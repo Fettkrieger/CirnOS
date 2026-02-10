@@ -10,8 +10,8 @@
       l = "ls -CF";
       
       # NixOS specific - dynamic hostname detection
-      rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/CirnOS#$(hostname)";
-      update = "cd ${config.home.homeDirectory}/CirnOS && sudo nix flake update && sudo nixos-rebuild switch --flake .#$(hostname)";
+      rebuild = "sudo nixos-rebuild switch --impure --flake ${config.home.homeDirectory}/CirnOS#$(hostname)";
+      update = "cd ${config.home.homeDirectory}/CirnOS && sudo nix flake update && sudo nixos-rebuild switch --impure --flake .#$(hostname)";
       cleanup = "sudo nix-collect-garbage -d";
       
       # Git shortcuts for CirnOS

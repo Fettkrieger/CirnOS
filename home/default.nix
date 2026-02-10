@@ -22,8 +22,10 @@
 
   # User packages
   home.packages = with pkgs; [
-      
+    
   ];
+
+ 
 
   # Let Home Manager manage itself
   programs.home-manager.enable = true;
