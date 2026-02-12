@@ -28,6 +28,12 @@
       gl = "git log --oneline --graph";
       gd = "git diff";
       
+      # Power profile switching
+      pp = "powerprofilesctl get";
+      pp-perf = "powerprofilesctl set performance";
+      pp-bal = "powerprofilesctl set balanced";
+      pp-save = "powerprofilesctl set power-saver";
+
       # System info
       sysinfo = "fastfetch";
 

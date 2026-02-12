@@ -5,6 +5,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ./power.nix
   ];
 
   # Use latest kernel for laptop hardware support
@@ -25,22 +26,6 @@
 
   # Intel CPU microcode (change to hardware.cpu.amd.updateMicrocode if AMD)
   hardware.cpu.intel.updateMicrocode = lib.mkDefault true;
-
-  # Laptop-specific power management
-  services.thermald.enable = true;
-  
-  # Disable power-profiles-daemon to use TLP instead
-  services.power-profiles-daemon.enable = false;
-  
-  services.tlp = {
-    enable = true;
-    settings = {
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-    };
-  };
 
   # Enable touchpad support
   services.libinput = {
