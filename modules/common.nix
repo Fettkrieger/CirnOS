@@ -95,6 +95,11 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Allow insecure packages (qtwebengine-5 needed by teamspeak3)
+  nixpkgs.config.permittedInsecurePackages = [
+    "qtwebengine-5.15.19"
+  ];
+
   # Enable flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
