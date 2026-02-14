@@ -45,9 +45,6 @@
 
       # ComfyUI update (force reinstall dependencies)
       comfyui-update = "rm -f ~/.local/share/comfyui/.deps-installed-v4 && comfyui";
-
-      # Noctalia settings update (copy settings and rebuild)
-      nocup = "install -m 0644 ~/.config/noctalia/settings.json ${config.home.homeDirectory}/CirnOS/home/noctalia-settings.json";
     };
   };
 }

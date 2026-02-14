@@ -11,12 +11,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     
-    # Catppuccin theming for NixOS and Home Manager
-    catppuccin = {
-      url = "github:catppuccin/nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Niri scrolling tiling Wayland compositor
     niri = {
       url = "github:sodiboo/niri-flake";
@@ -30,7 +24,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, catppuccin, niri, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, niri, ... }@inputs:
     let
       system = "x86_64-linux";
       

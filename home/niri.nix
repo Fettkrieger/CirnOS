@@ -226,8 +226,8 @@ in
         focus-ring = {
           enable = true;
           width = 3;
-          active.color = "#b4befe";   # Catppuccin 
-          inactive.color = "#45475a"; # Catppuccin Surface1
+          active.color = "#fff59b";   # Noctalia default mPrimary
+          inactive.color = "#21215F"; # Noctalia default mOutline
         };
         
         # Window border
@@ -245,7 +245,7 @@ in
 
       # === Cursor ===
       cursor = {
-        theme = "catppuccin-mocha-lavender-cursors";
+        theme = "Adwaita";
         size = 24;
       };
 
@@ -396,20 +396,20 @@ in
       border-radius = 8;
       border-size = 2;
       padding = "12";
-      # Catppuccin Mocha colors (blue accent)
-      background-color = "#1e1e2e";
-      text-color = "#cdd6f4";
-      border-color = "#89b4fa";
-      progress-color = "#89b4fa";
+      # Noctalia default dark scheme
+      background-color = "#070722";
+      text-color = "#f3edf7";
+      border-color = "#fff59b";
+      progress-color = "#fff59b";
     };
   };
 
-  # Swaylock - enable and use swaylock-effects, let Catppuccin handle colors
+  # Swaylock - enable swaylock-effects with visual effects
   programs.swaylock = {
     enable = true;
     package = pkgs.swaylock-effects;
     settings = {
-      # Effects only - Catppuccin handles colors
+      # Effects only - colors come from defaults
       clock = true;
       indicator = true;
       indicator-radius = 100;
@@ -432,7 +432,7 @@ in
     extraConfig = {
       modi = "drun,run,window";
       show-icons = true;
-      icon-theme = "Papirus-Dark";
+      icon-theme = "Adwaita";
       display-drun = "Apps";
       display-run = "Run";
       display-window = "Windows";
@@ -442,10 +442,10 @@ in
       inherit (config.lib.formats.rasi) mkLiteral;
     in {
       "*" = {
-        bg = mkLiteral "#1e1e2e";
-        fg = mkLiteral "#cdd6f4";
-        accent = mkLiteral "#89b4fa";
-        surface = mkLiteral "#585b70";
+        bg = mkLiteral "#070722";
+        fg = mkLiteral "#f3edf7";
+        accent = mkLiteral "#fff59b";
+        surface = mkLiteral "#11112d";
         background-color = mkLiteral "@bg";
         text-color = mkLiteral "@fg";
       };
@@ -468,7 +468,7 @@ in
       };
       entry = {
         placeholder = "Search...";
-        placeholder-color = mkLiteral "@surface";
+        placeholder-color = mkLiteral "#7c80b4";
       };
       listview = {
         lines = 8;
@@ -489,7 +489,7 @@ in
         size = mkLiteral "24px";
       };
       element-text = {
-        highlight = mkLiteral "bold #89b4fa";
+        highlight = mkLiteral "bold #fff59b";
       };
     };
   };  

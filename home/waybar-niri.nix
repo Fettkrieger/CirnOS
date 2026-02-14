@@ -173,11 +173,11 @@ in
             weeks-pos = "right";
             on-scroll = 1;
             format = {
-              months = "<span color='#89b4fa'><b>{}</b></span>";
-              days = "<span color='#cdd6f4'><b>{}</b></span>";
-              weeks = "<span color='#94e2d5'><b>W{}</b></span>";
-              weekdays = "<span color='#f9e2af'><b>{}</b></span>";
-              today = "<span color='#a6e3a1'><b><u>{}</u></b></span>";
+              months = "<span color='#a9aefe'><b>{}</b></span>";
+              days = "<span color='#f3edf7'><b>{}</b></span>";
+              weeks = "<span color='#9BFECE'><b>W{}</b></span>";
+              weekdays = "<span color='#fff59b'><b>{}</b></span>";
+              today = "<span color='#fff59b'><b><u>{}</u></b></span>";
             };
           };
           actions = {
@@ -401,33 +401,33 @@ in
     };
 
     style = ''
-      /* === Catppuccin Mocha Colors === */
-      @define-color base #1e1e2e;
-      @define-color mantle #181825;
-      @define-color crust #11111b;
-      @define-color surface0 #313244;
-      @define-color surface1 #45475a;
-      @define-color surface2 #585b70;
-      @define-color overlay0 #6c7086;
-      @define-color overlay1 #7f849c;
-      @define-color overlay2 #9399b2;
-      @define-color text #cdd6f4;
-      @define-color subtext0 #a6adc8;
-      @define-color subtext1 #bac2de;
-      @define-color lavender #b4befe;
-      @define-color blue #89b4fa;
-      @define-color sapphire #74c7ec;
-      @define-color sky #89dceb;
-      @define-color teal #94e2d5;
-      @define-color green #a6e3a1;
-      @define-color yellow #f9e2af;
-      @define-color peach #fab387;
-      @define-color maroon #eba0ac;
-      @define-color red #f38ba8;
-      @define-color mauve #cba6f7;
-      @define-color pink #f5c2e7;
-      @define-color flamingo #f2cdcd;
-      @define-color rosewater #f5e0dc;
+      /* === Noctalia Default Dark Colors === */
+      @define-color base #070722;
+      @define-color mantle #0e0e43;
+      @define-color crust #050518;
+      @define-color surface0 #11112d;
+      @define-color surface1 #21215F;
+      @define-color surface2 #2c2c73;
+      @define-color overlay0 #7c80b4;
+      @define-color overlay1 #a9aefe;
+      @define-color overlay2 #c4c8ff;
+      @define-color text #f3edf7;
+      @define-color subtext0 #d8d4e6;
+      @define-color subtext1 #e8e2ef;
+      @define-color lavender #a9aefe;
+      @define-color blue #a9aefe;
+      @define-color sapphire #9BFECE;
+      @define-color sky #9BFECE;
+      @define-color teal #9BFECE;
+      @define-color green #9BFECE;
+      @define-color yellow #fff59b;
+      @define-color peach #fff59b;
+      @define-color maroon #FD4663;
+      @define-color red #FD4663;
+      @define-color mauve #a9aefe;
+      @define-color pink #fff59b;
+      @define-color flamingo #9BFECE;
+      @define-color rosewater #f3edf7;
 
       /* === Global Styles === */
       * {

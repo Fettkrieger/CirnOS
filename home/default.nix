@@ -3,9 +3,6 @@
 
 {
   imports = [
-    # Catppuccin Home Manager module
-    inputs.catppuccin.homeModules.catppuccin
-
     ./shellAliases.nix
     ./default-apps.nix
     ./themes.nix
@@ -47,7 +44,7 @@
     silent = true;
   };
 
-  # === Catppuccin-themed Applications ===
+  # === Themed Applications ===
 
   # Btop system monitor
   programs.btop = {
