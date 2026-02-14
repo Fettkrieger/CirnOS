@@ -6,6 +6,8 @@
 let
   repoSettingsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia-settings.json";
   legacySettingsFile = "${config.home.homeDirectory}/.config/noctalia/settings.json";
+  repoPluginsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia-plugins.json";
+  legacyPluginsFile = "${config.home.homeDirectory}/.config/noctalia/plugins.json";
 in
 
 {
@@ -16,11 +18,13 @@ in
     systemd.enable = true;
   };
 
-  # Keep Noctalia on its default settings path, but point that path to a
-  # repository-tracked file so UI edits are committed naturally.
+  # Keep Noctalia on default config paths, but point them to repository-tracked
+  # files so UI edits are committed naturally.
   home.activation.noctaliaSettingsBootstrap = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$(dirname "${repoSettingsFile}")"
     mkdir -p "$(dirname "${legacySettingsFile}")"
+    mkdir -p "$(dirname "${repoPluginsFile}")"
+    mkdir -p "$(dirname "${legacyPluginsFile}")"
 
     if [ ! -e "${repoSettingsFile}" ]; then
       if [ -e "${legacySettingsFile}" ] && [ ! -L "${legacySettingsFile}" ]; then
@@ -31,6 +35,16 @@ in
       chmod u+rw "${repoSettingsFile}"
     fi
 
+    if [ ! -e "${repoPluginsFile}" ]; then
+      if [ -e "${legacyPluginsFile}" ] && [ ! -L "${legacyPluginsFile}" ]; then
+        cp "${legacyPluginsFile}" "${repoPluginsFile}"
+      else
+        printf '{"version":2,"sources":[],"states":{}}\n' > "${repoPluginsFile}"
+      fi
+      chmod u+rw "${repoPluginsFile}"
+    fi
+
     ln -sfn "${repoSettingsFile}" "${legacySettingsFile}"
+    ln -sfn "${repoPluginsFile}" "${legacyPluginsFile}"
   '';
 }
