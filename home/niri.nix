@@ -1,76 +1,10 @@
 # Niri compositor configuration
-{ config, pkgs, lib, inputs, ... }:
+{ pkgs, ... }:
 
-let
-  # Clipboard script with image preview - Windows+V style (auto-paste)
-  # 1. Shows clipboard history with image thumbnails
-  # 2. On selection: copies to clipboard AND pastes into focused window
-  clipboardScript = pkgs.writeShellScript "clipboard-rofi" ''
-    # Cache directory for image thumbnails
-    CACHE_DIR="$HOME/.cache/cliphist-thumbs"
-    mkdir -p "$CACHE_DIR"
-
-    # Generate thumbnails for image entries
-    generate_thumbs() {
-      cliphist list | while IFS= read -r line; do
-        # Check if this is a binary/image entry
-        if echo "$line" | grep -q '\[\[ binary'; then
-          # Get the ID (first field)
-          id=$(echo "$line" | cut -f1)
-          thumb="$CACHE_DIR/$id.png"
-
-          # Generate thumbnail if it doesn't exist
-          if [ ! -f "$thumb" ]; then
-            cliphist decode <<< "$line" | ${pkgs.imagemagick}/bin/convert - -resize 200x200 "$thumb" 2>/dev/null
-          fi
-        fi
-      done
-    }
-
-    # Show rofi with clipboard entries
-    show_clipboard() {
-      # Build entries with icons for images
-      cliphist list | while IFS= read -r line; do
-        id=$(echo "$line" | cut -f1)
-        thumb="$CACHE_DIR/$id.png"
-
-        if [ -f "$thumb" ]; then
-          # Image entry - show with icon
-          echo -en "$line\0icon\x1f$thumb\n"
-        else
-          # Text entry - show normally
-          echo "$line"
-        fi
-      done
-    }
-
-    # Generate thumbnails in background
-    generate_thumbs &
-
-    # Show rofi and get selection
-    selected=$(show_clipboard | rofi -dmenu -i -p "Clipboard" -display-columns 2 -theme-str 'element-icon { size: 64px; }')
-
-    # If something was selected, decode it, copy to clipboard, and paste
-    if [ -n "$selected" ]; then
-      # Copy to clipboard
-      cliphist decode <<< "$selected" | wl-copy
-
-      # Small delay to let rofi close and focus return to previous window
-      sleep 0.1
-
-      # Simulate Ctrl+V to paste (wtype is a Wayland keyboard input tool)
-      ${pkgs.wtype}/bin/wtype -M ctrl v -m ctrl
-    fi
-  '';
-in
 {
   # Niri packages and tools
   home.packages = with pkgs; [
-    imagemagick                # For generating clipboard image thumbnails
-    wtype                      # For simulating keyboard input (auto-paste)
     # === Core Niri Tools ===
-    rofi                      # App launcher (wayland support built-in)
-    mako                      # Notifications
     swaylock-effects          # Screen locker with effects
     swayidle                  # Idle management (screen locking, power saving)
     # === Screenshots ===
@@ -79,19 +13,10 @@ in
     swappy                    # Screenshot editor      
     # === Wallpaper ===
     swww                      # Animated wallpaper daemon
-    
-    # === Clipboard ===
-    cliphist                  # Clipboard history
-    
-    # === Utilities ===
-    brightnessctl             # Brightness control
-    playerctl                 # Media player control
-    pamixer                   # PulseAudio mixer CLI
-    networkmanagerapplet      # Network tray icon
-    
+
     # === XWayland ===
     xwayland-satellite        # XWayland support for Niri
-    
+
     # === Authentication ===
     polkit_gnome              # Polkit authentication agent
   ];
@@ -121,12 +46,6 @@ in
         { command = [ "swww-daemon" ]; }
         # Wallpaper is now managed by niri-wallpaper.nix systemd service
         { command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ]; }
-        { command = [ "mako" ]; }
-        { command = [ "nm-applet" "--indicator" ]; }
-        # Clipboard history - store both text and images
-        { command = [ "wl-paste" "--type" "text" "--watch" "cliphist" "store" ]; }
-        { command = [ "wl-paste" "--type" "image" "--watch" "cliphist" "store" ]; }
-        # waybar is started via systemd user service (programs.waybar.systemd.enable)
         { command = [ "swayidle" "-w"
             "timeout" "300" "swaylock -f"
             "timeout" "600" "niri msg action power-off-monitors"
@@ -355,7 +274,9 @@ in
         
         # === Launchers ===
         "Super+Return".action.spawn = ["ghostty"];
-        "Super+D".action.spawn = ["rofi" "-show" "drun"];
+        "Super+D".action.spawn = ["noctalia-shell" "ipc" "call" "launcher" "toggle"];
+        "Super+B".action.spawn = ["noctalia-shell" "ipc" "call" "controlCenter" "toggle"];
+        "Super+N".action.spawn = ["noctalia-shell" "ipc" "call" "notifications" "toggleHistory"];
         
         # === Screenshots ===
         "Super+Shift+S".action.screenshot = [];
@@ -368,42 +289,25 @@ in
         "Super+Shift+R".action.spawn = ["sh" "-c" "niri msg action reload-config"];
         
         # === Media Keys ===
-        "XF86AudioRaiseVolume".action.spawn = ["pamixer" "-i" "5"];
-        "XF86AudioLowerVolume".action.spawn = ["pamixer" "-d" "5"];
-        "XF86AudioMute".action.spawn = ["pamixer" "-t"];
-        "XF86AudioPlay".action.spawn = ["playerctl" "play-pause"];
-        "XF86AudioNext".action.spawn = ["playerctl" "next"];
-        "XF86AudioPrev".action.spawn = ["playerctl" "previous"];
+        "XF86AudioRaiseVolume".action.spawn = ["noctalia-shell" "ipc" "call" "volume" "increase"];
+        "XF86AudioLowerVolume".action.spawn = ["noctalia-shell" "ipc" "call" "volume" "decrease"];
+        "XF86AudioMute".action.spawn = ["noctalia-shell" "ipc" "call" "volume" "muteOutput"];
+        "XF86AudioPlay".action.spawn = ["noctalia-shell" "ipc" "call" "media" "playPause"];
+        "XF86AudioNext".action.spawn = ["noctalia-shell" "ipc" "call" "media" "next"];
+        "XF86AudioPrev".action.spawn = ["noctalia-shell" "ipc" "call" "media" "previous"];
         
         # === Brightness ===
-        "XF86MonBrightnessUp".action.spawn = ["brightnessctl" "set" "+5%"];
-        "XF86MonBrightnessDown".action.spawn = ["brightnessctl" "set" "5%-"];
+        "XF86MonBrightnessUp".action.spawn = ["noctalia-shell" "ipc" "call" "brightness" "increase"];
+        "XF86MonBrightnessDown".action.spawn = ["noctalia-shell" "ipc" "call" "brightness" "decrease"];
         
-        # === Clipboard History (with image preview) ===
-        "Super+V".action.spawn = ["${clipboardScript}"];
+        # === Noctalia Clipboard ===
+        "Super+V".action.spawn = ["noctalia-shell" "ipc" "call" "launcher" "clipboard"];
         
       };
     };
   };
 
   
-
-  # Mako notification daemon configuration
-  services.mako = {
-    enable = true;
-    settings = {
-      default-timeout = 5000;
-      border-radius = 8;
-      border-size = 2;
-      padding = "12";
-      # Noctalia default dark scheme
-      background-color = "#070722";
-      text-color = "#f3edf7";
-      border-color = "#fff59b";
-      progress-color = "#fff59b";
-    };
-  };
-
   # Swaylock - enable swaylock-effects with visual effects
   programs.swaylock = {
     enable = true;
@@ -423,75 +327,4 @@ in
     };
   };
 
-  # Rofi launcher configuration
-  programs.rofi = {
-    enable = true;
-    package = pkgs.rofi;
-    font = "JetBrainsMono Nerd Font 12";
-    terminal = "ghostty";
-    extraConfig = {
-      modi = "drun,run,window";
-      show-icons = true;
-      icon-theme = "Adwaita";
-      display-drun = "Apps";
-      display-run = "Run";
-      display-window = "Windows";
-      drun-display-format = "{name}";
-    };
-    theme = let
-      inherit (config.lib.formats.rasi) mkLiteral;
-    in {
-      "*" = {
-        bg = mkLiteral "#070722";
-        fg = mkLiteral "#f3edf7";
-        accent = mkLiteral "#fff59b";
-        surface = mkLiteral "#11112d";
-        background-color = mkLiteral "@bg";
-        text-color = mkLiteral "@fg";
-      };
-      window = {
-        width = mkLiteral "600px";
-        border = mkLiteral "2px";
-        border-color = mkLiteral "@accent";
-        border-radius = mkLiteral "8px";
-        padding = mkLiteral "20px";
-      };
-      inputbar = {
-        children = mkLiteral "[prompt,entry]";
-        spacing = mkLiteral "10px";
-        padding = mkLiteral "10px";
-        background-color = mkLiteral "@surface";
-        border-radius = mkLiteral "8px";
-      };
-      prompt = {
-        text-color = mkLiteral "@accent";
-      };
-      entry = {
-        placeholder = "Search...";
-        placeholder-color = mkLiteral "#7c80b4";
-      };
-      listview = {
-        lines = 8;
-        columns = 1;
-        fixed-height = false;
-        spacing = mkLiteral "5px";
-        padding = mkLiteral "10px 0 0 0";
-      };
-      element = {
-        padding = mkLiteral "10px";
-        border-radius = mkLiteral "8px";
-        spacing = mkLiteral "10px";
-      };
-      "element selected" = {
-        background-color = mkLiteral "@surface";
-      };
-      element-icon = {
-        size = mkLiteral "24px";
-      };
-      element-text = {
-        highlight = mkLiteral "bold #fff59b";
-      };
-    };
-  };  
-  
 }

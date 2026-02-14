@@ -1,12 +1,12 @@
 # HP Envy x360 Power Management
-# - power-profiles-daemon for interactive profile switching (Waybar + CLI)
+# - power-profiles-daemon for interactive profile switching (Noctalia + CLI)
 # - Battery charge threshold at 80% for long-term battery health
 # - thermald for Intel thermal management
 { config, pkgs, lib, ... }:
 
 {
   # power-profiles-daemon: 3 profiles (performance, balanced, power-saver)
-  # Waybar module cycles profiles on click, CLI via powerprofilesctl
+  # Noctalia widget can cycle profiles, CLI via powerprofilesctl
   services.power-profiles-daemon.enable = true;
 
   # Intel thermal daemon - works alongside ppd on Tiger Lake

@@ -82,6 +82,7 @@
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
       gtk-theme = "Adwaita-dark";
+      enable-hot-corners = false;
     };
   };
 }

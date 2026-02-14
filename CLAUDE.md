@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-CirnOS is a multi-host NixOS flake configuration managing two machines with Home Manager integration and Catppuccin Mocha theming. Uses Niri (scrolling tiling Wayland compositor) as the window manager.
+CirnOS is a multi-host NixOS flake configuration managing two machines with Home Manager integration and Noctalia shell. Uses Niri (scrolling tiling Wayland compositor) as the window manager.
 
 **Hosts:**
 - `nzxt-nix`: Gaming desktop (NVIDIA RTX 5070 Ti, AMD Ryzen 7800X3D, 3x 1440p monitors)
@@ -50,7 +50,7 @@ flake.nix                    # Entry point with mkHost() helper
 │   ├── default.nix          # Main HM config, imports, user packages
 │   ├── niri.nix             # Compositor config (monitors, keybinds, window rules)
 │   ├── niri-wallpaper.nix   # Per-workspace wallpaper daemon
-│   ├── waybar-niri.nix      # Status bar (modules, custom scripts, CSS)
+│   ├── noctalia.nix         # Noctalia shell integration
 │   ├── themes.nix           # GTK/Qt/cursor/icon theming
 │   ├── gaming.nix           # Gaming tools (conditional on enableGaming)
 │   ├── comfyui.nix          # ComfyUI wrapper script
@@ -76,11 +76,8 @@ imports = [...] ++ (if enableGaming then [ ./gaming.nix ./comfyui.nix ] else [])
 rebuild = "sudo nixos-rebuild switch --flake .../CirnOS#$(hostname)";
 ```
 
-### Catppuccin Theming
-Theme is Catppuccin Mocha with blue accent. Configured via the `catppuccin` flake input and integrated in `home/themes.nix`. Waybar colors are manually defined in CSS to match.
-
-### Custom Waybar Scripts
-CPU and GPU monitoring use custom shell scripts defined in `waybar-niri.nix` (cpuScript, gpuScript, networkScript) that read from `/proc/stat`, `/sys/class/hwmon`, and `nvidia-smi`.
+### Noctalia Shell
+Desktop shell features (bar, notifications, control center, launcher) are provided by Noctalia. Keybindings to open Noctalia panels are configured in `home/niri.nix`.
 
 ## Where to Edit
 
@@ -91,7 +88,7 @@ CPU and GPU monitoring use custom shell scripts defined in `waybar-niri.nix` (cp
 | Gaming packages | `home/gaming.nix` |
 | Keybindings | `home/niri.nix` → `binds` section |
 | Window rules | `home/niri.nix` → `window-rules` section |
-| Waybar modules | `home/waybar-niri.nix` → `modules-right/left/center` |
+| Noctalia shell | `home/noctalia.nix` and `~/.config/noctalia/settings.json` |
 | Shell aliases | `home/shellAliases.nix` |
 | Monitor layout | `home/niri.nix` → `outputs` section |
 | Startup apps | `home/niri.nix` → `spawn-at-startup` |
@@ -101,8 +98,8 @@ CPU and GPU monitoring use custom shell scripts defined in `waybar-niri.nix` (cp
 
 - `nixpkgs`: nixos-unstable channel
 - `home-manager`: User environment management
-- `catppuccin`: Theming module for NixOS and Home Manager
 - `niri`: Scrolling tiling Wayland compositor flake
+- `noctalia`: Desktop shell module and package
 
 ## Nix Conventions
 
@@ -110,7 +107,7 @@ CPU and GPU monitoring use custom shell scripts defined in `waybar-niri.nix` (cp
 - NVIDIA uses `nvidiaPackages.beta` for RTX 50-series support
 - Steam is system-level (`programs.steam`), gaming tools are user-level
 - Home Manager uses `useGlobalPkgs = true` (shared nixpkgs instance)
-- Waybar runs as systemd user service (`systemd.enable = true`)
+- Noctalia runs as systemd user service (`programs.noctalia-shell.systemd.enable = true`)
 
 ## Niri Specifics
 

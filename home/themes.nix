@@ -1,19 +1,7 @@
 # Theme configuration (Noctalia-default aligned GTK, Qt, and cursors)
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
-  # Theme packages
-  home.packages = with pkgs; [
-    adwaita-qt
-    adwaita-qt6
-    adwaita-icon-theme
-    qgnomeplatform
-    qgnomeplatform-qt6
-    gnome-themes-extra
-    swaybg
-    swww
-  ];
-
   # GTK configuration (dark defaults compatible with Noctalia default scheme)
   gtk = {
     enable = true;
@@ -46,7 +34,7 @@
   # Qt configuration matching GTK dark style
   qt = {
     enable = true;
-    platformTheme.name = "gnome";
+    platformTheme.name = "adwaita";
     style.name = "adwaita-dark";
   };
 }

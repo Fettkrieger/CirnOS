@@ -2,7 +2,7 @@
 { pkgs, ... }:
 
 {
-  # Fonts (needed for waybar and other UI elements)
+  # Fonts (needed for Noctalia and other UI elements)
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code

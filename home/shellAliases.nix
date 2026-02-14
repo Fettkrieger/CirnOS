@@ -44,6 +44,7 @@
       cat = "bat";
 
       # ComfyUI update (force reinstall dependencies)
+      comfy-update = "rm -f ~/.local/share/comfyui/.deps-installed-v4 && comfyui";
       comfyui-update = "rm -f ~/.local/share/comfyui/.deps-installed-v4 && comfyui";
     };
   };
