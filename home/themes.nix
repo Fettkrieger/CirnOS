@@ -43,7 +43,7 @@
   catppuccin = {
     enable = true;
     flavor = "mocha";   # dark themes: mocha (darkest), macchiato, frappe | light: latte
-    accent = "blue";    # accent color for highlights
+    accent = "lavender";    # accent color for highlights
     
     # Cursor theme
     cursors = {

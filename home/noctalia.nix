@@ -1,4 +1,9 @@
 # Noctalia shell - desktop bar, notifications, and control center
+#
+# To update settings:
+#   1. Change settings in noctalia GUI
+#   2. Copy ~/.config/noctalia/settings.json to home/noctalia-settings.json
+#   3. Run rebuild
 { inputs, hostname, ... }:
 
 {
@@ -7,38 +12,6 @@
   programs.noctalia-shell = {
     enable = true;
     systemd.enable = true;
-
-    settings = {
-      bar = {
-        position = "top";
-        density = "default";
-        widgets = {
-          left = [
-            { id = "Workspace"; }
-            { id = "ActiveWindow"; }
-          ];
-          center = [
-            { id = "Clock"; }
-          ];
-          right = [
-            { id = "Tray"; }
-            { id = "MediaMini"; }
-            { id = "AudioVisualizer"; }
-            { id = "Network"; }
-            { id = "SystemMonitor"; }
-            { id = "Volume"; }
-            { id = "Microphone"; }
-            { id = "Brightness"; }
-            { id = "Bluetooth"; }
-            { id = "NightLight"; }
-            { id = "PowerProfile"; }
-            { id = "LockKeys"; }
-            { id = "NotificationHistory"; }
-            { id = "SessionMenu"; }
-            { id = "ControlCenter"; }
-          ] ++ (if hostname == "hp-nix" then [{ id = "Battery"; }] else []);
-        };
-      };
-    };
+    settings = builtins.fromJSON (builtins.readFile ./noctalia-settings.json);
   };
 }
