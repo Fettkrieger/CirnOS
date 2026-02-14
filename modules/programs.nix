@@ -14,6 +14,8 @@
   # Chromium browser
   programs.chromium.enable = true;
 
+  programs.partition-manager.enable = true;
+
   # Keychron keyboard WebHID access (for launcher.keychron.com)
   services.udev.extraRules = ''
     # Keychron keyboards - allow WebHID access
@@ -57,7 +59,7 @@
     wl-clipboard                      #Wayland clipboard utilities
     teamspeak6-client                 #Voice communication software
     obsidian                          #Note-taking and knowledge management application
-    
+    kdePackages.partitionmanager                                                    
     #GStreamer plugins (needed for Footage and video apps)
     gst_all_1.gstreamer
     gst_all_1.gst-plugins-base

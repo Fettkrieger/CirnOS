@@ -7,8 +7,8 @@
     ./gpu.nix
   ];
 
-  # Use latest kernel for best hardware support
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Pin to 6.18 until NVIDIA beta driver supports 6.19
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
 
   # MediaTek MT7921 Bluetooth support (NZXT N7 motherboard WiFi/BT combo chip)
   boot.kernelModules = [ "btusb" "btmtk" ];

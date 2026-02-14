@@ -55,7 +55,7 @@
       "application/x-tar" = "org.gnome.Nautilus.desktop";
       "application/x-7z-compressed" = "org.gnome.Nautilus.desktop";
       "application/x-rar" = "org.gnome.Nautilus.desktop";
-      
+
       # Directories
       "inode/directory" = "org.gnome.Nautilus.desktop";
     };
