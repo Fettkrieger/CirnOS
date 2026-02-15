@@ -40,6 +40,9 @@
 
   # Enable Niri compositor (niri-flake module handles session registration)
   programs.niri.enable = true;
+  # niri-flake also starts a KDE polkit agent by default; disable it because
+  # we use lxqt-policykit in Home Manager and multiple agents conflict.
+  systemd.user.services.niri-flake-polkit.enable = false;
 
   # XDG Desktop Portal for Niri (file dialogs, screen sharing)
   xdg.portal = {
