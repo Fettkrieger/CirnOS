@@ -58,10 +58,98 @@
         "marginHorizontal": 4,
         "marginVertical": 4,
         "monitors": [
+            "DP-5",
+            "DP-6",
+            "DP-4"
         ],
         "outerCorners": false,
         "position": "top",
         "screenOverrides": [
+            {
+                "enabled": true,
+                "name": "DP-5",
+                "widgets": {
+                    "center": [
+                        {
+                            "clockColor": "none",
+                            "customFont": "",
+                            "formatHorizontal": "HH:mm ddd, MMM dd",
+                            "formatVertical": "HH mm - dd MM",
+                            "id": "Clock",
+                            "tooltipFormat": "HH:mm ddd, MMM dd",
+                            "useCustomFont": false
+                        }
+                    ],
+                    "left": [
+                        {
+                            "characterCount": 2,
+                            "colorizeIcons": false,
+                            "emptyColor": "secondary",
+                            "enableScrollWheel": true,
+                            "focusedColor": "primary",
+                            "followFocusedScreen": false,
+                            "groupedBorderOpacity": 1,
+                            "hideUnoccupied": false,
+                            "iconScale": 1,
+                            "id": "Workspace",
+                            "labelMode": "index",
+                            "occupiedColor": "secondary",
+                            "pillSize": 0.6,
+                            "reverseScroll": false,
+                            "showApplications": true,
+                            "showBadge": true,
+                            "showLabelsOnlyWhenOccupied": true,
+                            "unfocusedIconsOpacity": 0.5
+                        },
+                        {
+                            "colorizeIcons": false,
+                            "hideMode": "hidden",
+                            "id": "ActiveWindow",
+                            "maxWidth": 145,
+                            "scrollingMode": "hover",
+                            "showIcon": true,
+                            "textColor": "none",
+                            "useFixedWidth": false
+                        }
+                    ],
+                    "right": [
+                        {
+                            "colorName": "primary",
+                            "hideWhenIdle": false,
+                            "id": "AudioVisualizer",
+                            "width": 200
+                        },
+                        {
+                            "defaultSettings": {
+                                "hideBackground": false,
+                                "minimumThreshold": 10
+                            },
+                            "id": "plugin:catwalk"
+                        },
+                        {
+                            "compactMode": false,
+                            "diskPath": "/",
+                            "iconColor": "none",
+                            "id": "SystemMonitor",
+                            "showCpuFreq": false,
+                            "showCpuTemp": true,
+                            "showCpuUsage": true,
+                            "showDiskAvailable": true,
+                            "showDiskUsage": true,
+                            "showDiskUsageAsPercent": false,
+                            "showGpuTemp": true,
+                            "showLoadAverage": false,
+                            "showMemoryAsPercent": true,
+                            "showMemoryUsage": true,
+                            "showNetworkStats": false,
+                            "showSwapUsage": false,
+                            "textColor": "none",
+                            "useMonospaceFont": false,
+                            "usePadding": false
+                        }
+                    ]
+                }
+            }
         ],
         "showCapsule": false,
         "showOutline": false,
@@ -69,6 +157,12 @@
         "widgets": {
             "center": [
                 {
+                    "defaultSettings": {
+                        "activeColor": "primary",
+                        "hideInactive": false,
+                        "inactiveColor": "none",
+                        "removeMargins": false
+                    },
                     "id": "plugin:privacy-indicator"
                 },
                 {
@@ -91,16 +185,16 @@
                     "followFocusedScreen": false,
                     "groupedBorderOpacity": 1,
                     "hideUnoccupied": false,
-                    "iconScale": 0.8,
+                    "iconScale": 1,
                     "id": "Workspace",
                     "labelMode": "index",
                     "occupiedColor": "secondary",
                     "pillSize": 0.6,
                     "reverseScroll": false,
-                    "showApplications": false,
+                    "showApplications": true,
                     "showBadge": true,
                     "showLabelsOnlyWhenOccupied": true,
-                    "unfocusedIconsOpacity": 1
+                    "unfocusedIconsOpacity": 0.5
                 },
                 {
                     "colorizeIcons": false,
@@ -140,6 +234,10 @@
                     "visualizerType": "linear"
                 },
                 {
+                    "defaultSettings": {
+                        "hideBackground": false,
+                        "minimumThreshold": 10
+                    },
                     "id": "plugin:catwalk"
                 },
                 {

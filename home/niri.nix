@@ -5,8 +5,10 @@
   # Niri packages and tools
   home.packages = with pkgs; [
     # === Core Niri Tools ===
-    swaylock-effects          # Screen locker with effects
     swayidle                  # Idle management (screen locking, power saving)
+    # === Clipboard (Noctalia launcher) ===
+    wtype                     # Types selected clipboard entries into the active window
+    cliphist                  # Clipboard history backend used by Noctalia
     # === Screenshots ===
     grim                      # Screenshot tool
     slurp                     # Area selector
@@ -18,7 +20,7 @@
     xwayland-satellite        # XWayland support for Niri
 
     # === Authentication ===
-    polkit_gnome              # Polkit authentication agent
+    lxqt.lxqt-policykit       # Polkit authentication agent
   ];
   # Niri compositor configuration using niri-flake settings
   programs.niri = {
@@ -45,11 +47,11 @@
         { command = [ "xwayland-satellite" ]; }
         { command = [ "swww-daemon" ]; }
         # Wallpaper is now managed by niri-wallpaper.nix systemd service
-        { command = [ "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1" ]; }
+        { command = [ "${pkgs.lxqt.lxqt-policykit}/bin/lxqt-policykit-agent" ]; }
         { command = [ "swayidle" "-w"
-            "timeout" "300" "swaylock -f"
+            "timeout" "300" "noctalia-shell ipc call lockScreen lock"
             "timeout" "600" "niri msg action power-off-monitors"
-            "before-sleep" "swaylock -f"
+            "before-sleep" "noctalia-shell ipc call lockScreen lock"
           ]; }
       ];
 
@@ -122,6 +124,10 @@
           max-scroll-amount = "0%";
         };
       };
+
+      # === Gestures ===
+      # Prevent opening overview by moving cursor to top-left screen corner.
+      gestures.hot-corners.enable = false;
 
       # === Layout Configuration ===
       layout = {
@@ -197,7 +203,10 @@
         }
         # Polkit
         {
-          matches = [{ app-id = "^polkit-gnome-authentication-agent-1$"; }];
+          matches = [
+            { app-id = "^lxqt-policykit-agent$"; }
+            { app-id = "^org\\.lxqt\\.lxqt-policykit-agent$"; }
+          ];
           open-floating = true;
         }
       ];
@@ -284,7 +293,7 @@
         "Super+Print".action.screenshot-window = [];
         
         # === System ===
-        "Super+Escape".action.spawn = ["swaylock"];
+        "Super+Escape".action.spawn = ["noctalia-shell" "ipc" "call" "lockScreen" "lock"];
         "Super+Shift+E".action.quit = [];
         "Super+Shift+R".action.spawn = ["sh" "-c" "niri msg action reload-config"];
         
@@ -304,26 +313,6 @@
         "Super+V".action.spawn = ["noctalia-shell" "ipc" "call" "launcher" "clipboard"];
         
       };
-    };
-  };
-
-  
-  # Swaylock - enable swaylock-effects with visual effects
-  programs.swaylock = {
-    enable = true;
-    package = pkgs.swaylock-effects;
-    settings = {
-      # Effects only - colors come from defaults
-      clock = true;
-      indicator = true;
-      indicator-radius = 100;
-      indicator-thickness = 7;
-      effect-blur = "7x5";
-      effect-vignette = "0.5:0.5";
-      grace = 2;
-      fade-in = 0.2;
-      font = "JetBrainsMono Nerd Font";
-      font-size = 24;
     };
   };
 

@@ -1,13 +1,22 @@
 # Noctalia shell - desktop bar, notifications, and control center
 #
 # Settings are stored in a git-tracked file so UI edits are versioned.
-{ config, inputs, lib, ... }:
+{ config, inputs, lib, pkgs, ... }:
 
 let
   repoSettingsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia-settings.json";
   legacySettingsFile = "${config.home.homeDirectory}/.config/noctalia/settings.json";
   repoPluginsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia-plugins.json";
   legacyPluginsFile = "${config.home.homeDirectory}/.config/noctalia/plugins.json";
+  patchedNoctaliaPackage = (inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default).overrideAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      # Fix clipboard auto-paste focus race by waiting briefly before sending paste keys.
+      substituteInPlace Services/Keyboard/ClipboardService.qml \
+        --replace-fail \
+          'const cmd = `cliphist decode ''${id} | wl-copy''${typeArg} && ''${pasteKeys}`;' \
+          'const cmd = `cliphist decode ''${id} | wl-copy''${typeArg} && ''${isImage ? "sleep 0.12 && " : ""}''${pasteKeys}`;'
+    '';
+  });
 in
 
 {
@@ -16,6 +25,7 @@ in
   programs.noctalia-shell = {
     enable = true;
     systemd.enable = true;
+    package = patchedNoctaliaPackage;
   };
 
   # Keep Noctalia on default config paths, but point them to repository-tracked
