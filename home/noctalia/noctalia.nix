@@ -20,7 +20,10 @@ let
 in
 
 {
-  imports = [ inputs.noctalia.homeModules.default ];
+  imports = [
+    inputs.noctalia.homeModules.default
+    ./niri-focus-ring-live.nix
+  ];
 
   programs.noctalia-shell = {
     enable = true;

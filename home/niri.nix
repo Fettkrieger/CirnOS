@@ -147,12 +147,12 @@
         # Default window width
         default-column-width = { proportion = 1.0 / 2.0; };
         
-        # Focus ring (border around focused window)
+        # Focus ring (live-updated at runtime from Noctalia colors.json)
         focus-ring = {
           enable = true;
           width = 3;
-          active.color = "#fff59b";   # Noctalia default mPrimary
-          inactive.color = "#21215F"; # Noctalia default mOutline
+          active.color = "#fff59b";
+          inactive.color = "#21215F";
         };
         
         # Window border
