@@ -120,7 +120,7 @@
         };
         # Focus follows mouse
         focus-follows-mouse = {
-          enable = true;
+          enable = false;
           max-scroll-amount = "0%";
         };
       };
