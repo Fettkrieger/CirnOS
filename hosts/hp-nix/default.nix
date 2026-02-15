@@ -42,5 +42,22 @@
 
   # Bluetooth
   hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
+
+  # Some HP firmware sessions leave Bluetooth soft-blocked at boot.
+  # Force-unblock and power on the adapter after rfkill state restore.
+  systemd.services.bluetooth-unblock = {
+    description = "Unblock and power on Bluetooth adapter";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-rfkill.service" "bluetooth.service" ];
+    wants = [ "bluetooth.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+    };
+    script = ''
+      ${pkgs.util-linux}/bin/rfkill unblock bluetooth || true
+      ${pkgs.bluez}/bin/bluetoothctl --timeout 5 power on || true
+    '';
+  };
 }
