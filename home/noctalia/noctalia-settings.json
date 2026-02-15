@@ -40,7 +40,7 @@
         "visualizerType": "linear",
         "volumeFeedback": false,
         "volumeOverdrive": true,
-        "volumeStep": 5
+        "volumeStep": 1
     },
     "bar": {
         "autoHideDelay": 500,
@@ -289,8 +289,8 @@
         }
     },
     "brightness": {
-        "brightnessStep": 5,
-        "enableDdcSupport": false,
+        "brightnessStep": 1,
+        "enableDdcSupport": true,
         "enforceMinimum": true
     },
     "calendar": {
