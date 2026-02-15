@@ -50,7 +50,10 @@ flake.nix                    # Entry point with mkHost() helper
 │   ├── default.nix          # Main HM config, imports, user packages
 │   ├── niri.nix             # Compositor config (monitors, keybinds, window rules)
 │   ├── niri-wallpaper.nix   # Per-workspace wallpaper daemon
-│   ├── noctalia.nix         # Noctalia shell integration
+│   ├── noctalia/
+│   │   ├── noctalia.nix     # Noctalia shell integration
+│   │   ├── noctalia-settings.json
+│   │   └── noctalia-plugins.json
 │   ├── themes.nix           # GTK/Qt/cursor/icon theming
 │   ├── gaming.nix           # Gaming tools (conditional on enableGaming)
 │   ├── comfyui.nix          # ComfyUI wrapper script
@@ -88,7 +91,7 @@ Desktop shell features (bar, notifications, control center, launcher) are provid
 | Gaming packages | `home/gaming.nix` |
 | Keybindings | `home/niri.nix` → `binds` section |
 | Window rules | `home/niri.nix` → `window-rules` section |
-| Noctalia shell | `home/noctalia.nix` and `~/.config/noctalia/settings.json` |
+| Noctalia shell | `home/noctalia/noctalia.nix` and `~/.config/noctalia/settings.json` |
 | Shell aliases | `home/shellAliases.nix` |
 | Monitor layout | `home/niri.nix` → `outputs` section |
 | Startup apps | `home/niri.nix` → `spawn-at-startup` |

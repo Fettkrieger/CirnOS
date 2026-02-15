@@ -4,9 +4,9 @@
 { config, inputs, lib, pkgs, ... }:
 
 let
-  repoSettingsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia-settings.json";
+  repoSettingsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia/noctalia-settings.json";
   legacySettingsFile = "${config.home.homeDirectory}/.config/noctalia/settings.json";
-  repoPluginsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia-plugins.json";
+  repoPluginsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia/noctalia-plugins.json";
   legacyPluginsFile = "${config.home.homeDirectory}/.config/noctalia/plugins.json";
   patchedNoctaliaPackage = (inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default).overrideAttrs (old: {
     postPatch = (old.postPatch or "") + ''
