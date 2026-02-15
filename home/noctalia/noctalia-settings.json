@@ -377,9 +377,19 @@
         }
     },
     "desktopWidgets": {
-        "enabled": false,
-        "gridSnap": false,
+        "enabled": true,
+        "gridSnap": true,
         "monitorWidgets": [
+            {
+                "name": "DP-5",
+                "widgets": [
+                ]
+            },
+            {
+                "name": "DP-4",
+                "widgets": [
+                ]
+            }
         ]
     },
     "dock": {

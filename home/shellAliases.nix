@@ -45,7 +45,6 @@
 
       # ComfyUI dependency refresh (reinstall from pinned lock file)
       comfyui-update = "comfyui-reset-deps && comfyui";
-      comfyui-lock = "comfyui-relock";
     };
   };
 }

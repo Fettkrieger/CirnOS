@@ -1,6 +1,16 @@
 # Common NixOS configuration shared across all hosts
 { config, pkgs, lib, inputs, hostname, ... }:
 
+let
+  # SDDM theme tuned to a dark, Noctalia-like style.
+  sddmNoctaliaTheme = pkgs.catppuccin-sddm.override {
+    flavor = "mocha";
+    accent = "blue";
+    font = "Noto Sans";
+    fontSize = "11";
+    clockEnabled = true;
+  };
+in
 {
   imports = [
     ./firewall.nix
@@ -34,9 +44,16 @@
     LC_TIME = "de_CH.UTF-8";
   };
 
-  # GDM Display Manager
+  # SDDM Display Manager
   services.xserver.enable = true;
-  services.displayManager.gdm.enable = true;
+  services.displayManager = {
+    gdm.enable = false;
+    sddm = {
+      enable = true;
+      theme = "${sddmNoctaliaTheme}/share/sddm/themes/catppuccin-mocha-blue";
+      wayland.enable = true;
+    };
+  };
 
   # Enable Niri compositor (niri-flake module handles session registration)
   programs.niri.enable = true;
@@ -58,7 +75,7 @@
 
   # GNOME Keyring for credential storage (used by apps like VS Code, browsers)
   services.gnome.gnome-keyring.enable = true;
-  security.pam.services.gdm.enableGnomeKeyring = true;
+  security.pam.services.sddm.enableGnomeKeyring = true;
 
   # GVFS for Nautilus (trash, network mounts, MTP devices)
   services.gvfs.enable = true;

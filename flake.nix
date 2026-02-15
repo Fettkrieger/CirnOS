@@ -34,7 +34,7 @@
         specialArgs = { inherit inputs hostname enableGaming; };
         
         modules = [
-          # Niri NixOS module (provides session in GDM)
+          # Niri NixOS module (registers desktop sessions for display managers)
           niri.nixosModules.niri
           
           # Common configuration shared across all hosts

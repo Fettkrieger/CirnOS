@@ -34,6 +34,5 @@
   # AMD CPU microcode
   hardware.cpu.amd.updateMicrocode = true;
 
-  # GDM Wayland with NVIDIA
-  services.displayManager.gdm.wayland = true;
+  # SDDM Wayland is enabled in shared config
 }
