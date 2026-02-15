@@ -71,13 +71,16 @@
                 "widgets": {
                     "center": [
                         {
-                            "clockColor": "none",
+                            "clockColor": "primary",
                             "customFont": "",
                             "formatHorizontal": "HH:mm ddd, MMM dd",
                             "formatVertical": "HH mm - dd MM",
                             "id": "Clock",
                             "tooltipFormat": "HH:mm ddd, MMM dd",
                             "useCustomFont": false
+                        },
+                        {
+                            "id": "plugin:screen-recorder"
                         }
                     ],
                     "left": [
@@ -100,22 +103,12 @@
                             "showBadge": true,
                             "showLabelsOnlyWhenOccupied": true,
                             "unfocusedIconsOpacity": 0.5
-                        },
-                        {
-                            "colorizeIcons": false,
-                            "hideMode": "hidden",
-                            "id": "ActiveWindow",
-                            "maxWidth": 145,
-                            "scrollingMode": "hover",
-                            "showIcon": true,
-                            "textColor": "none",
-                            "useFixedWidth": false
                         }
                     ],
                     "right": [
                         {
-                            "colorName": "primary",
-                            "hideWhenIdle": false,
+                            "colorName": "secondary",
+                            "hideWhenIdle": true,
                             "id": "AudioVisualizer",
                             "width": 200
                         },
@@ -129,7 +122,7 @@
                         {
                             "compactMode": false,
                             "diskPath": "/",
-                            "iconColor": "none",
+                            "iconColor": "primary",
                             "id": "SystemMonitor",
                             "showCpuFreq": false,
                             "showCpuTemp": true,
@@ -143,12 +136,9 @@
                             "showMemoryUsage": true,
                             "showNetworkStats": false,
                             "showSwapUsage": false,
-                            "textColor": "none",
+                            "textColor": "primary",
                             "useMonospaceFont": false,
                             "usePadding": false
-                        },
-                        {
-                            "id": "plugin:screen-recorder"
                         }
                     ]
                 }
@@ -217,16 +207,6 @@
                     "showBadge": true,
                     "showLabelsOnlyWhenOccupied": true,
                     "unfocusedIconsOpacity": 0.5
-                },
-                {
-                    "colorizeIcons": false,
-                    "hideMode": "hidden",
-                    "id": "ActiveWindow",
-                    "maxWidth": 145,
-                    "scrollingMode": "hover",
-                    "showIcon": true,
-                    "textColor": "none",
-                    "useFixedWidth": false
                 }
             ],
             "right": [
