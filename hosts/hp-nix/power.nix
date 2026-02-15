@@ -5,6 +5,9 @@
 { config, pkgs, lib, ... }:
 
 {
+  # Required for battery telemetry in desktop shells/widgets (Noctalia, etc.)
+  services.upower.enable = true;
+
   # power-profiles-daemon: 3 profiles (performance, balanced, power-saver)
   # Noctalia widget can cycle profiles, CLI via powerprofilesctl
   services.power-profiles-daemon.enable = true;
