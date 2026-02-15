@@ -288,7 +288,8 @@
         "Super+N".action.spawn = ["noctalia-shell" "ipc" "call" "notifications" "toggleHistory"];
         
         # === Screenshots ===
-        "Super+Shift+S".action.screenshot = [];
+        "Super+Shift+S".action.spawn = ["sh" "-c" "grim -g \"$(slurp)\" - | wl-copy --type image/png"];
+        "Super+Ctrl+S".action.spawn = ["sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"];
         "Print".action.screenshot-screen = [];
         "Super+Print".action.screenshot-window = [];
         
