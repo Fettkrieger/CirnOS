@@ -27,6 +27,9 @@ in
   # Enable networking
   networking.networkmanager.enable = true;
 
+  # Firmware updates via LVFS (includes UEFI/BIOS when supported)
+  services.fwupd.enable = true;
+
   # Set your time zone
   time.timeZone = "Europe/Zurich";
 

@@ -44,4 +44,10 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
   services.blueman.enable = true;
+
+  # Temporary tooling for a Windows VM (used to build HP BIOS USB media)
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
+  virtualisation.spiceUSBRedirection.enable = true;
+  users.users.krieger.extraGroups = [ "libvirtd" ];
 }
