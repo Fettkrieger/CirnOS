@@ -160,18 +160,50 @@
             "center": [
                 {
                     "defaultSettings": {
+                        "completedCount": 0,
+                        "count": 0,
+                        "current_page_id": 0,
+                        "isExpanded": false,
+                        "pages": [
+                            {
+                                "id": 0,
+                                "name": "General"
+                            }
+                        ],
+                        "priorityColors": {
+                            "high": "#f44336",
+                            "low": "#9e9e9e",
+                            "medium": "#2196f3"
+                        },
+                        "showBackground": true,
+                        "showCompleted": true,
+                        "todos": [
+                        ],
+                        "useCustomColors": false
+                    },
+                    "id": "plugin:todo"
+                },
+                {
+                    "defaultSettings": {
+                        "cursorPosition": 0,
+                        "filePath": "",
+                        "fontSize": 14,
+                        "panelHeight": 400,
+                        "panelWidth": 600,
+                        "scratchpadContent": "",
+                        "scrollPositionX": 0,
+                        "scrollPositionY": 0
+                    },
+                    "id": "plugin:notes-scratchpad"
+                },
+                {
+                    "defaultSettings": {
                         "activeColor": "primary",
                         "hideInactive": false,
                         "inactiveColor": "none",
                         "removeMargins": false
                     },
                     "id": "plugin:privacy-indicator"
-                },
-                {
-                    "id": "plugin:todo"
-                },
-                {
-                    "id": "plugin:notes-scratchpad"
                 },
                 {
                     "clockColor": "primary",
@@ -202,9 +234,22 @@
                     "id": "plugin:screen-recorder"
                 },
                 {
+                    "defaultSettings": {
+                        "compactMode": false,
+                        "defaultDuration": 0,
+                        "iconColor": "none"
+                    },
                     "id": "plugin:timer"
                 },
                 {
+                    "defaultSettings": {
+                        "autoStartBreaks": false,
+                        "autoStartWork": false,
+                        "longBreakDuration": 15,
+                        "sessionsBeforeLongBreak": 4,
+                        "shortBreakDuration": 5,
+                        "workDuration": 25
+                    },
                     "id": "plugin:pomodoro"
                 }
             ],
