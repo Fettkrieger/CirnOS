@@ -136,6 +136,18 @@
                             "textColor": "primary",
                             "useMonospaceFont": false,
                             "usePadding": false
+                        },
+                        {
+                            "id": "plugin:timer"
+                        },
+                        {
+                            "id": "plugin:notes-scratchpad"
+                        },
+                        {
+                            "id": "plugin:todo"
+                        },
+                        {
+                            "id": "plugin:pomodoro"
                         }
                     ]
                 }
@@ -154,6 +166,12 @@
                         "removeMargins": false
                     },
                     "id": "plugin:privacy-indicator"
+                },
+                {
+                    "id": "plugin:todo"
+                },
+                {
+                    "id": "plugin:notes-scratchpad"
                 },
                 {
                     "clockColor": "primary",
@@ -182,6 +200,12 @@
                         "videoSource": "portal"
                     },
                     "id": "plugin:screen-recorder"
+                },
+                {
+                    "id": "plugin:timer"
+                },
+                {
+                    "id": "plugin:pomodoro"
                 }
             ],
             "left": [
@@ -254,11 +278,11 @@
                 },
                 {
                     "hideWhenZero": true,
-                    "hideWhenZeroUnread": false,
-                    "iconColor": "none",
+                    "hideWhenZeroUnread": true,
+                    "iconColor": "tertiary",
                     "id": "NotificationHistory",
                     "showUnreadBadge": true,
-                    "unreadBadgeColor": "primary"
+                    "unreadBadgeColor": "error"
                 },
                 {
                     "displayMode": "onhover",
