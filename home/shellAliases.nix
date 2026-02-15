@@ -10,8 +10,8 @@
       l = "ls -CF";
       
       # NixOS specific - dynamic hostname detection
-      rebuild = "sudo nixos-rebuild switch --impure --flake ${config.home.homeDirectory}/CirnOS#$(hostname)";
-      update = "cd ${config.home.homeDirectory}/CirnOS && sudo nix flake update && sudo nixos-rebuild switch --impure --flake .#$(hostname)";
+      rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/CirnOS#$(hostname)";
+      update = "cd ${config.home.homeDirectory}/CirnOS && sudo nix flake update && sudo nixos-rebuild switch --flake .#$(hostname)";
       cleanup = "sudo nix-collect-garbage -d";
       
       # Git shortcuts for CirnOS
@@ -43,9 +43,9 @@
       # Better cat with bat
       cat = "bat";
 
-      # ComfyUI update (force reinstall dependencies)
-      comfy-update = "rm -f ~/.local/share/comfyui/.deps-installed-v4 && comfyui";
-      comfyui-update = "rm -f ~/.local/share/comfyui/.deps-installed-v4 && comfyui";
+      # ComfyUI dependency refresh (reinstall from pinned lock file)
+      comfyui-update = "comfyui-reset-deps && comfyui";
+      comfyui-lock = "comfyui-relock";
     };
   };
 }

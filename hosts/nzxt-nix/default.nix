@@ -7,7 +7,7 @@
     ./gpu.nix
   ];
 
-  # Pin to 6.18 until NVIDIA beta driver supports 6.19
+  # Pin to 6.18: nvidia-open 590.48.01 currently fails to build on 6.19.
   boot.kernelPackages = pkgs.linuxPackages_6_18;
 
   # MediaTek MT7921 Bluetooth support (NZXT N7 motherboard WiFi/BT combo chip)
