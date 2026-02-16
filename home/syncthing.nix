@@ -4,8 +4,7 @@
   services.syncthing = {
     enable = true;
 
-    # Keep GUI-added devices/folders instead of forcing only declarative state.
-    # This lets you pair hosts from the Syncthing UI without committing IDs.
+    # Keep GUI-added devices/folders from the web UI across restarts.
     overrideDevices = false;
     overrideFolders = false;
 
@@ -13,15 +12,6 @@
       options = {
         # Disable telemetry prompt.
         urAccepted = -1;
-      };
-
-      folders = {
-        "sync" = {
-          path = "/home/krieger/Sync";
-          id = "krieger-sync";
-          label = "Sync";
-          devices = [ ];
-        };
       };
     };
   };

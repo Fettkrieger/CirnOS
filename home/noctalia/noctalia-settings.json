@@ -438,7 +438,6 @@
         "lockScreenBlur": 1,
         "lockScreenCountdownDuration": 1000,
         "lockScreenMonitors": [
-            "DP-4"
         ],
         "lockScreenTint": 1,
         "radiusRatio": 1,

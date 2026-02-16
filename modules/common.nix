@@ -69,8 +69,19 @@ in
     enable = true;
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk
-      xdg-desktop-portal-gnome  # For file picker dialogs
+      xdg-desktop-portal-gnome  # For ScreenCast/RemoteDesktop support
     ];
+    # Override Niri's default portal ordering so apps that need file pickers
+    # (e.g. Steam chat image upload) use GTK first.
+    config.niri = {
+      default = [ "gtk" "gnome" ];
+      "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+      # Keep GNOME backend for interfaces GTK does not implement.
+      "org.freedesktop.impl.portal.ScreenCast" = [ "gnome" ];
+      "org.freedesktop.impl.portal.Screenshot" = [ "gnome" ];
+      "org.freedesktop.impl.portal.RemoteDesktop" = [ "gnome" ];
+      "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+    };
   };
 
   # Power management (can be overridden by hosts using TLP)
