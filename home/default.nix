@@ -7,6 +7,7 @@
     ./default-apps.nix
     ./themes.nix
     ./ghostty.nix
+    ./syncthing.nix
     ./niri.nix
     ./niri-wallpaper.nix
     ./noctalia/noctalia.nix
