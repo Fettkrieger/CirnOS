@@ -9,7 +9,6 @@
     ./ghostty.nix
     ./syncthing.nix
     ./niri.nix
-    ./niri-wallpaper.nix
     ./noctalia/noctalia.nix
   ] ++ (if enableGaming then [ ./gaming.nix ./comfyui.nix ] else [])
     ++ (if hostname == "nzxt-nix" then [ ./defaultwindows.nix ] else []);

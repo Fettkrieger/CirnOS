@@ -13,8 +13,6 @@
     grim                      # Screenshot tool
     slurp                     # Area selector
     swappy                    # Screenshot editor      
-    # === Wallpaper ===
-    swww                      # Animated wallpaper daemon
 
     # === XWayland ===
     xwayland-satellite        # XWayland support for Niri
@@ -44,8 +42,6 @@
       # === Startup Applications ===
       spawn-at-startup = [
         { command = [ "xwayland-satellite" ]; }
-        { command = [ "swww-daemon" ]; }
-        # Wallpaper is now managed by niri-wallpaper.nix systemd service
         { command = [ "${pkgs.lxqt.lxqt-policykit}/bin/lxqt-policykit-agent" ]; }
         { command = [ "swayidle" "-w"
             "timeout" "300" "noctalia-shell ipc call lockScreen lock"
