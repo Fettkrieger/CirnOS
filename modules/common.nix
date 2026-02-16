@@ -2,13 +2,21 @@
 { config, pkgs, lib, inputs, hostname, ... }:
 
 let
-  # SDDM theme tuned to a dark, Noctalia-like style.
-  sddmNoctaliaTheme = pkgs.catppuccin-sddm.override {
+  sddmBlackBackground = pkgs.writeText "sddm-black-background.svg" ''
+    <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+      <rect width="1920" height="1080" fill="#000000"/>
+    </svg>
+  '';
+
+  sddmTheme = pkgs.catppuccin-sddm.override {
     flavor = "mocha";
     accent = "blue";
     font = "Noto Sans";
-    fontSize = "11";
-    clockEnabled = true;
+    fontSize = "10";
+    background = sddmBlackBackground;
+    clockEnabled = false;
+    userIcon = false;
+    loginBackground = true;
   };
 in
 {
@@ -53,10 +61,13 @@ in
     gdm.enable = false;
     sddm = {
       enable = true;
-      theme = "${sddmNoctaliaTheme}/share/sddm/themes/catppuccin-mocha-blue";
+      theme = "catppuccin-mocha-blue";
       wayland.enable = true;
     };
   };
+
+  # Install the selected SDDM theme so it is available in ThemeDir.
+  environment.systemPackages = [ sddmTheme ];
 
   # Enable Niri compositor (niri-flake module handles session registration)
   programs.niri.enable = true;
