@@ -189,7 +189,7 @@
                     "unfocusedIconsOpacity": 0.5
                 },
                 {
-                    "colorName": "error",
+                    "colorName": "secondary",
                     "hideWhenIdle": false,
                     "id": "AudioVisualizer",
                     "width": 400
