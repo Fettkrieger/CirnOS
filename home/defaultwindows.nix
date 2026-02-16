@@ -26,7 +26,7 @@ let
     }
   ];
 
-  letters = [ "A" "B" "C" "D" "E" "F" "G" ];
+  letters = [ "A" "B" "C" ];
   mkLane = suffix: output:
     builtins.listToAttrs
       (builtins.map

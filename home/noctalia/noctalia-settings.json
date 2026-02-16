@@ -187,6 +187,12 @@
                     "showBadge": true,
                     "showLabelsOnlyWhenOccupied": true,
                     "unfocusedIconsOpacity": 0.5
+                },
+                {
+                    "colorName": "secondary",
+                    "hideWhenIdle": false,
+                    "id": "AudioVisualizer",
+                    "width": 250
                 }
             ],
             "right": [
