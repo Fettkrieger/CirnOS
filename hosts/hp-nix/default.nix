@@ -50,4 +50,8 @@
   programs.virt-manager.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
   users.users.krieger.extraGroups = [ "libvirtd" ];
+  
+  environment.systemPackages = with pkgs; [
+    vintagestory
+  ];
 }
