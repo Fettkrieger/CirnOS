@@ -11,7 +11,8 @@
     ./niri.nix
     ./noctalia/noctalia.nix
   ] ++ (if enableGaming then [ ./gaming.nix ./comfyui.nix ] else [])
-    ++ (if hostname == "nzxt-nix" then [ ./defaultwindows.nix ] else []);
+    ++ (if hostname == "nzxt-nix" then [ ./defaultwindows.nix ] else [])
+    ++ (if hostname == "hp-nix" then [ ./workspaces-hp.nix ] else []);
 
   home.username = "krieger";
   home.homeDirectory = "/home/krieger";
