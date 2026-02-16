@@ -408,7 +408,7 @@
         "enableLockScreenCountdown": true,
         "enableShadows": false,
         "forceBlackScreenCorners": false,
-        "iRadiusRatio": 1,
+        "iRadiusRatio": 2,
         "keybinds": {
             "keyDown": [
                 "Down"
@@ -440,12 +440,12 @@
         "lockScreenMonitors": [
         ],
         "lockScreenTint": 1,
-        "radiusRatio": 1,
-        "scaleRatio": 1,
+        "radiusRatio": 1.2,
+        "scaleRatio": 0.8500000000000001,
         "screenRadiusRatio": 0,
-        "shadowDirection": "bottom_right",
-        "shadowOffsetX": 2,
-        "shadowOffsetY": 3,
+        "shadowDirection": "top_left",
+        "shadowOffsetX": -2,
+        "shadowOffsetY": -2,
         "showChangelogOnStartup": true,
         "showHibernateOnLockScreen": false,
         "showScreenCorners": true,
@@ -641,14 +641,14 @@
         "bluetoothHideUnnamedDevices": false,
         "boxBorderEnabled": true,
         "fontDefault": "Sans Serif",
-        "fontDefaultScale": 1.03,
+        "fontDefaultScale": 1.09,
         "fontFixed": "monospace",
-        "fontFixedScale": 1,
+        "fontFixedScale": 1.1400000000000001,
         "networkPanelView": "wifi",
         "panelBackgroundOpacity": 1,
         "panelsAttachedToBar": true,
         "settingsPanelMode": "centered",
-        "tooltipsEnabled": true,
+        "tooltipsEnabled": false,
         "wifiDetailsViewMode": "grid"
     },
     "wallpaper": {
