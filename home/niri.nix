@@ -124,6 +124,10 @@
       # Prevent opening overview by moving cursor to top-left screen corner.
       gestures.hot-corners.enable = false;
 
+      # === Hotkey Overlay ===
+      # Don't show the built-in important hotkeys popup at session startup.
+      hotkey-overlay.skip-at-startup = true;
+
       # === Layout Configuration ===
       layout = {
         gaps = 3;  # Gap between windows and screen edges
@@ -165,7 +169,7 @@
 
       # === Cursor ===
       cursor = {
-        theme = "Adwaita";
+        theme = "catppuccin-mocha-blue-cursors";
         size = 24;
       };
 

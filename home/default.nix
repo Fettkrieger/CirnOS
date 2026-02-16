@@ -82,6 +82,8 @@
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
       gtk-theme = "Adwaita-dark";
+      cursor-theme = "catppuccin-mocha-blue-cursors";
+      cursor-size = 24;
       enable-hot-corners = false;
     };
   };
