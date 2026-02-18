@@ -21,7 +21,8 @@
             "discord",
             "discord-ptb",
             "discord-canary",
-            "org.gnome.Nautilus"
+            "org.gnome.Nautilus",
+            "steam"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",
