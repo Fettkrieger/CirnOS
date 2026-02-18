@@ -114,7 +114,7 @@ in
         startupApps)
       ++ [
         {
-          matches = [{ app-id = "^(firefox|org\\.mozilla\\.firefox)$"; }];
+          matches = [{ app-id = "^(firefox|org\\.mozilla\\.firefox)$"; at-startup = true; }];
           open-maximized = true;
         }
         {
