@@ -61,6 +61,8 @@
     obsidian                          #Note-taking and knowledge management application
     kdePackages.partitionmanager   
     nodejs_20
+    signal-desktop
+    whatsapp-electron
     #GStreamer plugins (needed for Footage and video apps)
     gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
