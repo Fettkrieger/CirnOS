@@ -8,13 +8,12 @@
     # TCP ports
     allowedTCPPorts = [ 
       22     # SSH
-      7777   # Fragments torrent client
       22000  # Syncthing sync traffic (TCP)
+      3000   # Next.js dev server (LAN testing)
     ];
     
     # UDP ports
     allowedUDPPorts = [ 
-      7777   # Fragments torrent client
       22000  # Syncthing sync traffic (QUIC)
       21027  # Syncthing local discovery
     ];

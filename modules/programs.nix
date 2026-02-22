@@ -59,7 +59,8 @@
     wl-clipboard                      #Wayland clipboard utilities
     teamspeak6-client                 #Voice communication software
     obsidian                          #Note-taking and knowledge management application
-    kdePackages.partitionmanager                                                    
+    kdePackages.partitionmanager   
+    nodejs_20
     #GStreamer plugins (needed for Footage and video apps)
     gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
