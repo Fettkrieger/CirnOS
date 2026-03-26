@@ -30,8 +30,6 @@ Review date: 2026-02-15
 
 5) Reproducibility and update strategy
 - Shell aliases in `home/shellAliases.nix` use `--impure` for rebuild/update. If not strictly required, drop `--impure` to improve reproducibility.
-- `home/comfyui.nix` uses runtime `git clone/pull` and `pip install --upgrade` (unpinned). This is convenient but non-reproducible and can break unexpectedly. Consider pinning repo/dependency versions or wrapping with a more reproducible workflow.
-- In `home/comfyui.nix`, dependency bootstrapping marker file (`.deps-installed-v4`) is manual-versioned. It works, but consider a clearer upgrade path (for example pinned requirements lock + explicit update command).
 
 6) Optional software/tools you may want
 - Nix workflow tooling: `nh`, `nix-output-monitor`, `nvd`, `nix-tree`, `alejandra`, `statix`, `deadnix`.

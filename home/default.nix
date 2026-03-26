@@ -10,7 +10,7 @@
     ./syncthing.nix
     ./niri.nix
     ./noctalia/noctalia.nix
-  ] ++ (if enableGaming then [ ./gaming.nix ./comfyui.nix ] else [])
+  ] ++ (if enableGaming then [ ./gaming.nix ] else [])
     ++ (if hostname == "nzxt-nix" then [ ./defaultwindows.nix ] else [])
     ++ (if hostname == "hp-nix" then [ ./workspaces-hp.nix ] else []);
 

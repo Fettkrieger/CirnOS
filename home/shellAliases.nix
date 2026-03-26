@@ -42,9 +42,6 @@
 
       # Better cat with bat
       cat = "bat";
-
-      # ComfyUI dependency refresh (reinstall from pinned lock file)
-      comfyui-update = "comfyui-reset-deps && comfyui";
     };
   };
 }
