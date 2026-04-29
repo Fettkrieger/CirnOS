@@ -11,8 +11,7 @@
     ./niri.nix
     ./noctalia/noctalia.nix
   ] ++ (if enableGaming then [ ./gaming.nix ] else [])
-    ++ (if hostname == "nzxt-nix" then [ ./defaultwindows.nix ] else [])
-    ++ (if hostname == "hp-nix" then [ ./workspaces-hp.nix ] else []);
+    ++ (if builtins.elem hostname [ "hp-nix" "lenuwu-nix" ] then [ ./workspaces-hp.nix ] else []);
 
   home.username = "krieger";
   home.homeDirectory = "/home/krieger";
@@ -31,6 +30,7 @@
   # Git configuration
   programs.git = {
     enable = true;
+    signing.format = "openpgp";
     settings = {
       user.name = "Krieger";
       user.email = "leandro.tiziani@protonmail.com";

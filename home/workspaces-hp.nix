@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  # hp-nix: define named laptop workspaces only (no startup windows).
+  # Laptop hosts: define named workspaces only (no startup windows).
   programs.niri.settings.workspaces = {
     A = { };
     B = { };

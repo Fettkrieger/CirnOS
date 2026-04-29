@@ -14,16 +14,11 @@
   # Chromium browser
   programs.chromium.enable = true;
 
-  programs.partition-manager.enable = true;
-
   # Keychron keyboard WebHID access (for launcher.keychron.com)
   services.udev.extraRules = ''
     # Keychron keyboards - allow WebHID access
     KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="3434", MODE="0660", TAG+="uaccess"
   '';
-
-  
-
 
   environment.systemPackages = with pkgs; [
     wget                              #CLI downloader for files over HTTP/HTTPS
@@ -59,7 +54,7 @@
     wl-clipboard                      #Wayland clipboard utilities
     teamspeak6-client                 #Voice communication software
     obsidian                          #Note-taking and knowledge management application
-    kdePackages.partitionmanager   
+    gparted-full                      #Graphical partition editor with extra filesystem tools (including exFAT)
     nodejs_20
     signal-desktop
     whatsapp-electron

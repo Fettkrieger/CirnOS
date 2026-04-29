@@ -37,9 +37,6 @@
     };
   };
 
-  # Backlight control
-  programs.light.enable = true;
-
   # Bluetooth
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
@@ -52,6 +49,8 @@
   users.users.krieger.extraGroups = [ "libvirtd" ];
   
   environment.systemPackages = with pkgs; [
+    # Noctalia brightness controls use brightnessctl.
+    brightnessctl
     vintagestory
   ];
 }

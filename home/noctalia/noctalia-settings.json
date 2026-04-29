@@ -90,15 +90,6 @@
         "widgets": {
             "center": [
                 {
-                    "defaultSettings": {
-                        "activeColor": "primary",
-                        "hideInactive": false,
-                        "inactiveColor": "none",
-                        "removeMargins": false
-                    },
-                    "id": "plugin:privacy-indicator"
-                },
-                {
                     "clockColor": "primary",
                     "customFont": "Sans Serif",
                     "formatHorizontal": "HH:mm ddd, MMM dd",
@@ -674,7 +665,12 @@
         "transitionDuration": 1500,
         "transitionEdgeSmoothness": 0.05,
         "transitionType": [
-            "fade"
+            "fade",
+            "disc",
+            "stripes",
+            "wipe",
+            "pixelate",
+            "honeycomb"
         ],
         "useOriginalImages": false,
         "useSolidColor": false,

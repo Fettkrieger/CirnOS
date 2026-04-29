@@ -1,5 +1,5 @@
 # Theme configuration (Noctalia-default aligned GTK, Qt, and cursors)
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   # Ship all mocha cursor variants so runtime switching can pick the closest color.
@@ -32,6 +32,9 @@ in
       name = "Adwaita-dark";
       package = pkgs.gnome-themes-extra;
     };
+
+    # Preserve the pre-26.05 GTK 4 theme behavior explicitly.
+    gtk4.theme = config.gtk.theme;
 
     iconTheme = {
       name = "Adwaita";

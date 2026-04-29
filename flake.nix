@@ -59,11 +59,11 @@
     in
     {
       nixosConfigurations = {
-        # Desktop PC (NZXT case with NVIDIA RTX 5070 Ti + AMD 7800X3D)
-        nzxt-nix = mkHost {
-          hostname = "nzxt-nix";
-          hostConfig = ./hosts/nzxt-nix;
-          enableGaming = true;
+        # Lenovo ThinkPad E16 Gen 2 AMD (21M5002DGE)
+        lenuwu-nix = mkHost {
+          hostname = "lenuwu-nix";
+          hostConfig = ./hosts/lenuwu-nix;
+          enableGaming = false;
         };
         
         
