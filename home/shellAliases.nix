@@ -28,11 +28,14 @@
       gl = "git log --oneline --graph";
       gd = "git diff";
       
-      # Power profile switching
-      pp = "powerprofilesctl get";
-      pp-perf = "powerprofilesctl set performance";
-      pp-bal = "powerprofilesctl set balanced";
-      pp-save = "powerprofilesctl set power-saver";
+      # TLP profile switching
+      pp = "tlpctl get";
+      pp-list = "tlpctl list";
+      pp-perf = "tlpctl set performance";
+      pp-bal = "tlpctl set balanced";
+      pp-save = "tlpctl set power-saver";
+      steam-perf = "tlpctl launch --profile performance --reason Gaming steam";
+      game-perf = "tlpctl launch --profile performance --reason Gaming";
 
       # System info
       sysinfo = "fastfetch";

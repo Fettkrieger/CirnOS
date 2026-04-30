@@ -77,10 +77,6 @@
         "rightClickCommand": "",
         "rightClickFollowMouse": true,
         "screenOverrides": [
-            {
-                "enabled": true,
-                "name": "DP-5"
-            }
         ],
         "showCapsule": false,
         "showOnWorkspaceSwitch": true,
@@ -89,6 +85,19 @@
         "widgetSpacing": 6,
         "widgets": {
             "center": [
+                {
+                    "defaultSettings": {
+                        "activeColor": "primary",
+                        "camFilterRegex": "",
+                        "enableToast": true,
+                        "hideInactive": false,
+                        "iconSpacing": 4,
+                        "inactiveColor": "none",
+                        "micFilterRegex": "",
+                        "removeMargins": false
+                    },
+                    "id": "plugin:privacy-indicator"
+                },
                 {
                     "clockColor": "primary",
                     "customFont": "Sans Serif",
@@ -196,6 +205,7 @@
                 {
                     "colorizeDistroLogo": false,
                     "colorizeSystemIcon": "secondary",
+                    "colorizeSystemText": "none",
                     "customIconPath": "",
                     "enableColorization": true,
                     "icon": "noctalia",
@@ -301,16 +311,6 @@
         "gridSnap": true,
         "gridSnapScale": false,
         "monitorWidgets": [
-            {
-                "name": "DP-5",
-                "widgets": [
-                ]
-            },
-            {
-                "name": "DP-4",
-                "widgets": [
-                ]
-            }
         ],
         "overviewEnabled": true
     },
@@ -353,7 +353,7 @@
         "animationDisabled": false,
         "animationSpeed": 1,
         "autoStartAuth": false,
-        "avatarImage": "/home/krieger/Sync/Profile Piture/nixxxxus.png",
+        "avatarImage": "/home/krieger/Pictures/cirnos.gif",
         "boxRadiusRatio": 1,
         "clockFormat": "hh\\nmm",
         "clockStyle": "digital",
@@ -409,6 +409,7 @@
         "showHibernateOnLockScreen": false,
         "showScreenCorners": true,
         "showSessionButtonsOnLockScreen": false,
+        "smoothScrollEnabled": true,
         "telemetryEnabled": false
     },
     "hooks": {
@@ -439,6 +440,7 @@
     },
     "location": {
         "analogClockInCalendar": false,
+        "autoLocate": false,
         "firstDayOfWeek": -1,
         "hideWeatherCityName": false,
         "hideWeatherTimezone": false,
@@ -449,10 +451,10 @@
         "use12hourFormat": false,
         "useFahrenheit": false,
         "weatherEnabled": true,
-        "weatherShowEffects": true
+        "weatherShowEffects": true,
+        "weatherTaliaMascotAlways": false
     },
     "network": {
-        "airplaneModeEnabled": false,
         "bluetoothAutoConnect": true,
         "bluetoothDetailsViewMode": "grid",
         "bluetoothHideUnnamedDevices": false,
@@ -611,18 +613,6 @@
     },
     "templates": {
         "activeTemplates": [
-            {
-                "enabled": true,
-                "id": "ghostty"
-            },
-            {
-                "enabled": true,
-                "id": "code"
-            },
-            {
-                "enabled": true,
-                "id": "steam"
-            }
         ],
         "enableUserTheming": false
     },
@@ -642,7 +632,7 @@
     },
     "wallpaper": {
         "automationEnabled": false,
-        "directory": "/home/krieger/Sync/Wallpapers",
+        "directory": "/home/krieger/Pictures/Wallpapers/workspaces",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
@@ -650,6 +640,7 @@
         "fillColor": "#000000",
         "fillMode": "crop",
         "hideWallpaperFilenames": false,
+        "linkLightAndDarkWallpapers": true,
         "monitorDirectories": [
         ],
         "overviewBlur": 0.4,

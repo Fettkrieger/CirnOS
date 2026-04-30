@@ -1,5 +1,85 @@
 # Niri compositor configuration
-{ pkgs, ... }:
+{ lib, pkgs, hostname, ... }:
+
+let
+  isLenuwu = hostname == "lenuwu-nix";
+
+  waylandEnvironment = {
+    "NIXOS_OZONE_WL" = "1";
+    "ELECTRON_OZONE_PLATFORM_HINT" = "wayland";
+    "MOZ_ENABLE_WAYLAND" = "1";
+    "QT_QPA_PLATFORM" = "wayland";
+    "SDL_VIDEODRIVER" = "wayland";
+    "GDK_BACKEND" = "wayland";
+  } // lib.optionalAttrs (!isLenuwu) {
+    "LIBVA_DRIVER_NAME" = "nvidia";
+    "GBM_BACKEND" = "nvidia-drm";
+    "__GLX_VENDOR_LIBRARY_NAME" = "nvidia";
+    "WLR_NO_HARDWARE_CURSORS" = "1";
+  };
+
+  laptopOutputs = {
+    "eDP-1" = {
+      mode = {
+        width = 1920;
+        height = 1200;
+        refresh = 60.010;
+      };
+      scale = 1.0;
+      position = {
+        x = 0;
+        y = 0;
+      };
+      focus-at-startup = true;
+    };
+  };
+
+  dockOutputs = {
+    "DP-5" = {
+      mode = {
+        width = 2560;
+        height = 1440;
+        refresh = 155.000;
+      };
+      scale = 1.0;
+      transform = {
+        rotation = 90;  # Rotated left (vertical)
+      };
+      position = {
+        x = 0;
+        y = 0;
+      };
+      variable-refresh-rate = true;
+    };
+    "DP-4" = {
+      mode = {
+        width = 2560;
+        height = 1440;
+        refresh = 179.952;
+      };
+      scale = 1.0;
+      position = {
+        x = 1440;  # After vertical monitor (1440 wide when rotated)
+        y = 810;   # Centered vertically (2560-1440)/2
+      };
+      variable-refresh-rate = true;
+      focus-at-startup = true;  # Start with cursor/focus on this monitor
+    };
+    "DP-6" = {
+      mode = {
+        width = 2560;
+        height = 1440;
+        refresh = 155.000;
+      };
+      scale = 1.0;
+      position = {
+        x = 4000;  # After DP-4 (1440 + 2560)
+        y = 810;   # Aligned with center monitor
+      };
+      variable-refresh-rate = true;
+    };
+  };
+in
 
 {
   # Niri packages and tools
@@ -25,22 +105,12 @@
     settings = {
       
       
-      # === Environment Variables (NVIDIA) ===
-      environment = {
-        "NIXOS_OZONE_WL" = "1";
-        "ELECTRON_OZONE_PLATFORM_HINT" = "wayland";
-        "MOZ_ENABLE_WAYLAND" = "1";
-        "QT_QPA_PLATFORM" = "wayland";
-        "SDL_VIDEODRIVER" = "wayland";
-        "GDK_BACKEND" = "wayland";
-        "LIBVA_DRIVER_NAME" = "nvidia";
-        "GBM_BACKEND" = "nvidia-drm";
-        "__GLX_VENDOR_LIBRARY_NAME" = "nvidia";
-        "WLR_NO_HARDWARE_CURSORS" = "1";
-      };
+      # === Environment Variables ===
+      environment = waylandEnvironment;
 
       # === Startup Applications ===
       spawn-at-startup = [
+        { command = [ "noctalia-shell" ]; }
         { command = [ "xwayland-satellite" ]; }
         { command = [ "${pkgs.lxqt.lxqt-policykit}/bin/lxqt-policykit-agent" ]; }
         { command = [ "swayidle" "-w"
@@ -51,58 +121,13 @@
       ];
 
       # === Monitor Configuration ===
-      # Left: DP-5 (vertical), Center: DP-4 (primary), Right: DP-6
-      outputs = {
-        "DP-5" = {
-          mode = {
-            width = 2560;
-            height = 1440;
-            refresh = 155.000;
-          };
-          scale = 1.0;
-          transform = {
-            rotation = 90;  # Rotated left (vertical)
-          };
-          position = {
-            x = 0;
-            y = 0;
-          };
-          variable-refresh-rate = true;
-        };
-        "DP-4" = {
-          mode = {
-            width = 2560;
-            height = 1440;
-            refresh = 179.952;
-          };
-          scale = 1.0;
-          position = {
-            x = 1440;  # After vertical monitor (1440 wide when rotated)
-            y = 810;   # Centered vertically (2560-1440)/2
-          };
-          variable-refresh-rate = true;
-          focus-at-startup = true;  # Start with cursor/focus on this monitor
-        };
-        "DP-6" = {
-          mode = {
-            width = 2560;
-            height = 1440;
-            refresh = 155.000;
-          };
-          scale = 1.0;
-          position = {
-            x = 4000;  # After DP-4 (1440 + 2560)
-            y = 810;   # Aligned with center monitor
-          };
-          variable-refresh-rate = true;
-        };
-      };
+      outputs = if isLenuwu then laptopOutputs else dockOutputs;
 
       # === Input Configuration ===
       input = {
         keyboard = {
           xkb = {
-            layout = "ch";
+            layout = if hostname == "lenuwu-nix" then "de" else "ch";
           };
         };
         mouse = {

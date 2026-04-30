@@ -63,7 +63,7 @@
         lenuwu-nix = mkHost {
           hostname = "lenuwu-nix";
           hostConfig = ./hosts/lenuwu-nix;
-          enableGaming = false;
+          enableGaming = true;
         };
         
         
