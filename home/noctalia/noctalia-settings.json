@@ -44,7 +44,7 @@
         "volumeFeedback": false,
         "volumeFeedbackSoundFile": "",
         "volumeOverdrive": true,
-        "volumeStep": 5
+        "volumeStep": 1
     },
     "bar": {
         "autoHideDelay": 500,
@@ -86,6 +86,9 @@
         "widgets": {
             "center": [
                 {
+                    "id": "plugin:screen-toolkit"
+                },
+                {
                     "defaultSettings": {
                         "activeColor": "primary",
                         "camFilterRegex": "",
@@ -106,6 +109,9 @@
                     "id": "Clock",
                     "tooltipFormat": "HH:mm ddd, MMM dd",
                     "useCustomFont": true
+                },
+                {
+                    "id": "plugin:screen-recorder"
                 }
             ],
             "left": [
@@ -129,12 +135,6 @@
                     "showBadge": true,
                     "showLabelsOnlyWhenOccupied": true,
                     "unfocusedIconsOpacity": 0.5
-                },
-                {
-                    "colorName": "secondary",
-                    "hideWhenIdle": false,
-                    "id": "AudioVisualizer",
-                    "width": 250
                 }
             ],
             "right": [
@@ -166,6 +166,9 @@
                     "textColor": "primary",
                     "useMonospaceFont": false,
                     "usePadding": false
+                },
+                {
+                    "id": "plugin:usb-drive-manager"
                 },
                 {
                     "blacklist": [
@@ -218,7 +221,7 @@
     "brightness": {
         "backlightDeviceMappings": [
         ],
-        "brightnessStep": 5,
+        "brightnessStep": 1,
         "enableDdcSupport": false,
         "enforceMinimum": true
     },
@@ -264,7 +267,7 @@
                 "id": "audio-card"
             },
             {
-                "enabled": false,
+                "enabled": true,
                 "id": "brightness-card"
             },
             {
@@ -307,45 +310,50 @@
         }
     },
     "desktopWidgets": {
-        "enabled": true,
+        "enabled": false,
         "gridSnap": true,
         "gridSnapScale": false,
         "monitorWidgets": [
+            {
+                "name": "eDP-1",
+                "widgets": [
+                ]
+            }
         ],
         "overviewEnabled": true
     },
     "dock": {
         "animationSpeed": 2,
-        "backgroundOpacity": 0,
-        "colorizeIcons": false,
+        "backgroundOpacity": 1,
+        "colorizeIcons": true,
         "deadOpacity": 0,
         "displayMode": "auto_hide",
-        "dockType": "floating",
-        "enabled": false,
-        "floatingRatio": 1.23,
+        "dockType": "attached",
+        "enabled": true,
+        "floatingRatio": 1.29,
         "groupApps": false,
         "groupClickAction": "cycle",
         "groupContextMenuMode": "extended",
         "groupIndicatorStyle": "dots",
-        "inactiveIndicators": false,
-        "indicatorColor": "primary",
-        "indicatorOpacity": 0.6,
-        "indicatorThickness": 3,
+        "inactiveIndicators": true,
+        "indicatorColor": "none",
+        "indicatorOpacity": 0.44000000000000006,
+        "indicatorThickness": 6,
         "launcherIcon": "",
-        "launcherIconColor": "none",
+        "launcherIconColor": "secondary",
         "launcherPosition": "end",
-        "launcherUseDistroLogo": false,
+        "launcherUseDistroLogo": true,
         "monitors": [
         ],
         "onlySameOutput": true,
         "pinnedApps": [
         ],
-        "pinnedStatic": false,
+        "pinnedStatic": true,
         "position": "bottom",
         "showDockIndicator": false,
-        "showLauncherIcon": false,
+        "showLauncherIcon": true,
         "sitOnFrame": false,
-        "size": 1.1300000000000001
+        "size": 1.27
     },
     "general": {
         "allowPanelsOnScreenWithoutBar": true,
@@ -359,10 +367,10 @@
         "clockStyle": "digital",
         "compactLockScreen": true,
         "dimmerOpacity": 0,
-        "enableBlurBehind": true,
+        "enableBlurBehind": false,
         "enableLockScreenCountdown": true,
         "enableLockScreenMediaControls": false,
-        "enableShadows": true,
+        "enableShadows": false,
         "forceBlackScreenCorners": false,
         "iRadiusRatio": 2,
         "keybinds": {
@@ -440,11 +448,11 @@
     },
     "location": {
         "analogClockInCalendar": false,
-        "autoLocate": false,
+        "autoLocate": true,
         "firstDayOfWeek": -1,
-        "hideWeatherCityName": false,
-        "hideWeatherTimezone": false,
-        "name": "Winterthur",
+        "hideWeatherCityName": true,
+        "hideWeatherTimezone": true,
+        "name": "Moudon",
         "showCalendarEvents": true,
         "showCalendarWeather": true,
         "showWeekNumberInCalendar": false,
@@ -546,41 +554,48 @@
                 "command": "",
                 "countdownEnabled": true,
                 "enabled": false,
-                "keybind": "2"
+                "keybind": ""
             },
             {
                 "action": "hibernate",
                 "command": "",
                 "countdownEnabled": true,
                 "enabled": false,
-                "keybind": "3"
+                "keybind": ""
             },
             {
                 "action": "reboot",
                 "command": "",
                 "countdownEnabled": true,
                 "enabled": true,
-                "keybind": "4"
+                "keybind": "2"
             },
             {
                 "action": "logout",
                 "command": "",
                 "countdownEnabled": true,
                 "enabled": false,
-                "keybind": "5"
+                "keybind": ""
             },
             {
                 "action": "shutdown",
                 "command": "",
                 "countdownEnabled": true,
                 "enabled": true,
-                "keybind": "6"
+                "keybind": "3"
             },
             {
                 "action": "rebootToUefi",
                 "command": "",
                 "countdownEnabled": true,
                 "enabled": true,
+                "keybind": "4"
+            },
+            {
+                "action": "userspaceReboot",
+                "command": "",
+                "countdownEnabled": true,
+                "enabled": false,
                 "keybind": ""
             }
         ],
@@ -598,7 +613,7 @@
         "diskAvailWarningThreshold": 20,
         "diskCriticalThreshold": 90,
         "diskWarningThreshold": 80,
-        "enableDgpuMonitoring": true,
+        "enableDgpuMonitoring": false,
         "externalMonitor": "resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor",
         "gpuCriticalThreshold": 90,
         "gpuWarningThreshold": 80,
@@ -619,7 +634,7 @@
     "ui": {
         "boxBorderEnabled": true,
         "fontDefault": "Sans Serif",
-        "fontDefaultScale": 1.09,
+        "fontDefaultScale": 1.1400000000000001,
         "fontFixed": "monospace",
         "fontFixedScale": 1.1400000000000001,
         "panelBackgroundOpacity": 1,
