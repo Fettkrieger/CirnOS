@@ -18,6 +18,16 @@ let
     "WLR_NO_HARDWARE_CURSORS" = "1";
   };
 
+  swayidleCommand = [
+    "swayidle" "-w"
+    "timeout" "300" "noctalia-shell ipc call lockScreen lock"
+    "timeout" "600" "niri msg action power-off-monitors"
+  ] ++ lib.optionals isLenuwu [
+    "timeout" "1800" "${pkgs.systemd}/bin/systemctl hibernate"
+  ] ++ [
+    "before-sleep" "noctalia-shell ipc call lockScreen lock"
+  ];
+
   laptopOutputs = {
     "eDP-1" = {
       mode = {
@@ -113,11 +123,7 @@ in
         { command = [ "noctalia-shell" ]; }
         { command = [ "xwayland-satellite" ]; }
         { command = [ "${pkgs.lxqt.lxqt-policykit}/bin/lxqt-policykit-agent" ]; }
-        { command = [ "swayidle" "-w"
-            "timeout" "300" "noctalia-shell ipc call lockScreen lock"
-            "timeout" "600" "niri msg action power-off-monitors"
-            "before-sleep" "noctalia-shell ipc call lockScreen lock"
-          ]; }
+        { command = swayidleCommand; }
       ];
 
       # === Monitor Configuration ===

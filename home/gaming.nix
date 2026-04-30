@@ -4,15 +4,13 @@
 
 {
   home.packages = with pkgs; [
-    # Note: Steam is installed system-wide in hosts/*/default.nix
+    # Steam, GameMode, Steam runtime helpers, and GPU recording are enabled
+    # system-wide on gaming hosts.
     protontricks
     protonup-qt     # Install/manage Proton-GE versions
-    steam-run       # Run games with Steam runtime libraries
-    gamemode
     mangohud
     vulkan-tools
     winetricks
-    gpu-screen-recorder
     heroic  # Epic Games / GOG launcher
     vintagestory
   ];

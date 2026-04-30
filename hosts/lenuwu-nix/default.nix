@@ -64,6 +64,10 @@
 
   services.openssh.enable = lib.mkForce false;
 
+  # Disable root-run automatic upgrades from the user-writable repo path on this
+  # roaming laptop; use the manual rebuild/update aliases instead.
+  system.autoUpgrade.enable = lib.mkForce false;
+
   programs.steam.enable = true;
   hardware.steam-hardware.enable = true;
   programs.gamemode.enable = true;
@@ -75,5 +79,12 @@
 
   environment.systemPackages = with pkgs; [
     brightnessctl
+    pciutils
+    usbutils
+    iw
+    lm_sensors
+    smartmontools
+    nvme-cli
+    powertop
   ];
 }
