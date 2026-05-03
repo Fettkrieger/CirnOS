@@ -21,9 +21,13 @@
   '';
 
   environment.systemPackages = with pkgs; [
+    evtest                            #Input event inspection tool used by Noctalia Slow Bongo
     wget                              #CLI downloader for files over HTTP/HTTPS
     curl                              #CLI tool for transferring data with URLs  
     git                               #Version control system
+    jdk17                             #Java runtime/toolchain for Android builds
+    android-studio-full               #Android Studio with bundled Android SDK/emulator components
+    android-tools                     #ADB and fastboot tools for Android devices
     python3                           #Python programming language interpreter  
     chromium                          #Web browser
     qbittorrent                       #Torrent client

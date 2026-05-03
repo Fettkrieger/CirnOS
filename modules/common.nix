@@ -130,7 +130,7 @@ in
   users.users.krieger = {
     isNormalUser = true;
     description = "Krieger";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "kvm" ];
     packages = with pkgs; [];
   };
 
@@ -139,6 +139,9 @@ in
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  # Accept Android SDK licenses for declarative Android Studio/SDK installs.
+  nixpkgs.config.android_sdk.accept_license = true;
 
   # Allow insecure packages (qtwebengine-5 needed by teamspeak3)
   nixpkgs.config.permittedInsecurePackages = [

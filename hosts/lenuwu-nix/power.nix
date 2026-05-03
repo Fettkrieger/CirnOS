@@ -40,6 +40,9 @@ let
       battery_capacity=100
     fi
 
+    state_dir=/run/lenuwu-power-policy
+    ac_state_file="$state_dir/ac-online"
+
     holds=$(tlpctl list-holds 2>/dev/null || true)
     if [ -n "$holds" ]; then
       exit 0
@@ -63,9 +66,27 @@ let
       brightness_cap=80
     fi
 
-    current_profile=$(tlpctl get 2>/dev/null || true)
-    if [ "$current_profile" != "$profile" ]; then
-      tlpctl set "$profile" >/dev/null || tlp "$profile" >/dev/null
+    mkdir -p "$state_dir"
+
+    last_ac_online=
+    if [ -r "$ac_state_file" ]; then
+      last_ac_online=$(cat "$ac_state_file")
+      case "$last_ac_online" in
+        0|1) ;;
+        *) last_ac_online= ;;
+      esac
+    fi
+
+    # Manual profile changes should stick. Auto-switch only after the AC state
+    # actually changes; the first run just seeds the state for future checks.
+    if [ -z "$last_ac_online" ]; then
+      printf '%s\n' "$ac_online" > "$ac_state_file"
+    elif [ "$last_ac_online" != "$ac_online" ]; then
+      current_profile=$(tlpctl get 2>/dev/null || true)
+      if [ "$current_profile" != "$profile" ]; then
+        tlpctl set "$profile" >/dev/null || tlp "$profile" >/dev/null
+      fi
+      printf '%s\n' "$ac_online" > "$ac_state_file"
     fi
 
     if [ -n "$brightness_cap" ]; then
@@ -128,7 +149,7 @@ in
     pd.enable = true;
 
     settings = {
-      # The custom policy service below owns threshold-based switching.
+      # The custom policy service below owns AC-transition profile changes.
       TLP_AUTO_SWITCH = 0;
       TLP_DEFAULT_MODE = "BAL";
 
@@ -174,7 +195,7 @@ in
   };
 
   systemd.services.lenuwu-power-policy = {
-    description = "Apply lenuwu AC/battery power profile and brightness policy";
+    description = "Apply lenuwu AC-transition power profile and brightness policy";
     serviceConfig = {
       Type = "oneshot";
       ExecStart = lenuwuPowerPolicy;
@@ -182,7 +203,7 @@ in
   };
 
   systemd.timers.lenuwu-power-policy = {
-    description = "Re-apply lenuwu power policy";
+    description = "Re-apply lenuwu brightness policy and detect AC changes";
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnBootSec = "30s";
