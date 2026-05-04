@@ -18,14 +18,13 @@
         "ignoreMouseInput": false,
         "overviewLayer": true,
         "pinnedApps": [
-            "code",
             "firefox",
             "discord",
             "discord-ptb",
             "discord-canary",
             "org.gnome.Nautilus",
             "steam",
-            "android-studio"
+            "cursor"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",
@@ -167,12 +166,6 @@
                     "showBadge": true,
                     "showLabelsOnlyWhenOccupied": true,
                     "unfocusedIconsOpacity": 0.5
-                },
-                {
-                    "colorName": "secondary",
-                    "hideWhenIdle": false,
-                    "id": "AudioVisualizer",
-                    "width": 300
                 }
             ],
             "right": [
@@ -743,6 +736,18 @@
     },
     "templates": {
         "activeTemplates": [
+            {
+                "enabled": true,
+                "id": "ghostty"
+            },
+            {
+                "enabled": true,
+                "id": "pywalfox"
+            },
+            {
+                "enabled": true,
+                "id": "code"
+            }
         ],
         "enableUserTheming": false
     },
@@ -762,7 +767,7 @@
     },
     "wallpaper": {
         "automationEnabled": false,
-        "directory": "/home/krieger/Pictures/Wallpapers/workspaces",
+        "directory": "/home/krieger/Pictures/Wallpapers/",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
@@ -770,7 +775,7 @@
         "fillColor": "#000000",
         "fillMode": "crop",
         "hideWallpaperFilenames": false,
-        "linkLightAndDarkWallpapers": true,
+        "linkLightAndDarkWallpapers": false,
         "monitorDirectories": [
         ],
         "overviewBlur": 0.4,
@@ -796,7 +801,7 @@
         "useOriginalImages": false,
         "useSolidColor": false,
         "useWallhaven": false,
-        "viewMode": "single",
+        "viewMode": "recursive",
         "wallhavenApiKey": "",
         "wallhavenCategories": "111",
         "wallhavenOrder": "desc",

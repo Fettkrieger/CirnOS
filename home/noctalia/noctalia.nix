@@ -18,6 +18,13 @@ let
         --replace-fail \
           'const cmd = `cliphist decode ''${id} | wl-copy''${typeArg} && ''${pasteKeys}`;' \
           'const cmd = `cliphist decode ''${id} | wl-copy''${typeArg} && ''${isImage ? "sleep 0.12 && " : ""}''${pasteKeys}`;'
+
+      # Let external color-sync services force a redraw when the wallpaper file
+      # changed but the selected wallpaper path stayed the same.
+      substituteInPlace Services/Control/IPCService.qml \
+        --replace-fail \
+          '    function toggleAutomation() {' \
+          $'    function reload(screen: string) {\n      if (!screen || screen === "all" || screen.trim().length === 0) {\n        for (var i = 0; i < Quickshell.screens.length; i++) {\n          var name = Quickshell.screens[i].name;\n          WallpaperService.wallpaperChanged(name, WallpaperService.getWallpaper(name) ?? "");\n        }\n        return;\n      }\n\n      var found = Quickshell.screens.find(s => s.name === screen);\n      if (!found) {\n        Logger.w("IPC", "wallpaper reload: unknown screen: " + screen);\n        return;\n      }\n\n      WallpaperService.wallpaperChanged(screen, WallpaperService.getWallpaper(screen) ?? "");\n    }\n\n    function toggleAutomation() {'
     '';
   });
 in
@@ -26,6 +33,7 @@ in
   imports = [
     inputs.noctalia.homeModules.default
     ./niri-focus-ring-live.nix
+    ./nix-wallpaper-live.nix
   ];
 
   programs.noctalia-shell = {

@@ -41,6 +41,7 @@ in
     android-studio-full               #Android Studio with bundled Android SDK/emulator components
     android-tools                     #ADB and fastboot tools for Android devices
     python3                           #Python programming language interpreter  
+    pywalfox-native                   #Native app/CLI used by the Pywalfox Firefox addon
     chromium                          #Web browser
     qbittorrent                       #Torrent client
     popsicle                          #USB image writer

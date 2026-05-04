@@ -53,6 +53,7 @@ home/
   noctalia/
     noctalia.nix          imports HM module, sets up settings/plugin symlinks, patches clipboard + battery-threshold plugin
     niri-focus-ring-live.nix    live syncs niri focus-ring colors and cursor variant from Noctalia colors.json
+    nix-wallpaper-live.nix      live syncs nix.svg wallpaper colors from Noctalia colors.json and reloads Noctalia wallpaper
     noctalia-settings.json      versioned UI settings (track UI edits in git)
     noctalia-plugins.json       enabled plugins
     tailscale-settings.json     Tailscale plugin settings
@@ -195,6 +196,10 @@ Apps installed system-wide: git, wget, curl, jdk17, android-studio-full, android
   - Forces `xdg.configFile."niri-config".enable = lib.mkForce false` so the niri config file is writable at runtime (it's emitted from `programs.niri.finalConfig` once during activation, then mutated by the live sync).
   - On activation, runs `syncFocusRing`: an awk pass that reads `~/.config/noctalia/colors.json` (`mPrimary`/`mSecondary`/`mOutline`) and rewrites `focus-ring.active-color`, `focus-ring.inactive-color`, and `cursor.xcursor-theme` (picks the closest catppuccin-mocha-* variant by RGB squared distance to `mSecondary`).
   - User systemd service `noctalia-niri-focus-ring-live` watches `~/.config/noctalia/colors.json` with `inotifywait`, re-runs `syncFocusRing`, updates `org.gnome.desktop.interface cursor-theme` via gsettings, and asks niri to `load-config-file` on its socket.
+- `nix-wallpaper-live.nix`:
+  - Watches `~/.config/noctalia/colors.json` with `inotifywait` and rewrites `/home/krieger/Pictures/Wallpapers/nix.svg`.
+  - Maps the SVG background rect (`rect3019`) to `mSurface` (the Noctalia bar/panel background), the darker Nix logo paths (`path4260*`) to `mPrimary`, and the lighter logo paths (`path3336*`) to `mSecondary`.
+  - The Noctalia package patch adds `noctalia-shell ipc call wallpaper reload [screen|all]`; the watcher calls it after recoloring because Noctalia otherwise ignores same-path wallpaper content changes.
 - Enabled Noctalia plugins (`noctalia-plugins.json`): battery-threshold, catwalk, network-manager-vpn, noctalia-calculator, polkit-agent, privacy-indicator, screen-recorder, screen-toolkit, slowbongo, tailscale, usb-drive-manager, weather-indicator. Disabled: notes-scratchpad, pomodoro.
 - `noctalia-settings.json` is large (~770 lines) and version-controlled. Top-level sections: appLauncher, audio, bar, brightness, calendar, colorSchemes, controlCenter, desktopWidgets, dock, general, hooks, idle, location, network, nightLight, noctaliaPerformance, notifications, osd, plugins, sessionMenu, systemMonitor, templates, ui, wallpaper. `settingsVersion = 59`.
 
