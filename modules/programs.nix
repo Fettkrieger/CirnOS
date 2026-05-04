@@ -1,6 +1,18 @@
 # System-wide packages (available to all users)
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
+let
+  cursorWithLibsecret = pkgs.symlinkJoin {
+    name = "code-cursor-libsecret";
+    paths = [ pkgs.code-cursor ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      rm $out/bin/cursor
+      makeWrapper ${pkgs.code-cursor}/bin/cursor $out/bin/cursor \
+        --add-flags "--password-store=gnome-libsecret"
+    '';
+  };
+in
 {
   # Fonts (needed for Noctalia and other UI elements)
   fonts.packages = with pkgs; [
@@ -36,7 +48,7 @@
     dconf-editor                      #GNOME configuration editor
     discord                           #Chat and communication platform  
     vscode                            #Source-code editor
-    code-cursor                       #Cursor AI code editor
+    (lib.hiPrio cursorWithLibsecret)  #Cursor AI code editor, forced to use GNOME Keyring/libsecret
     fastfetch                         #System information tool
     tree                              #Directory listing tool
     ripgrep                           #Search tool

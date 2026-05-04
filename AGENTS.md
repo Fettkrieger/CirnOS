@@ -1,0 +1,259 @@
+# CirnOS — Agent Reference
+
+Multi-host NixOS flake + Home Manager for user `krieger`. Wayland-only desktop
+built on Niri + Noctalia. Two hosts: a Lenovo ThinkPad (`lenuwu-nix`) and an
+HP Envy x360 (`hp-nix`). This file is the navigation map for agents working
+in the repo.
+
+## Quick facts
+
+- Flake inputs: `nixpkgs` (nixos-unstable), `home-manager`, `niri` (sodiboo/niri-flake),
+  `noctalia` (noctalia-dev/noctalia-shell).
+- `nixosConfigurations`: `lenuwu-nix`, `hp-nix`. Both built via the `mkHost` helper in `flake.nix`.
+- Display manager: SDDM (Wayland) with `catppuccin-mocha-blue` theme over a black SVG.
+- Compositor: Niri (system module from niri-flake; user config from `home/niri.nix`).
+- Shell: Noctalia (bar / notifications / control-center / launcher) — HM module from the noctalia flake.
+- Theme: Catppuccin Mocha Blue + Adwaita-dark GTK/Qt; cursor live-synced from Noctalia colors.
+- Audio: PipeWire (no PulseAudio); rtkit on. Audio control via Noctalia.
+- Network: NetworkManager (+ openvpn plugin) and Tailscale (`useRoutingFeatures = "client"`).
+- Locale: `en_US.UTF-8` with `de_CH.UTF-8` formats. TZ Europe/Zurich. Console `sg`, XKB `ch` (overridden to `de` on `lenuwu-nix`).
+- `system.stateVersion = "24.11"`, `home.stateVersion = "24.11"`.
+- Git identity: Krieger / `leandro.tiziani@protonmail.com`, openpgp signing.
+- Auto-upgrade: enabled in `common.nix`, force-disabled on the laptop.
+
+## Repo layout
+
+```
+flake.nix                 entry point + mkHost
+flake.lock                pinned inputs
+modules/
+  common.nix              shared system config (boot, locale, SDDM, Niri, portals, PipeWire, Tailscale, fwupd, keyd, battery_ctl udev, auto-upgrade, ssh, ...)
+  programs.nix            system packages + fonts; wraps code-cursor with --password-store=gnome-libsecret; wraps footage with GDK_BACKEND=x11
+  firewall.nix            host-aware firewall (laptop = roaming → SSH and dev ports closed)
+hosts/
+  lenuwu-nix/
+    default.nix           ThinkPad E16 Gen 2 AMD specifics
+    power.nix             TLP + custom AC-transition policy + hibernate setup
+    hardware-configuration.nix   generated, do not edit
+  hp-nix/
+    default.nix           HP Envy x360 13-bd0xxx (Intel Tiger Lake) specifics
+    power.nix             power-profiles-daemon + thermald
+    hardware-configuration.nix   generated, do not edit
+home/
+  default.nix             HM entry point; conditional imports
+  shellAliases.nix        rebuild / update / cleanup / git / tlp aliases
+  default-apps.nix        XDG MIME defaults (code, firefox, gthumb, mpv, nautilus)
+  themes.nix              GTK + Qt + cursor pack (all Catppuccin Mocha variants)
+  ghostty.nix             Ghostty terminal (transparent + blur, theme=noctalia)
+  syncthing.nix           Syncthing (web-UI overrides preserved)
+  niri.nix                Niri settings (outputs, keybinds, swayidle)
+  gaming.nix              user-level gaming packages (only imported if enableGaming)
+  workspaces-hp.nix       named workspaces A/B/C — imported on hp-nix and lenuwu-nix
+  defaultwindows.nix      multi-monitor startup layout (NOT currently imported)
+  noctalia/
+    noctalia.nix          imports HM module, sets up settings/plugin symlinks, patches clipboard + battery-threshold plugin
+    niri-focus-ring-live.nix    live syncs niri focus-ring colors and cursor variant from Noctalia colors.json
+    noctalia-settings.json      versioned UI settings (track UI edits in git)
+    noctalia-plugins.json       enabled plugins
+    tailscale-settings.json     Tailscale plugin settings
+    battery-threshold/BatteryThresholdService.qml  local fork that also writes charge_control_start_threshold
+docs/lenuwu-nix-migration.md   disk-transplant checklist
+possible improvements.txt      2026-02-15 review notes (open items)
+```
+
+## Hosts
+
+### `lenuwu-nix` — Lenovo ThinkPad E16 Gen 2 AMD (21M5002DGE)
+
+- AMD CPU + Radeon iGPU. `enableGaming = true`.
+- Pinned to `pkgs.linuxPackages` (NOT `_latest`) because rtw89/RTL8852CE
+  firmware init fails on Linux 7.0.x.
+- Wi-Fi/BT race workaround: `rtw89_8852ce` is blacklisted; a oneshot
+  `rtw89-8852ce-delayed.service` waits for `bluetooth.service` then
+  `modprobe`s it after a 10 s sleep.
+- Touchpad via libinput (natural scroll, tap, clickfinger).
+- Bluetooth on, `powerOnBoot = false`, blueman without applet.
+- Steam, gamescope (capSysNice), gamemode, gpu-screen-recorder, brightnessctl,
+  pciutils/usbutils/iw/lm_sensors/smartmontools/nvme-cli/powertop.
+- Keyboard: `layout = "de"`, console `de` (forced).
+- SSH force-disabled. `system.autoUpgrade` force-disabled.
+- Power management (`power.nix`):
+  - TLP enabled with `tlp-pd`. `TLP_AUTO_SWITCH = 0` — the custom policy below
+    owns AC transitions. AC = performance/perf governor; battery = balanced/
+    powersave; SAV = low-power.
+  - `lenuwu-power-policy` shell script + 30 s timer + udev hook on
+    `power_supply` events. It only switches profiles when the AC state
+    actually flips (so manual `tlpctl set` sticks), and caps backlight by
+    battery %. Respects `tlpctl list-holds`.
+  - logind: lid/dock/idle (30 min) → hibernate. systemd-initrd hibernation
+    via EFI `HibernateLocation`; 36 GiB swap file at
+    `/var/lib/hibernate-swapfile`. ZRAM 25% zstd. Weekly fstrim.
+    `boot.loader.systemd-boot.configurationLimit = 10`.
+
+### `hp-nix` — HP Envy x360 Convertible 13-bd0xxx (Intel 11th-gen Tiger Lake / Iris Xe)
+
+- `enableGaming = false` (toggleable in `flake.nix`).
+- `linuxPackages_latest`; `boot.initrd.kernelModules = [ "i915" ]` for early KMS.
+- Intel iGPU with `intel-media-driver` (VAAPI) + `vpl-gpu-rt` (Quick Sync).
+- Touchpad via libinput; Bluetooth on; blueman with applet.
+- libvirtd + virt-manager + spiceUSBRedirection (Windows VM for HP BIOS USB tooling). `krieger ∈ libvirtd`.
+- System packages: `brightnessctl`, `vintagestory`.
+- Power management (`power.nix`): power-profiles-daemon + thermald, no TLP.
+
+## System-level config (`modules/common.nix`)
+
+- Hostname injected from the flake via `specialArgs.hostname`.
+- systemd-boot, EFI vars writable.
+- NetworkManager (+ networkmanager-openvpn). Tailscale opens its firewall hole automatically.
+- fwupd enabled (LVFS BIOS updates).
+- SDDM Wayland with `catppuccin-mocha-blue` theme; theme is a custom override (mocha/blue/Noto Sans/black SVG background).
+- Niri enabled (`programs.niri.enable`); the niri-flake polkit user service is disabled because Noctalia provides a polkit agent (multiple agents conflict).
+- xdg.portal: GTK + GNOME extra portals. Niri-specific portal ordering forces GTK for FileChooser, GNOME for ScreenCast/Screenshot/RemoteDesktop, gnome-keyring for Secret.
+- power-profiles-daemon defaulted on (laptop hosts override with `lib.mkForce`).
+- gnome-keyring + SDDM PAM integration; gvfs for Nautilus.
+- Battery threshold: `users.groups.battery_ctl` + udev rules `chgrp battery_ctl` and `chmod g+w` the kernel `charge_control_{start,end}_threshold` files. The Noctalia plugin writes them as `krieger`.
+- `keyd`: Logitech receiver `m:046d:c548` mouse — `mouse1+mouse2` and `mouseback+mouseforward` chord → `M-x` (Niri overview).
+- CUPS printing on. PipeWire (alsa + 32-bit + pulse). pulseaudio off, rtkit on.
+- User `krieger` (normal, wheel/networkmanager/video/audio/input/kvm/battery_ctl).
+- Firefox enabled. Unfree allowed. Android SDK license auto-accepted.
+- `permittedInsecurePackages = [ "qtwebengine-5.15.19" ]` — original justification was teamspeak3, but the package list now uses `teamspeak6-client`; possibly stale.
+- Flakes enabled. `nix.nixPath = [ "nixpkgs=/etc/channels/nixpkgs" ]`. Weekly GC, 30-day retention. `auto-optimise-store`.
+- OpenSSH on (overridden off on the laptop). PasswordAuthentication still true.
+- Auto-upgrade: weekly, no reboot, points at `/home/krieger/CirnOS#$hostname` (laptop overrides this off).
+
+## System packages (`modules/programs.nix`)
+
+Fonts: nerd-fonts (jetbrains-mono, fira-code), noto-fonts + emoji, corefonts (Steam/Proton).
+
+`programs.chromium.enable = true`. Keychron WebHID udev rule for vendor `3434`.
+
+Notable wrappers:
+- `cursorWithLibsecret` — wraps `pkgs.code-cursor` with `--password-store=gnome-libsecret`, installed at `lib.hiPrio` so it wins over the un-wrapped binary.
+- `footage-x11` — `wrapProgram footage --set GDK_BACKEND x11` (Wayland + NVIDIA Vulkan crash workaround).
+
+Apps installed system-wide: git, wget, curl, jdk17, android-studio-full, android-tools, python3, chromium, qbittorrent, popsicle, kicad, dconf-editor, discord, vscode, the wrapped cursor, fastfetch, tree, ripgrep, fd, jq, yt-dlp, libreoffice-fresh, claude-code, ffmpeg, nautilus, unzip/zip/p7zip, ffmpegthumbnailer, gthumb, inkscape, networkmanagerapplet, pavucontrol, tailscale, wdisplays, wl-clipboard, teamspeak6-client, obsidian, gparted-full, nodejs_20, signal-desktop, whatsapp-electron, full GStreamer plugin set, the footage X11 wrapper, evtest (used by the Noctalia Slow Bongo plugin).
+
+## Firewall (`modules/firewall.nix`)
+
+- Always-open: TCP/UDP `22000` (Syncthing sync), UDP `21027` (Syncthing discovery).
+- Open everywhere except the laptop: TCP `22` (SSH), TCP `3000` (Next.js dev).
+- Ping allowed; reverse-path/refused-conn logging off.
+- The laptop is detected by `hostname == "lenuwu-nix"`.
+
+## Home Manager (`home/`)
+
+- `home/default.nix` imports unconditionally: `shellAliases`, `default-apps`, `themes`, `ghostty`, `syncthing`, `niri`, `noctalia/noctalia.nix`. Conditionally imports `gaming.nix` if `enableGaming` and `workspaces-hp.nix` if hostname is `hp-nix` or `lenuwu-nix`.
+- Programs enabled at HM level: home-manager itself, git (with openpgp signing), direnv (silent), btop, bat, eza (icons + git), fzf (bash integration), mpv, bash.
+- `dconf` forces `prefer-dark` color scheme, `Adwaita-dark` GTK theme, and the catppuccin-mocha-blue cursor (size 24); hot corners disabled.
+
+### Aliases (`home/shellAliases.nix`)
+
+- `rebuild` → `sudo nixos-rebuild switch --flake path:~/CirnOS#$(hostname)`
+- `update` → `cd ~/CirnOS && sudo nix flake update && sudo nixos-rebuild switch --flake path:.#$(hostname)`
+- `cleanup` → `sudo nix-collect-garbage -d`
+- `gaaCirnOS / gcCirnOS / gpCirnOS / gsCirnOS` — repo-local git shortcuts.
+- `gs/ga/gc/gp/gl/gd` — generic git shortcuts.
+- `pp / pp-list / pp-perf / pp-bal / pp-save` — TLP profile control via `tlpctl`.
+- `steam-perf` / `game-perf` — `tlpctl launch --profile performance --reason Gaming ...`.
+- `sysinfo = fastfetch`, `ls = eza`, `cat = bat`.
+
+### Niri (`home/niri.nix`)
+
+- Wayland env vars set globally; NVIDIA-specific vars (`LIBVA_DRIVER_NAME=nvidia`, `GBM_BACKEND=nvidia-drm`, `__GLX_VENDOR_LIBRARY_NAME=nvidia`, `WLR_NO_HARDWARE_CURSORS=1`) are added when `hostname != "lenuwu-nix"` — note this currently applies on the *Intel* `hp-nix` too (see `possible improvements.txt`).
+- Spawn at startup: `noctalia-shell`, `xwayland-satellite`, `swayidle`.
+- swayidle: lock at 5 min (`noctalia-shell ipc call lockScreen lock`), power off monitors at 10 min, on lenuwu also hibernate at 30 min, lock on `before-sleep`.
+- Outputs:
+  - lenuwu → laptop `eDP-1` 1920×1200@60.
+  - everywhere else → dock layout: `DP-5` (rotated 90° / vertical), `DP-4` (center, focus-at-startup), `DP-6` (right). All 2560×1440 with VRR.
+- Input: keyboard layout `de` on lenuwu else `ch`; flat mouse accel; touchpad tap + natural scroll; focus-follows-mouse off; hot-corners off.
+- Layout: gaps 3, preset column widths 1/3, 1/2, 2/3 (default 1/2). Focus ring enabled (3 px, runtime-overridden by Noctalia colors), borders off.
+- Cursor: `catppuccin-mocha-blue-cursors` size 24 (also runtime-overridden).
+- `prefer-no-csd = true`. Screenshots → `~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png`.
+- Window rules: PiP floats; xdg-desktop-portal-gtk dialogs float.
+- Keybinds (Super = Mod):
+  - `Q` close, `F` maximize column, `T` toggle floating
+  - `Up/Down` focus window-or-workspace; `Shift+Left/Right` move column; `Shift+Up/Down` move window between workspaces
+  - `X` toggle overview
+  - `Left/Right` focus column; `[`/`]` consume/expel into column
+  - `R` cycle preset width; `-`/`=` shrink/grow column 10%
+  - `1..9` focus workspace; `Shift+1..9` move column to workspace
+  - `Ctrl+Left/Right` focus monitor; `Shift+Ctrl+Left/Right` move column to monitor
+  - `Home/End` first/last column; `C` center column
+  - `Return` ghostty; `D` Noctalia launcher; `B` controlCenter; `N` notifications; `V` clipboard
+  - `Shift+S` region screenshot to clipboard; `Ctrl+S` region into swappy; `Print` full screen; `Super+Print` window
+  - `Esc` lock; `Shift+E` quit niri; `Shift+R` reload-config
+  - Media keys + brightness keys → Noctalia IPC.
+
+### Noctalia (`home/noctalia/`)
+
+- HM module is imported from the `noctalia` flake input; the package is overridden via `postPatch` to fix a clipboard auto-paste focus race for image entries (adds a 0.12 s sleep before the paste keys).
+- Activation snippets (`noctaliaSettingsBootstrap`, `noctaliaTailscaleSettingsBootstrap`, `noctaliaBatteryThresholdPluginPatch`):
+  - Bootstraps `~/.config/noctalia/settings.json`, `~/.config/noctalia/plugins.json`, and `~/.config/noctalia/plugins/tailscale/settings.json` if they don't already exist (preserves any pre-existing legacy file).
+  - Then **symlinks** them to the repo-tracked files in `home/noctalia/`. Net effect: edits made via Noctalia's UI land in the git repo and can be committed naturally.
+  - On every switch, copies the local fork of `BatteryThresholdService.qml` over the upstream plugin file. The fork additionally writes `charge_control_start_threshold` (max - 5), so ThinkPads don't get stuck in pending-charge.
+- `niri-focus-ring-live.nix`:
+  - Forces `xdg.configFile."niri-config".enable = lib.mkForce false` so the niri config file is writable at runtime (it's emitted from `programs.niri.finalConfig` once during activation, then mutated by the live sync).
+  - On activation, runs `syncFocusRing`: an awk pass that reads `~/.config/noctalia/colors.json` (`mPrimary`/`mSecondary`/`mOutline`) and rewrites `focus-ring.active-color`, `focus-ring.inactive-color`, and `cursor.xcursor-theme` (picks the closest catppuccin-mocha-* variant by RGB squared distance to `mSecondary`).
+  - User systemd service `noctalia-niri-focus-ring-live` watches `~/.config/noctalia/colors.json` with `inotifywait`, re-runs `syncFocusRing`, updates `org.gnome.desktop.interface cursor-theme` via gsettings, and asks niri to `load-config-file` on its socket.
+- Enabled Noctalia plugins (`noctalia-plugins.json`): battery-threshold, catwalk, network-manager-vpn, noctalia-calculator, polkit-agent, privacy-indicator, screen-recorder, screen-toolkit, slowbongo, tailscale, usb-drive-manager, weather-indicator. Disabled: notes-scratchpad, pomodoro.
+- `noctalia-settings.json` is large (~770 lines) and version-controlled. Top-level sections: appLauncher, audio, bar, brightness, calendar, colorSchemes, controlCenter, desktopWidgets, dock, general, hooks, idle, location, network, nightLight, noctaliaPerformance, notifications, osd, plugins, sessionMenu, systemMonitor, templates, ui, wallpaper. `settingsVersion = 59`.
+
+### Default applications (`home/default-apps.nix`)
+
+- Text/code/JSON/XML/YAML → `code.desktop`.
+- HTTP/HTTPS/about/unknown → `firefox.desktop`.
+- Images (jpeg/png/gif/bmp/webp/svg) → `org.gnome.gThumb.desktop`.
+- Video (mp4/mkv/webm/mpeg/avi/quicktime/flv) and audio (mpeg/mp4/wav/flac/ogg) → `mpv.desktop`.
+- Archives (zip/tar/7z/rar) and directories → `org.gnome.Nautilus.desktop`.
+
+### Themes (`home/themes.nix`)
+
+- GTK: `Adwaita-dark` (gnome-themes-extra) for both gtk3 and gtk4. Adwaita icon theme.
+- Qt: `adwaita` platform theme, `adwaita-dark` style.
+- Cursor: `catppuccin-mocha-blue-cursors` size 24, but the package is a `symlinkJoin` of every catppuccin-mocha cursor variant so the live focus-ring service can switch between them at runtime without rebuilding.
+- gtk3/gtk4 `extraConfig`: `gtk-application-prefer-dark-theme = true`.
+
+### Ghostty (`home/ghostty.nix`)
+
+`background-opacity = 0.8`, `background-blur = true`, `theme = "noctalia"` (Noctalia generates the matching theme file).
+
+### Syncthing (`home/syncthing.nix`)
+
+User service. `overrideDevices` and `overrideFolders` left false so devices/folders added via the web UI persist. Telemetry prompt declined (`urAccepted = -1`).
+
+### Gaming (`home/gaming.nix`, only when `enableGaming`)
+
+User packages: protontricks, protonup-qt, mangohud, vulkan-tools, winetricks, heroic, vintagestory. (Steam, gamescope, gamemode, gpu-screen-recorder are enabled at the system level on the gaming host.)
+
+### Workspaces (`home/workspaces-hp.nix`)
+
+Imported on `hp-nix` and `lenuwu-nix`. Defines named workspaces `A`, `B`, `C` with no startup windows.
+
+### `home/defaultwindows.nix` (NOT currently imported)
+
+Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / DP-6) — declares named workspaces `A1..C3` (one per monitor lane), spawns Discord on A2, Firefox on A3 maximized, two Nautilus windows on A1 stacked + maximized, plus `at-startup` window-rules to pin them. Add it to `home/default.nix`'s imports if you re-enable the desktop layout.
+
+## Conventions and gotchas
+
+- **Niri config is intentionally writable.** `niri-focus-ring-live.nix` sets `xdg.configFile."niri-config".enable = lib.mkForce false;` and bootstraps the file from `programs.niri.finalConfig` on activation. Don't try to "fix" this with `xdg.configFile` — it's load-bearing.
+- **Noctalia settings live in git.** Editing the JSON files in `home/noctalia/` is equivalent to editing the live config (and vice versa); commit the JSON to track UI changes.
+- **Don't add a second polkit agent.** The niri-flake polkit user service is explicitly disabled in `common.nix`. Noctalia's `polkit-agent` plugin owns this.
+- **Battery thresholds** require both `start` and `end` files; the patched QML service (`battery-threshold/BatteryThresholdService.qml`) is force-installed over the upstream plugin on every switch.
+- **`code-cursor` is wrapped** with `--password-store=gnome-libsecret` and given `lib.hiPrio` to outrank a vanilla cursor; preserve both when modifying.
+- **`footage` is wrapped** to force GDK_BACKEND=x11 (Wayland + NVIDIA Vulkan crash). Wrapper lives inline in `programs.nix`.
+- **`keyd` matches by USB IDs.** Logitech receiver is `m:046d:c548`. Wildcards in keyd only match keyboards.
+- **Gaming on `lenuwu-nix`**: Steam etc. are configured at the system level here, not in `home/gaming.nix`. `enableGaming` only toggles the user-level extras.
+- **Roaming-laptop firewall**: `lenuwu-nix` does NOT expose SSH or port 3000.
+- **Auto-upgrade**: from a user-writable repo path (`~/krieger/CirnOS`). The laptop's auto-upgrade is force-disabled (`possible improvements.txt` flags this as a hardening target).
+- **`PasswordAuthentication = true`** for SSHd is currently set in `common.nix`; flagged in `possible improvements.txt` for hardening once SSH keys are in place.
+- **Insecure package allow-list**: `qtwebengine-5.15.19` is permitted with a comment about teamspeak3, but only `teamspeak6-client` is installed. May be removable.
+- **NVIDIA env vars** in `home/niri.nix` are applied to every host except `lenuwu-nix`. `hp-nix` is Intel — these are harmless there but are stale (the guard predates `hp-nix`).
+- **Always edit `hardware-configuration.nix` only via `nixos-generate-config`.** See `docs/lenuwu-nix-migration.md` for the full disk-transplant procedure on the ThinkPad.
+
+## Common workflows
+
+- Edit, then `rebuild` (alias) — runs `nixos-rebuild switch --flake path:~/CirnOS#$(hostname)`.
+- Update inputs with `update` (alias).
+- Garbage-collect with `cleanup` (alias); the system also auto-GCs weekly with 30-day retention and runs `auto-optimise-store`.
+- Power profile from CLI: `pp` (get), `pp-perf` / `pp-bal` / `pp-save`. Game with `steam-perf` or `game-perf <cmd>`.
+- After Noctalia UI tweaks: just `git add home/noctalia/*.json` and commit.

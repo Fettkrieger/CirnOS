@@ -75,12 +75,6 @@
     enable = true;
   };
 
-  # Cursor's Chromium keyring auto-detection does not reliably pick libsecret
-  # under Niri, even when GNOME Keyring is available on D-Bus.
-  xdg.configFile."Cursor/User/argv.json".text = builtins.toJSON {
-    "password-store" = "gnome-libsecret";
-  };
-
   # Bash
   programs.bash.enable = true;
 
