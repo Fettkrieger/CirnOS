@@ -24,7 +24,8 @@
             "discord-ptb",
             "discord-canary",
             "org.gnome.Nautilus",
-            "steam"
+            "steam",
+            "android-studio"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",
@@ -57,7 +58,7 @@
         "density": "default",
         "displayMode": "always_visible",
         "enableExclusionZoneInset": true,
-        "fontScale": 1.24,
+        "fontScale": 1.33,
         "frameRadius": 12,
         "frameThickness": 8,
         "hideOnOverview": true,
@@ -68,12 +69,12 @@
         "middleClickFollowMouse": false,
         "monitors": [
         ],
-        "mouseWheelAction": "none",
+        "mouseWheelAction": "volume",
         "mouseWheelWrap": true,
         "outerCorners": false,
         "position": "top",
         "reverseScroll": false,
-        "rightClickAction": "controlCenter",
+        "rightClickAction": "none",
         "rightClickCommand": "",
         "rightClickFollowMouse": true,
         "screenOverrides": [
@@ -87,22 +88,17 @@
             "center": [
                 {
                     "defaultSettings": {
-                        "colorHistory": [
-                        ],
-                        "detectedCompositor": "",
-                        "detectedRecorder": "",
-                        "filenameFormat": "",
-                        "installedLangs": [
-                            "eng"
-                        ],
-                        "paletteColors": [
-                        ],
-                        "screenshotPath": "",
-                        "selectedOcrLang": "eng",
-                        "transAvailable": false,
-                        "videoPath": ""
+                        "batteryDevice": "/sys/class/power_supply/BAT0",
+                        "chargeThreshold": 80
                     },
-                    "id": "plugin:screen-toolkit"
+                    "id": "plugin:battery-threshold"
+                },
+                {
+                    "defaultSettings": {
+                        "precision": 8,
+                        "showBarValue": true
+                    },
+                    "id": "plugin:noctalia-calculator"
                 },
                 {
                     "defaultSettings": {
@@ -128,6 +124,16 @@
                 },
                 {
                     "defaultSettings": {
+                        "customColor": "none",
+                        "showConditionIcon": true,
+                        "showTempUnit": true,
+                        "showTempValue": true,
+                        "tooltipOption": "everything"
+                    },
+                    "id": "plugin:weather-indicator"
+                },
+                {
+                    "defaultSettings": {
                         "catColor": "default",
                         "catOffsetY": 0,
                         "catSize": 1,
@@ -138,30 +144,6 @@
                         "waitingTimeout": 30000
                     },
                     "id": "plugin:slowbongo"
-                },
-                {
-                    "defaultSettings": {
-                        "audioCodec": "opus",
-                        "audioSource": "default_output",
-                        "colorRange": "limited",
-                        "copyToClipboard": false,
-                        "customReplayDuration": "30",
-                        "directory": "",
-                        "filenamePattern": "recording_yyyyMMdd_HHmmss",
-                        "frameRate": "60",
-                        "hideInactive": false,
-                        "iconColor": "none",
-                        "quality": "very_high",
-                        "replayDuration": "30",
-                        "replayEnabled": false,
-                        "replayStorage": "ram",
-                        "resolution": "original",
-                        "restorePortalSession": false,
-                        "showCursor": true,
-                        "videoCodec": "h264",
-                        "videoSource": "portal"
-                    },
-                    "id": "plugin:screen-recorder"
                 }
             ],
             "left": [
@@ -211,7 +193,7 @@
                     "showCpuTemp": true,
                     "showCpuUsage": true,
                     "showDiskAvailable": true,
-                    "showDiskUsage": true,
+                    "showDiskUsage": false,
                     "showDiskUsageAsPercent": false,
                     "showGpuTemp": true,
                     "showLoadAverage": false,
@@ -220,19 +202,36 @@
                     "showNetworkStats": false,
                     "showSwapUsage": false,
                     "textColor": "primary",
-                    "useMonospaceFont": false,
+                    "useMonospaceFont": true,
                     "usePadding": false
                 },
                 {
-                    "blacklist": [
-                    ],
-                    "chevronColor": "secondary",
-                    "colorizeIcons": false,
-                    "drawerEnabled": true,
-                    "hidePassive": false,
-                    "id": "Tray",
-                    "pinned": [
-                    ]
+                    "defaultSettings": {
+                        "connectedColor": "primary",
+                        "disableToastNotifications": false,
+                        "disconnectedColor": "none",
+                        "displayMode": "onhover"
+                    },
+                    "id": "plugin:network-manager-vpn"
+                },
+                {
+                    "defaultSettings": {
+                        "compactMode": false,
+                        "defaultPeerAction": "copy-ip",
+                        "hideDisconnected": false,
+                        "hideMullvadExitNodes": true,
+                        "loginServer": "",
+                        "pingCount": 5,
+                        "refreshInterval": 5000,
+                        "showIpAddress": true,
+                        "showPeerCount": true,
+                        "sshUsername": "",
+                        "taildropDownloadDir": "~/Downloads",
+                        "taildropEnabled": true,
+                        "taildropReceiveMode": "operator",
+                        "terminalCommand": ""
+                    },
+                    "id": "plugin:tailscale"
                 },
                 {
                     "hideWhenZero": true,
@@ -243,17 +242,17 @@
                     "unreadBadgeColor": "error"
                 },
                 {
-                    "displayMode": "alwaysShow",
+                    "displayMode": "alwaysHide",
                     "iconColor": "error",
                     "id": "Bluetooth",
-                    "textColor": "primary"
+                    "textColor": "secondary"
                 },
                 {
-                    "displayMode": "onhover",
+                    "displayMode": "alwaysHide",
                     "iconColor": "primary",
                     "id": "Volume",
                     "middleClickCommand": "pwvucontrol || pavucontrol",
-                    "textColor": "primary"
+                    "textColor": "error"
                 },
                 {
                     "deviceNativePath": "__default__",
@@ -263,6 +262,17 @@
                     "id": "Battery",
                     "showNoctaliaPerformance": false,
                     "showPowerProfiles": false
+                },
+                {
+                    "blacklist": [
+                    ],
+                    "chevronColor": "primary",
+                    "colorizeIcons": false,
+                    "drawerEnabled": true,
+                    "hidePassive": false,
+                    "id": "Tray",
+                    "pinned": [
+                    ]
                 },
                 {
                     "colorizeDistroLogo": false,
@@ -291,11 +301,11 @@
                 "id": "calendar-header-card"
             },
             {
-                "enabled": true,
+                "enabled": false,
                 "id": "calendar-month-card"
             },
             {
-                "enabled": true,
+                "enabled": false,
                 "id": "weather-card"
             }
         ]
@@ -330,11 +340,11 @@
                 "id": "brightness-card"
             },
             {
-                "enabled": true,
+                "enabled": false,
                 "id": "weather-card"
             },
             {
-                "enabled": true,
+                "enabled": false,
                 "id": "media-sysmon-card"
             }
         ],
@@ -349,15 +359,58 @@
                     "id": "Bluetooth"
                 },
                 {
-                    "id": "NoctaliaPerformance"
+                    "id": "Notifications"
+                },
+                {
+                    "defaultSettings": {
+                        "audioCodec": "opus",
+                        "audioSource": "default_output",
+                        "colorRange": "limited",
+                        "copyToClipboard": false,
+                        "customReplayDuration": "30",
+                        "directory": "",
+                        "filenamePattern": "recording_yyyyMMdd_HHmmss",
+                        "frameRate": "60",
+                        "hideInactive": false,
+                        "iconColor": "none",
+                        "quality": "very_high",
+                        "replayDuration": "30",
+                        "replayEnabled": false,
+                        "replayStorage": "ram",
+                        "resolution": "original",
+                        "restorePortalSession": false,
+                        "showCursor": true,
+                        "videoCodec": "h264",
+                        "videoSource": "portal"
+                    },
+                    "id": "plugin:screen-recorder"
+                },
+                {
+                    "defaultSettings": {
+                        "colorHistory": [
+                        ],
+                        "detectedCompositor": "",
+                        "detectedRecorder": "",
+                        "filenameFormat": "",
+                        "installedLangs": [
+                            "eng"
+                        ],
+                        "paletteColors": [
+                        ],
+                        "screenshotPath": "",
+                        "selectedOcrLang": "eng",
+                        "transAvailable": false,
+                        "videoPath": ""
+                    },
+                    "id": "plugin:screen-toolkit"
                 }
             ],
             "right": [
                 {
-                    "id": "Notifications"
+                    "id": "PowerProfile"
                 },
                 {
-                    "id": "PowerProfile"
+                    "id": "NoctaliaPerformance"
                 },
                 {
                     "id": "KeepAwake"
@@ -475,7 +528,7 @@
         "shadowDirection": "bottom_left",
         "shadowOffsetX": -2,
         "shadowOffsetY": 2,
-        "showChangelogOnStartup": true,
+        "showChangelogOnStartup": false,
         "showHibernateOnLockScreen": false,
         "showScreenCorners": false,
         "showSessionButtonsOnLockScreen": false,
@@ -512,10 +565,10 @@
         "analogClockInCalendar": false,
         "autoLocate": true,
         "firstDayOfWeek": -1,
-        "hideWeatherCityName": true,
-        "hideWeatherTimezone": true,
+        "hideWeatherCityName": false,
+        "hideWeatherTimezone": false,
         "name": "Moudon",
-        "showCalendarEvents": true,
+        "showCalendarEvents": false,
         "showCalendarWeather": true,
         "showWeekNumberInCalendar": false,
         "use12hourFormat": false,
@@ -529,8 +582,8 @@
         "bluetoothDetailsViewMode": "grid",
         "bluetoothHideUnnamedDevices": false,
         "bluetoothRssiPollIntervalMs": 60000,
-        "bluetoothRssiPollingEnabled": false,
-        "disableDiscoverability": false,
+        "bluetoothRssiPollingEnabled": true,
+        "disableDiscoverability": true,
         "networkPanelView": "wifi",
         "wifiDetailsViewMode": "grid"
     },
@@ -545,7 +598,7 @@
     },
     "noctaliaPerformance": {
         "disableDesktopWidgets": true,
-        "disableWallpaper": true
+        "disableWallpaper": false
     },
     "notifications": {
         "backgroundOpacity": 1,
@@ -666,8 +719,8 @@
     },
     "settingsVersion": 59,
     "systemMonitor": {
-        "batteryCriticalThreshold": 5,
-        "batteryWarningThreshold": 20,
+        "batteryCriticalThreshold": 15,
+        "batteryWarningThreshold": 30,
         "cpuCriticalThreshold": 90,
         "cpuWarningThreshold": 80,
         "criticalColor": "#fd4663",
@@ -704,7 +757,7 @@
         "scrollbarAlwaysVisible": true,
         "settingsPanelMode": "centered",
         "settingsPanelSideBarCardStyle": false,
-        "tooltipsEnabled": false,
+        "tooltipsEnabled": true,
         "translucentWidgets": false
     },
     "wallpaper": {

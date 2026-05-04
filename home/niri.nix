@@ -106,9 +106,6 @@ in
 
     # === XWayland ===
     xwayland-satellite        # XWayland support for Niri
-
-    # === Authentication ===
-    lxqt.lxqt-policykit       # Polkit authentication agent
   ];
   # Niri compositor configuration using niri-flake settings
   programs.niri = {
@@ -122,7 +119,6 @@ in
       spawn-at-startup = [
         { command = [ "noctalia-shell" ]; }
         { command = [ "xwayland-satellite" ]; }
-        { command = [ "${pkgs.lxqt.lxqt-policykit}/bin/lxqt-policykit-agent" ]; }
         { command = swayidleCommand; }
       ];
 
@@ -229,14 +225,6 @@ in
         # File dialogs
         {
           matches = [{ app-id = "^xdg-desktop-portal-gtk$"; }];
-          open-floating = true;
-        }
-        # Polkit
-        {
-          matches = [
-            { app-id = "^lxqt-policykit-agent$"; }
-            { app-id = "^org\\.lxqt\\.lxqt-policykit-agent$"; }
-          ];
           open-floating = true;
         }
       ];

@@ -36,10 +36,12 @@
     dconf-editor                      #GNOME configuration editor
     discord                           #Chat and communication platform  
     vscode                            #Source-code editor
+    code-cursor                       #Cursor AI code editor
     fastfetch                         #System information tool
     tree                              #Directory listing tool
     ripgrep                           #Search tool
     fd                                #Find alternative
+    jq                                #JSON processor used by Noctalia music search
     yt-dlp                            #YouTube downloader
     libreoffice-fresh                 #Office suite
     claude-code                       #AI assistant
@@ -51,7 +53,9 @@
     ffmpegthumbnailer                 #Thumbnail generator for video files
     gthumb                            #Image viewer and organizer  
     inkscape                          #Vector graphics editor
+    networkmanagerapplet              #NetworkManager connection editor for VPN imports
     pavucontrol                       #PulseAudio volume control
+    tailscale                         #Tailscale CLI used by the Noctalia plugin
     wdisplays                         #Wayland display configuration tool
     wl-clipboard                      #Wayland clipboard utilities
     teamspeak6-client                 #Voice communication software

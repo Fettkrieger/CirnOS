@@ -32,8 +32,22 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Enable networking
-  networking.networkmanager.enable = true;
+  # Enable networking. NordVPN manual profiles use OpenVPN through
+  # NetworkManager, which also makes them visible to Noctalia's VPN widget.
+  networking.networkmanager = {
+    enable = true;
+    plugins = with pkgs; [
+      networkmanager-openvpn
+    ];
+  };
+
+  # Tailscale mesh VPN. Client routing support keeps exit-node use working
+  # correctly when enabled from the Tailscale CLI or Noctalia plugin.
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+    useRoutingFeatures = "client";
+  };
 
   # Firmware updates via LVFS (includes UEFI/BIOS when supported)
   services.fwupd.enable = true;
@@ -72,7 +86,7 @@ in
   # Enable Niri compositor (niri-flake module handles session registration)
   programs.niri.enable = true;
   # niri-flake also starts a KDE polkit agent by default; disable it because
-  # we use lxqt-policykit in Home Manager and multiple agents conflict.
+  # Noctalia provides the polkit agent and multiple agents conflict.
   systemd.user.services.niri-flake-polkit.enable = false;
 
   # XDG Desktop Portal for Niri (file dialogs, screen sharing)
@@ -113,6 +127,32 @@ in
   };
   console.keyMap = "sg";
 
+  # Noctalia's battery-threshold plugin owns the charge limit value. This only
+  # grants the logged-in user write access to the kernel's threshold sysfs files.
+  users.groups.battery_ctl = {};
+  services.udev.extraRules = ''
+    SUBSYSTEM=="power_supply", KERNEL=="BAT*", TEST=="charge_control_end_threshold", \
+      RUN+="${pkgs.coreutils}/bin/chgrp battery_ctl /sys$devpath/charge_control_end_threshold", \
+      RUN+="${pkgs.coreutils}/bin/chmod g+w /sys$devpath/charge_control_end_threshold"
+    SUBSYSTEM=="power_supply", KERNEL=="BAT*", TEST=="charge_control_start_threshold", \
+      RUN+="${pkgs.coreutils}/bin/chgrp battery_ctl /sys$devpath/charge_control_start_threshold", \
+      RUN+="${pkgs.coreutils}/bin/chmod g+w /sys$devpath/charge_control_start_threshold"
+  '';
+
+  # Map Logitech side-button chord to the existing Niri overview hotkey.
+  # keyd's wildcard only matches keyboards, so the mouse receiver is explicit.
+  services.keyd = {
+    enable = true;
+    keyboards.logitechMouse = {
+      ids = [ "m:046d:c548" ];
+      settings = {
+        global.chord_timeout = 100;
+        main."mouse1+mouse2" = "M-x";
+        main."mouseback+mouseforward" = "M-x";
+      };
+    };
+  };
+
   # Enable CUPS printing
   services.printing.enable = true;
 
@@ -130,7 +170,7 @@ in
   users.users.krieger = {
     isNormalUser = true;
     description = "Krieger";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "kvm" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "kvm" "battery_ctl" ];
     packages = with pkgs; [];
   };
 

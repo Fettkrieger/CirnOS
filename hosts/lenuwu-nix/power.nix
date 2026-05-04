@@ -153,10 +153,6 @@ in
       TLP_AUTO_SWITCH = 0;
       TLP_DEFAULT_MODE = "BAL";
 
-      START_CHARGE_THRESH_BAT0 = 75;
-      STOP_CHARGE_THRESH_BAT0 = 80;
-      RESTORE_THRESHOLDS_ON_BAT = 1;
-
       PLATFORM_PROFILE_ON_AC = "performance";
       PLATFORM_PROFILE_ON_BAT = "balanced";
       PLATFORM_PROFILE_ON_SAV = "low-power";
