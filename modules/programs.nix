@@ -12,6 +12,20 @@ let
         --add-flags "--password-store=gnome-libsecret"
     '';
   };
+
+  spotifyWithHicolorIcon = pkgs.symlinkJoin {
+    name = "spotify-with-hicolor-icon";
+    paths = [ pkgs.spotify ];
+    postBuild = ''
+      # Expose Spotify icons through standard hicolor paths so bars/docks
+      # can resolve the "spotify-client" icon name from spotify.desktop.
+      for size in 16 22 24 32 48 64 128 256 512; do
+        mkdir -p "$out/share/icons/hicolor/''${size}x''${size}/apps"
+        ln -sf "../../../../spotify/icons/spotify-linux-''${size}.png" \
+          "$out/share/icons/hicolor/''${size}x''${size}/apps/spotify-client.png"
+      done
+    '';
+  };
 in
 {
   # Fonts (needed for Noctalia and other UI elements)
@@ -48,6 +62,7 @@ in
     kicad                             #PCB design software
     dconf-editor                      #GNOME configuration editor
     discord                           #Chat and communication platform  
+    spotifyWithHicolorIcon            #Music streaming client (exports hicolor icon aliases)
     vscode                            #Source-code editor
     (lib.hiPrio cursorWithLibsecret)  #Cursor AI code editor, forced to use GNOME Keyring/libsecret
     fastfetch                         #System information tool

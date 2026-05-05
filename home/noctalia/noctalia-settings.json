@@ -24,7 +24,8 @@
             "discord-canary",
             "org.gnome.Nautilus",
             "steam",
-            "cursor"
+            "cursor",
+            "spotify"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",
@@ -37,7 +38,7 @@
     "audio": {
         "mprisBlacklist": [
         ],
-        "preferredPlayer": "",
+        "preferredPlayer": "spotify",
         "spectrumFrameRate": 30,
         "spectrumMirrored": true,
         "visualizerType": "wave",
@@ -52,12 +53,12 @@
         "backgroundOpacity": 1,
         "barType": "simple",
         "capsuleColorKey": "none",
-        "capsuleOpacity": 0.98,
+        "capsuleOpacity": 0,
         "contentPadding": 0,
-        "density": "default",
+        "density": "comfortable",
         "displayMode": "always_visible",
-        "enableExclusionZoneInset": true,
-        "fontScale": 1.33,
+        "enableExclusionZoneInset": false,
+        "fontScale": 1.25,
         "frameRadius": 12,
         "frameThickness": 8,
         "hideOnOverview": true,
@@ -82,7 +83,7 @@
         "showOnWorkspaceSwitch": true,
         "showOutline": false,
         "useSeparateOpacity": true,
-        "widgetSpacing": 0,
+        "widgetSpacing": 2,
         "widgets": {
             "center": [
                 {
@@ -166,6 +167,22 @@
                     "showBadge": true,
                     "showLabelsOnlyWhenOccupied": true,
                     "unfocusedIconsOpacity": 0.5
+                },
+                {
+                    "compactMode": true,
+                    "hideMode": "hidden",
+                    "hideWhenIdle": false,
+                    "id": "MediaMini",
+                    "maxWidth": 400,
+                    "panelShowAlbumArt": true,
+                    "scrollingMode": "hover",
+                    "showAlbumArt": true,
+                    "showArtistFirst": true,
+                    "showProgressRing": true,
+                    "showVisualizer": false,
+                    "textColor": "secondary",
+                    "useFixedWidth": true,
+                    "visualizerType": "linear"
                 }
             ],
             "right": [
@@ -208,25 +225,6 @@
                     "id": "plugin:network-manager-vpn"
                 },
                 {
-                    "defaultSettings": {
-                        "compactMode": false,
-                        "defaultPeerAction": "copy-ip",
-                        "hideDisconnected": false,
-                        "hideMullvadExitNodes": true,
-                        "loginServer": "",
-                        "pingCount": 5,
-                        "refreshInterval": 5000,
-                        "showIpAddress": true,
-                        "showPeerCount": true,
-                        "sshUsername": "",
-                        "taildropDownloadDir": "~/Downloads",
-                        "taildropEnabled": true,
-                        "taildropReceiveMode": "operator",
-                        "terminalCommand": ""
-                    },
-                    "id": "plugin:tailscale"
-                },
-                {
                     "hideWhenZero": true,
                     "hideWhenZeroUnread": true,
                     "iconColor": "tertiary",
@@ -236,7 +234,7 @@
                 },
                 {
                     "displayMode": "alwaysHide",
-                    "iconColor": "error",
+                    "iconColor": "none",
                     "id": "Bluetooth",
                     "textColor": "secondary"
                 },
@@ -337,7 +335,7 @@
                 "id": "weather-card"
             },
             {
-                "enabled": false,
+                "enabled": true,
                 "id": "media-sysmon-card"
             }
         ],
@@ -417,7 +415,7 @@
     "desktopWidgets": {
         "enabled": false,
         "gridSnap": true,
-        "gridSnapScale": false,
+        "gridSnapScale": true,
         "monitorWidgets": [
             {
                 "name": "eDP-1",
@@ -454,7 +452,9 @@
         "pinnedApps": [
             "firefox",
             "discord",
-            "org.gnome.Nautilus"
+            "org.gnome.Nautilus",
+            "cursor",
+            "spotify"
         ],
         "pinnedStatic": true,
         "position": "bottom",
@@ -516,7 +516,7 @@
         "passwordChars": true,
         "radiusRatio": 2,
         "reverseScroll": false,
-        "scaleRatio": 0.9500000000000001,
+        "scaleRatio": 1,
         "screenRadiusRatio": 0,
         "shadowDirection": "bottom_left",
         "shadowOffsetX": -2,
@@ -780,7 +780,7 @@
         ],
         "overviewBlur": 0.4,
         "overviewEnabled": false,
-        "overviewTint": 0.6,
+        "overviewTint": 0,
         "panelPosition": "follow_bar",
         "randomIntervalSec": 600,
         "setWallpaperOnAllMonitors": true,

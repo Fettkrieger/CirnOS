@@ -5,7 +5,7 @@
   "showPeerCount": false,
   "hideDisconnected": false,
   "hideMullvadExitNodes": true,
-  "terminalCommand": "",
+  "terminalCommand": "ghostty",
   "sshUsername": "",
   "pingCount": 5,
   "defaultPeerAction": "copy-ip",
