@@ -32,6 +32,7 @@ in
 {
   imports = [
     ./firewall.nix
+    ./logiops.nix
     ./programs.nix
   ];
 
@@ -148,20 +149,6 @@ in
       RUN+="${pkgs.coreutils}/bin/chgrp battery_ctl /sys$devpath/charge_control_start_threshold", \
       RUN+="${pkgs.coreutils}/bin/chmod g+w /sys$devpath/charge_control_start_threshold"
   '';
-
-  # Map Logitech side-button chord to the existing Niri overview hotkey.
-  # keyd's wildcard only matches keyboards, so the mouse receiver is explicit.
-  services.keyd = {
-    enable = true;
-    keyboards.logitechMouse = {
-      ids = [ "m:046d:c548" ];
-      settings = {
-        global.chord_timeout = 100;
-        main."mouse1+mouse2" = "M-x";
-        main."mouseback+mouseforward" = "M-x";
-      };
-    };
-  };
 
   # Enable CUPS printing
   services.printing.enable = true;

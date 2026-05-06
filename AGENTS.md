@@ -27,9 +27,10 @@ in the repo.
 flake.nix                 entry point + mkHost
 flake.lock                pinned inputs
 modules/
-  common.nix              shared system config (boot, locale, SDDM, Niri, portals, PipeWire, Tailscale, fwupd, keyd, battery_ctl udev, auto-upgrade, ssh, ...)
+  common.nix              shared system config (boot, locale, SDDM, Niri, portals, PipeWire, Tailscale, fwupd, battery_ctl udev, auto-upgrade, ssh, ...)
   programs.nix            system packages + fonts; wraps code-cursor with --password-store=gnome-libsecret; wraps footage with GDK_BACKEND=x11
   firewall.nix            host-aware firewall (laptop = roaming → SSH and dev ports closed)
+  logiops.nix             Logitech MX Master 3S: logiops daemon + heavily-commented /etc/logid.cfg + Solaar (via hardware.logitech.wireless)
 hosts/
   lenuwu-nix/
     default.nix           ThinkPad E16 Gen 2 AMD specifics
@@ -113,7 +114,7 @@ possible improvements.txt      2026-02-15 review notes (open items)
 - power-profiles-daemon defaulted on (laptop hosts override with `lib.mkForce`).
 - gnome-keyring + SDDM PAM integration; gvfs for Nautilus.
 - Battery threshold: `users.groups.battery_ctl` + udev rules `chgrp battery_ctl` and `chmod g+w` the kernel `charge_control_{start,end}_threshold` files. The Noctalia plugin writes them as `krieger`.
-- `keyd`: Logitech receiver `m:046d:c548` mouse — `mouse1+mouse2` and `mouseback+mouseforward` chord → `M-x` (Niri overview).
+- Logitech MX Master 3S (USB receiver `046d:c548`) is owned by `modules/logiops.nix`: `pkgs.logiops` daemon (`logid.service`) reads a hand-written, heavily-commented `/etc/logid.cfg` rendered from a Nix heredoc; `hardware.logitech.wireless.{enable,enableGraphical}` pulls in Solaar + `logitech-udev-rules`. Starter mapping: gesture-button tap → `Super+X` (Niri overview), gesture drags → Niri focus column/window, wheel-mode button → ToggleSmartShift, thumb buttons → Back/Forward, thumb wheel = native horizontal scroll. The old `services.keyd` block on the receiver was removed.
 - CUPS printing on. PipeWire (alsa + 32-bit + pulse). pulseaudio off, rtkit on.
 - User `krieger` (normal, wheel/networkmanager/video/audio/input/kvm/battery_ctl).
 - Firefox enabled. Unfree allowed. Android SDK license auto-accepted.
@@ -246,7 +247,7 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 - **Battery thresholds** require both `start` and `end` files; the patched QML service (`battery-threshold/BatteryThresholdService.qml`) is force-installed over the upstream plugin on every switch.
 - **`code-cursor` is wrapped** with `--password-store=gnome-libsecret` and given `lib.hiPrio` to outrank a vanilla cursor; preserve both when modifying.
 - **`footage` is wrapped** to force GDK_BACKEND=x11 (Wayland + NVIDIA Vulkan crash). Wrapper lives inline in `programs.nix`.
-- **`keyd` matches by USB IDs.** Logitech receiver is `m:046d:c548`. Wildcards in keyd only match keyboards.
+- **MX Master 3S = logiops + Solaar.** `modules/logiops.nix` owns the receiver `046d:c548` end-to-end (gesture button, thumb wheel, smart-shift, DPI, per-button). The old `services.keyd` Logitech-mouse block is gone — don't reintroduce it; logiops "diverts" the relevant buttons before evdev, so keyd would never see them anyway. Edit `/etc/logid.cfg` by editing the Nix heredoc in `modules/logiops.nix`, then `rebuild` and `sudo systemctl restart logid`. Discover CIDs with `sudo systemctl stop logid && sudo logid -v`.
 - **Gaming on `lenuwu-nix`**: Steam etc. are configured at the system level here, not in `home/gaming.nix`. `enableGaming` only toggles the user-level extras.
 - **Roaming-laptop firewall**: `lenuwu-nix` does NOT expose SSH or port 3000.
 - **Auto-upgrade**: from a user-writable repo path (`~/krieger/CirnOS`). The laptop's auto-upgrade is force-disabled (`possible improvements.txt` flags this as a hardening target).

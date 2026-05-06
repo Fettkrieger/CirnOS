@@ -785,18 +785,18 @@
         "randomIntervalSec": 600,
         "setWallpaperOnAllMonitors": true,
         "showHiddenFiles": false,
-        "skipStartupTransition": false,
+        "skipStartupTransition": true,
         "solidColor": "#1a1a2e",
         "sortOrder": "name",
         "transitionDuration": 1500,
         "transitionEdgeSmoothness": 0.05,
         "transitionType": [
-            "fade",
             "disc",
             "stripes",
             "wipe",
             "pixelate",
-            "honeycomb"
+            "honeycomb",
+            "fade"
         ],
         "useOriginalImages": false,
         "useSolidColor": false,
