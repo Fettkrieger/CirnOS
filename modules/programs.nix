@@ -48,6 +48,7 @@ in
 
   environment.systemPackages = with pkgs; [
     evtest                            #Input event inspection tool used by Noctalia Slow Bongo
+    wev                               #Wayland event viewer (used to verify logiops keypresses)
     wget                              #CLI downloader for files over HTTP/HTTPS
     curl                              #CLI tool for transferring data with URLs  
     git                               #Version control system

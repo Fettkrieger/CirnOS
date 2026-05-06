@@ -39,15 +39,19 @@ let
     # Discover button CIDs live with `sudo systemctl stop logid && sudo logid -v`.
 
     # ------------------------------------------------------------------
-    # Global daemon options (apply to all devices)
+    # Global daemon options (apply to all devices) — both are optional and
+    # left at the upstream defaults below. Uncomment to override.
     # ------------------------------------------------------------------
     # workers:    number of worker threads in the dispatch queue. Default 4.
     #             Don't lower this; the queue spawns extra threads if it
     #             stalls so smaller numbers actually create more threads.
+    #               workers: 4;
     # io_timeout: HID++ I/O timeout in milliseconds. Default 2000. Bump it
     #             if you see "device timed out" warnings in the journal.
-    workers: 4;
-    io_timeout: 2000;
+    #             NOTE the trailing `L`: in logiops 0.3.x this field is a
+    #             64-bit int, and libconfig throws SettingTypeException on a
+    #             bare `2000` literal.
+    #               io_timeout: 2000L;
 
     # ------------------------------------------------------------------
     # Per-device configuration
@@ -64,10 +68,10 @@ let
       # DPI / sensitivity
       # ----------------------------------------------------------------
       # Integer between 200 and 4000 (MX Master 3S sensor range), in steps
-      # of 50. Logitech Options defaults to 1000; 1500 feels right on a
-      # 2560×1440 display. To bind a button to cycling DPIs instead, see
-      # the CycleDPI action in the buttons block below.
-      dpi: 1500;
+      # of 50. Logitech Options defaults to 1000. Bump it to 1500 / 2400
+      # on high-DPI displays if cursor travel feels short. To bind a
+      # button to cycling DPIs instead, see the CycleDPI action below.
+      dpi: 1000;
 
       # ----------------------------------------------------------------
       # Smart-shift (ratchet vs free-spin) on the vertical wheel
@@ -82,7 +86,8 @@ let
       #            (what the firmware boots into when logid isn't running
       #            yet). Solaar exposes the same setting in its UI.
       # The wheel-mode button under the wheel (CID 0xc4) is bound below
-      # to ToggleSmartShift, which flips `on` at runtime.
+      # to Super+F; rebind it to ToggleSmartShift if you want a hardware
+      # toggle for free-spin instead.
       smartshift:
       {
         on: true;
@@ -91,41 +96,80 @@ let
       };
 
       # ----------------------------------------------------------------
-      # Vertical scroll wheel — high-resolution mode
+      # Vertical scroll wheel — left to the kernel
       # ----------------------------------------------------------------
-      # hires:  true  = report ~120 ticks per detent (smooth scrolling in
-      #                 GTK 4, Firefox, Electron, etc.)
-      #         false = classic 1 tick per detent
-      # invert: true  = "natural scrolling" *on the device only* (does not
-      #                 affect touchpad). Most users keep this false and
-      #                 let the compositor decide.
-      # target: false = wheel events go straight to the OS (default).
-      #         true  = wheel events become HID++ notifications that
-      #                 logiops can remap below via `up`/`down` gestures.
-      # Templates for `target = true`:
+      # The kernel `hid-logitech-hidpp` driver already exposes the wheel
+      # as REL_WHEEL + REL_WHEEL_HI_RES, including smooth/high-res mode,
+      # which compositors and apps handle correctly out of the box. The
+      # whole `hiresscroll` block below is therefore commented out — the
+      # MX Master 3S vertical wheel is undiverted and behaves exactly as
+      # if logiops weren't running.
+      #
+      # If you ever want logiops in the path again (e.g. to scale the
+      # scroll speed via an Axis multiplier, or to remap up/down to keys),
+      # uncomment and tweak. NOTE that diverting the wheel can break some
+      # Wayland apps that filter scroll events strictly by source device.
+      #
+      # hires:  true  = report ~120 ticks per detent (smooth scrolling)
+      #         false = classic 1 tick per detent (much coarser)
+      # invert: true  = "natural scrolling" on the device only
+      # target: false = wheel events go straight to the OS (no remap)
+      #         true  = events become HID++ notifications and logiops
+      #                 re-emits them via the `up`/`down` gestures below
+      #                 (REQUIRED to use the `axis_multiplier` knob).
+      #
+      # Scroll-sensitivity dial (only when target = true):
+      #     0.25 -> very slow (~quarter speed)
+      #     0.50 -> half speed
+      #     1.00 -> identical to native (target = false / not diverted)
+      #     2.00 -> doubled
+      # Flip the signs on up/down to invert direction without touching
+      # `invert`. Alternative gesture modes (replace Axis with these if
+      # you prefer key events):
       #   up:   { mode: "OnInterval"; interval: 1000;
       #           action: { type: "Keypress"; keys: ["KEY_VOLUMEUP"]; }; };
       #   down: { mode: "OnInterval"; interval: 1000;
       #           action: { type: "Keypress"; keys: ["KEY_VOLUMEDOWN"]; }; };
-      hiresscroll:
-      {
-        hires: true;
-        invert: false;
-        target: false;
-      };
+      #
+      # hiresscroll:
+      # {
+      #   hires: true;
+      #   invert: false;
+      #   target: true;
+      #   up:   { mode: "Axis"; axis: "REL_WHEEL_HI_RES"; axis_multiplier:  0.5; };
+      #   down: { mode: "Axis"; axis: "REL_WHEEL_HI_RES"; axis_multiplier: -0.5; };
+      # };
 
       # ----------------------------------------------------------------
       # Thumb wheel (the small horizontal wheel by your thumb)
       # ----------------------------------------------------------------
-      # divert: false = native horizontal scrolling (REL_HWHEEL). Works in
-      #                 every GTK/Qt app out of the box, scrolls Firefox
-      #                 with Shift held, etc. Recommended default.
-      #         true  = logiops captures the wheel and you must define
-      #                 `left`/`right` (and optionally `proxy`/`touch`/
-      #                 `tap`) to give it any behavior.
-      # invert: flips the left/right direction reported to userspace.
+      # divert: true  = logiops captures the wheel and replays it as the
+      #                 `left`/`right` gestures defined below. Required
+      #                 for the volume mapping in use here.
+      #         false = native horizontal scrolling (REL_HWHEEL). Works
+      #                 in any GTK/Qt app, scrolls Firefox with Shift, etc.
+      # invert: flips left/right (swap volume-up/down without rewriting
+      #                 the gestures).
       #
-      # When `divert = true`, common bindings:
+      # CURRENT BEHAVIOR: thumb wheel = volume control.
+      #   Wheel forward (right) -> KEY_VOLUMEUP
+      #   Wheel backward (left) -> KEY_VOLUMEDOWN
+      # Niri forwards both keys to Noctalia, so the audio OSD pops up too.
+      #
+      # SENSITIVITY KNOB
+      # ----------------
+      # `interval` in `OnInterval` mode = how many accumulated wheel-delta
+      # units must pass before the keypress fires once. On THIS firmware
+      # of the MX Master 3S the thumbwheel reports very small deltas, so
+      # practical values are tiny — `1` is the lowest and feels normal
+      # here; community configs that use `8` would translate to multiple
+      # full rotations per keypress on this device.
+      #     1    -> one keypress per smallest wheel delta  (current setting)
+      #     2    -> half speed
+      #     5    -> noticeably slow
+      #     50+  -> effectively never fires
+      #
+      # ALTERNATIVE BINDINGS (drop in instead of the volume gestures):
       #   * Tab cycling (Ctrl+Tab / Ctrl+Shift+Tab):
       #       left:  { mode: "OnInterval"; interval: 100;
       #                action: { type: "Keypress";
@@ -140,13 +184,33 @@ let
       #       right: { mode: "OnInterval"; interval: 80;
       #                action: { type: "Keypress";
       #                          keys: ["KEY_LEFTMETA","KEY_RIGHT"]; }; };
-      #   * Analog horizontal scroll via Axis (kept here as documentation):
+      #   * Analog horizontal scroll via Axis (replaces native h-scroll):
       #       left:  { mode: "Axis"; axis: "REL_HWHEEL"; axis_multiplier: -1; };
       #       right: { mode: "Axis"; axis: "REL_HWHEEL"; axis_multiplier:  1; };
       thumbwheel:
       {
-        divert: false;
+        divert: true;
         invert: false;
+        left:
+        {
+          mode: "OnInterval";
+          interval: 1;
+          action:
+          {
+            type: "Keypress";
+            keys: ["KEY_VOLUMEDOWN"];
+          };
+        };
+        right:
+        {
+          mode: "OnInterval";
+          interval: 1;
+          action:
+          {
+            type: "Keypress";
+            keys: ["KEY_VOLUMEUP"];
+          };
+        };
       };
 
       # ----------------------------------------------------------------
@@ -167,28 +231,26 @@ let
       #   CycleDPI / ChangeDPI / ChangeHost
       # See the wiki for the full action grammar.
       buttons: (
-        # ---- Back thumb button ----------------------------------------
-        # Default: regular browser/file-manager Back. Replace `BTN_BACK`
-        # with e.g. `KEY_LEFTALT, KEY_LEFT` for an explicit Alt+Left, or
-        # bind a `CycleDPI` action to repurpose it as a precision toggle.
-        {
-          cid: 0x53;
-          action:
-          {
-            type: "Keypress";
-            keys: ["BTN_BACK"];
-          };
-        },
-
-        # ---- Forward thumb button -------------------------------------
-        {
-          cid: 0x56;
-          action:
-          {
-            type: "Keypress";
-            keys: ["BTN_FORWARD"];
-          };
-        },
+        # ---- Back / Forward thumb buttons -----------------------------
+        # Intentionally NOT listed here. The kernel `hid-logitech-hidpp`
+        # driver emits BTN_BACK / BTN_FORWARD natively, and any entry in
+        # this block "diverts" the CID — meaning the kernel stops emitting
+        # the native button event and only logiops' replacement fires.
+        # That's only worth doing if you want a *different* mapping (e.g.
+        # workspace switching, copy/paste). To remap them:
+        #   1. Stop the daemon and run it verbosely so you can see CIDs:
+        #         sudo systemctl stop logid
+        #         sudo logid -v
+        #      Press each thumb button; note the CID it prints (typical
+        #      values are around 0x53 and 0x56 but they vary per firmware
+        #      and aren't guaranteed across the MX Master 3 / 3S line).
+        #   2. Restart the daemon: sudo systemctl start logid
+        #   3. Add an entry like the template below using the real CIDs.
+        # Template (uncomment + fill in YOUR cids to remap to Niri workspaces):
+        #   { cid: 0xXX; action: {
+        #       type: "Keypress"; keys: ["KEY_LEFTMETA","KEY_1"]; }; },
+        #   { cid: 0xYY; action: {
+        #       type: "Keypress"; keys: ["KEY_LEFTMETA","KEY_2"]; }; },
 
         # ---- Gesture button (under the thumb) -------------------------
         # Tap (no drag)   -> Super+X (Niri overview, replaces the old
@@ -255,16 +317,18 @@ let
         },
 
         # ---- Wheel-mode button (under the scroll wheel) ---------------
-        # Toggles smart-shift on/off live (ratchet <-> free-spin).
-        # Other useful actions:
-        #   { type: "ToggleHiresScroll"; }                    # toggle hi-res
+        # Bound to Super+F (Niri "maximize column"). Other useful actions
+        # you can drop in here:
+        #   { type: "ToggleSmartShift"; }                    # ratchet <-> free-spin
+        #   { type: "ToggleHiresScroll"; }                   # toggle hi-res
         #   { type: "CycleDPI"; dpis: [800, 1500, 2400]; }   # DPI rotation
         #   { type: "ChangeHost"; host: "next"; }            # multi-host
         {
           cid: 0xc4;
           action:
           {
-            type: "ToggleSmartShift";
+            type: "Keypress";
+            keys: ["KEY_LEFTMETA", "KEY_F"];
           };
         }
 
