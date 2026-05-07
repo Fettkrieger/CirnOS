@@ -70,6 +70,13 @@
     enableBashIntegration = true;
   };
 
+  # Yazi terminal file manager
+  programs.yazi = {
+    enable = true;
+    enableBashIntegration = true;
+    shellWrapperName = "y";
+  };
+
   # MPV media player
   programs.mpv = {
     enable = true;
@@ -78,11 +85,19 @@
   # Bash
   programs.bash.enable = true;
 
-  # Force dark mode system-wide (GNOME apps, portals, freedesktop apps)
+  # Force dark mode system-wide (GNOME apps, portals, freedesktop apps).
+  # `gtk-theme` matches home/themes.nix so portal hosts (file-chooser,
+  # screencast permission dialogs) and any GTK4 app reading gsettings
+  # render with the same baseline as the static theme. Noctalia's GTK
+  # template overrides accent colors at runtime via gtk.css imports.
+  # `icon-theme` matches home/themes.nix so GNOME/portal hosts and any
+  # toolkit that consults gsettings (instead of gtkrc) get the same
+  # Papirus-Dark resolution chain as Quickshell-based Noctalia.
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
-      gtk-theme = "Adwaita-dark";
+      gtk-theme = "adw-gtk3-dark";
+      icon-theme = "Papirus-Dark";
       cursor-theme = "catppuccin-mocha-blue-cursors";
       cursor-size = 24;
       enable-hot-corners = false;

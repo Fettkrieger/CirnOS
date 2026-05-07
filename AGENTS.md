@@ -112,7 +112,7 @@ possible improvements.txt      2026-02-15 review notes (open items)
 - Niri enabled (`programs.niri.enable`); the niri-flake polkit user service is disabled because Noctalia provides a polkit agent (multiple agents conflict).
 - xdg.portal: GTK + GNOME extra portals. Niri-specific portal ordering forces GTK for FileChooser, GNOME for ScreenCast/Screenshot/RemoteDesktop, gnome-keyring for Secret.
 - power-profiles-daemon defaulted on (laptop hosts override with `lib.mkForce`).
-- gnome-keyring + SDDM PAM integration; gvfs for Nautilus.
+- gnome-keyring + SDDM PAM integration; gvfs is enabled for the remaining GTK apps (Dolphin uses KIO instead and doesn't need it).
 - Battery threshold: `users.groups.battery_ctl` + udev rules `chgrp battery_ctl` and `chmod g+w` the kernel `charge_control_{start,end}_threshold` files. The Noctalia plugin writes them as `krieger`.
 - Logitech MX Master 3S (USB receiver `046d:c548`) is owned by `modules/logiops.nix`: `pkgs.logiops` daemon (`logid.service`) reads a hand-written, heavily-commented `/etc/logid.cfg` rendered from a Nix heredoc; `hardware.logitech.wireless.{enable,enableGraphical}` pulls in Solaar + `logitech-udev-rules`. Starter mapping: DPI 1000, smart-shift on; gesture-button tap → `Super+X` (Niri overview), gesture drags → Niri focus column/window, wheel-mode button → `Super+F` (Niri maximize column), thumb wheel → `KEY_VOLUMEUP/DOWN` (forwarded to Noctalia by Niri's media-key bindings); thumb buttons (Back/Forward) and the vertical scroll wheel are intentionally undiverted so the kernel `hid-logitech-hidpp` driver handles them natively. The old `services.keyd` block on the receiver was removed.
 - CUPS printing on. PipeWire (alsa + 32-bit + pulse). pulseaudio off, rtkit on.
@@ -133,7 +133,7 @@ Notable wrappers:
 - `cursorWithLibsecret` — wraps `pkgs.code-cursor` with `--password-store=gnome-libsecret`, installed at `lib.hiPrio` so it wins over the un-wrapped binary.
 - `footage-x11` — `wrapProgram footage --set GDK_BACKEND x11` (Wayland + NVIDIA Vulkan crash workaround).
 
-Apps installed system-wide: git, wget, curl, jdk17, android-studio-full, android-tools, python3, chromium, qbittorrent, popsicle, kicad, dconf-editor, discord, vscode, the wrapped cursor, fastfetch, tree, ripgrep, fd, jq, yt-dlp, libreoffice-fresh, claude-code, ffmpeg, nautilus, unzip/zip/p7zip, ffmpegthumbnailer, gthumb, inkscape, networkmanagerapplet, pavucontrol, tailscale, wdisplays, wl-clipboard, teamspeak6-client, obsidian, gparted-full, nodejs_20, signal-desktop, whatsapp-electron, full GStreamer plugin set, the footage X11 wrapper, evtest (used by the Noctalia Slow Bongo plugin).
+Apps installed system-wide: git, wget, curl, jdk17, android-studio-full, android-tools, python3, chromium, qbittorrent, popsicle, kicad, dconf-editor, discord, vscode, the wrapped cursor, fastfetch, tree, ripgrep, fd, jq, yt-dlp, libreoffice-fresh, claude-code, ffmpeg, the KDE/Dolphin file-manager stack (`kdePackages.{dolphin,dolphin-plugins,kio,kio-extras,kio-fuse,kio-admin,ark,ffmpegthumbs,kdegraphics-thumbnailers,kimageformats,qtsvg}`), the Noctalia color-template prerequisites (`adw-gtk3`, `qt6ct`, `libsForQt5.qt5ct`), unzip/zip/p7zip, ffmpegthumbnailer, gthumb, inkscape, networkmanagerapplet, pavucontrol, tailscale, wdisplays, wl-clipboard, teamspeak6-client, obsidian, gparted-full, nodejs_20, signal-desktop, whatsapp-electron, full GStreamer plugin set, the footage X11 wrapper, evtest (used by the Noctalia Slow Bongo plugin), wev (used to verify logiops keypresses).
 
 ## Firewall (`modules/firewall.nix`)
 
@@ -146,7 +146,7 @@ Apps installed system-wide: git, wget, curl, jdk17, android-studio-full, android
 
 - `home/default.nix` imports unconditionally: `shellAliases`, `default-apps`, `themes`, `ghostty`, `syncthing`, `niri`, `noctalia/noctalia.nix`. Conditionally imports `gaming.nix` if `enableGaming` and `workspaces-hp.nix` if hostname is `hp-nix` or `lenuwu-nix`.
 - Programs enabled at HM level: home-manager itself, git (with openpgp signing), direnv (silent), btop, bat, eza (icons + git), fzf (bash integration), mpv, bash.
-- `dconf` forces `prefer-dark` color scheme, `Adwaita-dark` GTK theme, and the catppuccin-mocha-blue cursor (size 24); hot corners disabled.
+- `dconf` forces `prefer-dark` color scheme, `adw-gtk3-dark` GTK theme (so it matches `home/themes.nix` and Noctalia's GTK template overlay), and the catppuccin-mocha-blue cursor (size 24); hot corners disabled.
 
 ### Aliases (`home/shellAliases.nix`)
 
@@ -210,12 +210,14 @@ Apps installed system-wide: git, wget, curl, jdk17, android-studio-full, android
 - HTTP/HTTPS/about/unknown → `firefox.desktop`.
 - Images (jpeg/png/gif/bmp/webp/svg) → `org.gnome.gThumb.desktop`.
 - Video (mp4/mkv/webm/mpeg/avi/quicktime/flv) and audio (mpeg/mp4/wav/flac/ogg) → `mpv.desktop`.
-- Archives (zip/tar/7z/rar) and directories → `org.gnome.Nautilus.desktop`.
+- Archives (zip/tar/7z/rar/gz/bz2/xz) → `org.kde.ark.desktop` (KDE Ark).
+- Directories → `org.kde.dolphin.desktop` (KDE Dolphin).
 
 ### Themes (`home/themes.nix`)
 
-- GTK: `Adwaita-dark` (gnome-themes-extra) for both gtk3 and gtk4. Adwaita icon theme.
-- Qt: `adwaita` platform theme, `adwaita-dark` style.
+- GTK: `adw-gtk3-dark` (`pkgs.adw-gtk3`) for both gtk3 and gtk4. Adwaita icon theme. The `adw-gtk3` base is mandatory — Noctalia's GTK color template (Settings → Color Scheme → Templates → System → GTK) writes `~/.config/gtk-{3,4}.0/noctalia.css` and appends `@import url("noctalia.css");` to gtk.css; the import only layers correctly on top of `adw-gtk3`/`adw-gtk3-dark`.
+- Qt: `qt.platformTheme.name = "qtct"` so `QT_QPA_PLATFORMTHEME=qt6ct` and Qt apps consult `~/.config/qt6ct/colors/noctalia.conf` written by Noctalia's Qt template. After enabling the template, run `qt6ct` once and pick `noctalia` from the Color Scheme dropdown.
+- KColorScheme: Noctalia's KColorScheme template writes `~/.local/share/color-schemes/noctalia.colors`; KDE-style apps (Dolphin, Ark, Konsole, etc.) use it once `[General] ColorScheme=noctalia` is set in `~/.config/kdeglobals` (not done declaratively — set it manually if you want it).
 - Cursor: `catppuccin-mocha-blue-cursors` size 24, but the package is a `symlinkJoin` of every catppuccin-mocha cursor variant so the live focus-ring service can switch between them at runtime without rebuilding.
 - gtk3/gtk4 `extraConfig`: `gtk-application-prefer-dark-theme = true`.
 
@@ -237,7 +239,7 @@ Imported on `hp-nix` and `lenuwu-nix`. Defines named workspaces `A`, `B`, `C` wi
 
 ### `home/defaultwindows.nix` (NOT currently imported)
 
-Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / DP-6) — declares named workspaces `A1..C3` (one per monitor lane), spawns Discord on A2, Firefox on A3 maximized, two Nautilus windows on A1 stacked + maximized, plus `at-startup` window-rules to pin them. Add it to `home/default.nix`'s imports if you re-enable the desktop layout.
+Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / DP-6) — declares named workspaces `A1..C3` (one per monitor lane), spawns Discord on A2, Firefox on A3 maximized, two file-manager windows on A1 stacked + maximized (note: still spawns `nautilus` — swap to `dolphin` if you re-enable this), plus `at-startup` window-rules to pin them. Add it to `home/default.nix`'s imports if you re-enable the desktop layout.
 
 ## Conventions and gotchas
 
@@ -246,6 +248,8 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 - **Don't add a second polkit agent.** The niri-flake polkit user service is explicitly disabled in `common.nix`. Noctalia's `polkit-agent` plugin owns this.
 - **Battery thresholds** require both `start` and `end` files; the patched QML service (`battery-threshold/BatteryThresholdService.qml`) is force-installed over the upstream plugin on every switch.
 - **`code-cursor` is wrapped** with `--password-store=gnome-libsecret` and given `lib.hiPrio` to outrank a vanilla cursor; preserve both when modifying.
+- **Dolphin replaces Nautilus.** `kdePackages.{dolphin,kio,kio-extras,kio-fuse,kio-admin,dolphin-plugins,ark,ffmpegthumbs,kdegraphics-thumbnailers,kimageformats,qtsvg}` are installed in `modules/programs.nix`. Trash (`trash:/`, "Empty Trash", "Restore") is provided by KIO; remote protocols (sftp/smb/mtp/fish) by `kio-extras`; FUSE mounts by `kio-fuse`; privileged ops by `kio-admin`. The XDG MIMEs `inode/directory` and the archive set are routed to Dolphin / Ark in `home/default-apps.nix`, and Dolphin replaces Nautilus in the Noctalia app-launcher / dock pinned-apps in `home/noctalia/noctalia-settings.json` (`org.kde.dolphin`).
+- **Noctalia color templates need NixOS prep.** Toggling Settings → Color Scheme → Templates → System → {GTK, Qt, KColorScheme} only writes color files; for them to take effect: GTK base theme must be `adw-gtk3-dark` (`pkgs.adw-gtk3` installed, `gtk.theme.name = "adw-gtk3-dark"` in `home/themes.nix`, dconf `gtk-theme = "adw-gtk3-dark"`); Qt platform theme must be `qtct` (`pkgs.qt6ct` + `pkgs.libsForQt5.qt5ct` installed, `qt.platformTheme.name = "qtct"`, then `qt6ct` opened once to pick `noctalia` from Color Scheme); KColorScheme additionally needs `[General] ColorScheme=noctalia` in `~/.config/kdeglobals` (not declarative). Don't revert the GTK/Qt theme choices without disabling the matching templates first or the override will silently no-op.
 - **`footage` is wrapped** to force GDK_BACKEND=x11 (Wayland + NVIDIA Vulkan crash). Wrapper lives inline in `programs.nix`.
 - **MX Master 3S = logiops + Solaar.** `modules/logiops.nix` owns the receiver `046d:c548` end-to-end (gesture button, thumb wheel, smart-shift, DPI, per-button). The old `services.keyd` Logitech-mouse block is gone — don't reintroduce it; logiops "diverts" the relevant buttons before evdev, so keyd would never see them anyway. Edit `/etc/logid.cfg` by editing the Nix heredoc in `modules/logiops.nix`, then `rebuild` and `sudo systemctl restart logid`. Discover CIDs with `sudo systemctl stop logid && sudo logid -v`.
 - **Gaming on `lenuwu-nix`**: Steam etc. are configured at the system level here, not in `home/gaming.nix`. `enableGaming` only toggles the user-level extras.

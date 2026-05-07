@@ -12,20 +12,6 @@ let
         --add-flags "--password-store=gnome-libsecret"
     '';
   };
-
-  spotifyWithHicolorIcon = pkgs.symlinkJoin {
-    name = "spotify-with-hicolor-icon";
-    paths = [ pkgs.spotify ];
-    postBuild = ''
-      # Expose Spotify icons through standard hicolor paths so bars/docks
-      # can resolve the "spotify-client" icon name from spotify.desktop.
-      for size in 16 22 24 32 48 64 128 256 512; do
-        mkdir -p "$out/share/icons/hicolor/''${size}x''${size}/apps"
-        ln -sf "../../../../spotify/icons/spotify-linux-''${size}.png" \
-          "$out/share/icons/hicolor/''${size}x''${size}/apps/spotify-client.png"
-      done
-    '';
-  };
 in
 {
   # Fonts (needed for Noctalia and other UI elements)
@@ -62,8 +48,8 @@ in
     popsicle                          #USB image writer
     kicad                             #PCB design software
     dconf-editor                      #GNOME configuration editor
-    discord                           #Chat and communication platform  
-    spotifyWithHicolorIcon            #Music streaming client (exports hicolor icon aliases)
+    discord                           #Chat and communication platform
+    spotify                           #Music streaming client (icon resolved via papirus-icon-theme: spotify-client)
     vscode                            #Source-code editor
     (lib.hiPrio cursorWithLibsecret)  #Cursor AI code editor, forced to use GNOME Keyring/libsecret
     fastfetch                         #System information tool
@@ -74,12 +60,56 @@ in
     yt-dlp                            #YouTube downloader
     libreoffice-fresh                 #Office suite
     claude-code                       #AI assistant
-    ffmpeg                            #Multimedia framework  
-    nautilus                          #File manager
+    ffmpeg                            #Multimedia framework
+
+    # === KDE / Dolphin file manager stack ===
+    # Dolphin replaces Nautilus. The KIO packages provide the trash
+    # backend (`trash:/` URL, "Empty Trash" + "Restore" context entries),
+    # remote-protocol support (sftp, smb, fish, mtp) and FUSE bridging so
+    # non-KDE apps see KIO mounts as regular paths.
+    kdePackages.dolphin               #KDE file manager (replaces Nautilus)
+    kdePackages.dolphin-plugins       #VCS / extra context-menu integrations
+    kdePackages.kio                   #KIO core (trash, file ops, IO slaves)
+    kdePackages.kio-extras            #Extra protocols (sftp, smb, mtp, fish, recentdocuments)
+    kdePackages.kio-fuse              #Mount KIO URLs as FUSE so non-KDE apps can read them
+    kdePackages.kio-admin             #Polkit-based privileged file ops (replaces Nautilus' "Open as root")
+    kdePackages.ark                   #KDE archive manager (replaces nautilus' built-in)
+    kdePackages.ffmpegthumbs          #Video thumbnails inside Dolphin
+    kdePackages.kdegraphics-thumbnailers #PDF / SVG / image thumbnails inside Dolphin
+    kdePackages.kimageformats         #Extra Qt image format plugins (HEIC, AVIF, etc.)
+    kdePackages.qtsvg                 #SVG support for Qt apps (icons in Dolphin/Ark)
+
+    # === Qt + GTK base libraries needed by Noctalia color templates ===
+    # adw-gtk3 is required as the base GTK theme so the GTK template's
+    # `@import url("noctalia.css")` overlay layers correctly. qt6ct is
+    # required for the Qt template (~/.config/qt6ct/colors/noctalia.conf
+    # is only consulted when QT_QPA_PLATFORMTHEME=qt6ct, which is set by
+    # home/themes.nix via `qt.platformTheme.name = "qtct"`).
+    adw-gtk3                          #GTK3/4 Adwaita-style theme that Noctalia's GTK template overlays
+    libsForQt5.qt5ct                  #Qt5 control panel (qt5ct), reads ~/.config/qt5ct/colors/noctalia.conf
+    qt6Packages.qt6ct                 #Qt6 control panel, reads ~/.config/qt6ct/colors/noctalia.conf
+
+    # === Icon themes (resolution chain for app icons in dock/launcher/notifications) ===
+    # The active GTK icon theme is set in home/themes.nix to `Papirus-Dark`,
+    # which inherits `breeze-dark, hicolor`. With Papirus active, Noctalia's
+    # dock/launcher (which uses Quickshell -> QIcon::fromTheme) resolves icons
+    # in this order:
+    #   1. Papirus-Dark        ~5000+ third-party app icons (Discord, Spotify,
+    #                          Steam, Signal, WhatsApp, Chromium, VS Code, ...)
+    #   2. breeze-dark         KDE app icons (org.kde.dolphin, org.kde.ark, ...)
+    #   3. hicolor             per-app icons that ship in the package itself
+    #                          (cursor, teamspeak6-client, footage, ...)
+    #   4. Adwaita             still installed by home-manager as a sibling
+    # so virtually every desktop app gets a real icon in the dock without
+    # having to symlink anything per-app the way spotify used to need.
+    papirus-icon-theme                #Primary icon theme; pulls in breeze-icons via inherits chain
+    adwaita-icon-theme                #Generic GNOME/Adwaita symbolic icons (final fallback for GTK apps)
+    hicolor-icon-theme                #Freedesktop fallback theme (always required)
+
     unzip                             #Archive extractor
     zip                               #Archive creator
     p7zip                             #7z archive support
-    ffmpegthumbnailer                 #Thumbnail generator for video files
+    ffmpegthumbnailer                 #Thumbnail generator for video files (used by gthumb / GTK apps)
     gthumb                            #Image viewer and organizer  
     inkscape                          #Vector graphics editor
     networkmanagerapplet              #NetworkManager connection editor for VPN imports
