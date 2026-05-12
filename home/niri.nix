@@ -18,16 +18,6 @@ let
     "WLR_NO_HARDWARE_CURSORS" = "1";
   };
 
-  swayidleCommand = [
-    "swayidle" "-w"
-    "timeout" "300" "noctalia-shell ipc call lockScreen lock"
-    "timeout" "600" "niri msg action power-off-monitors"
-  ] ++ lib.optionals isLenuwu [
-    "timeout" "1800" "${pkgs.systemd}/bin/systemctl hibernate"
-  ] ++ [
-    "before-sleep" "noctalia-shell ipc call lockScreen lock"
-  ];
-
   laptopOutputs = {
     "eDP-1" = {
       mode = {
@@ -94,8 +84,6 @@ in
 {
   # Niri packages and tools
   home.packages = with pkgs; [
-    # === Core Niri Tools ===
-    swayidle                  # Idle management (screen locking, power saving)
     # === Clipboard (Noctalia launcher) ===
     wtype                     # Types selected clipboard entries into the active window
     cliphist                  # Clipboard history backend used by Noctalia
@@ -119,7 +107,6 @@ in
       spawn-at-startup = [
         { command = [ "noctalia-shell" ]; }
         { command = [ "xwayland-satellite" ]; }
-        { command = swayidleCommand; }
       ];
 
       # === Monitor Configuration ===

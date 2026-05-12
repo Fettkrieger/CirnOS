@@ -10,7 +10,7 @@
         "enableClipPreview": true,
         "enableClipboardChips": true,
         "enableClipboardHistory": true,
-        "enableClipboardSmartIcons": true,
+        "enableClipboardSmartIcons": false,
         "enableSessionSearch": false,
         "enableSettingsSearch": false,
         "enableWindowsSearch": false,
@@ -29,7 +29,7 @@
         ],
         "position": "center",
         "screenshotAnnotationTool": "",
-        "showCategories": false,
+        "showCategories": true,
         "showIconBackground": false,
         "sortByMostUsed": true,
         "terminalCommand": "",
@@ -50,7 +50,7 @@
     "bar": {
         "autoHideDelay": 500,
         "autoShowDelay": 150,
-        "backgroundOpacity": 1,
+        "backgroundOpacity": 0.75,
         "barType": "simple",
         "capsuleColorKey": "none",
         "capsuleOpacity": 0,
@@ -233,6 +233,18 @@
                     "unreadBadgeColor": "error"
                 },
                 {
+                    "defaultSettings": {
+                        "autoMount": false,
+                        "fileBrowser": "yazi",
+                        "hideWhenEmpty": false,
+                        "iconColor": "none",
+                        "showBadge": false,
+                        "showNotifications": true,
+                        "terminalCommand": "kitty"
+                    },
+                    "id": "plugin:usb-drive-manager"
+                },
+                {
                     "displayMode": "alwaysHide",
                     "iconColor": "none",
                     "id": "Bluetooth",
@@ -408,6 +420,12 @@
                 },
                 {
                     "id": "NightLight"
+                },
+                {
+                    "defaultSettings": {
+                        "iconColor": "none"
+                    },
+                    "id": "plugin:plugin-manager"
                 }
             ]
         }
@@ -479,7 +497,7 @@
         "enableLockScreenCountdown": true,
         "enableLockScreenMediaControls": false,
         "enableShadows": false,
-        "forceBlackScreenCorners": false,
+        "forceBlackScreenCorners": true,
         "iRadiusRatio": 2,
         "keybinds": {
             "keyDown": [
@@ -514,16 +532,16 @@
         ],
         "lockScreenTint": 1,
         "passwordChars": true,
-        "radiusRatio": 2,
+        "radiusRatio": 0.6,
         "reverseScroll": false,
         "scaleRatio": 1,
-        "screenRadiusRatio": 0,
+        "screenRadiusRatio": 0.46,
         "shadowDirection": "bottom_left",
         "shadowOffsetX": -2,
         "shadowOffsetY": 2,
         "showChangelogOnStartup": false,
         "showHibernateOnLockScreen": false,
-        "showScreenCorners": false,
+        "showScreenCorners": true,
         "showSessionButtonsOnLockScreen": false,
         "smoothScrollEnabled": true,
         "telemetryEnabled": false
@@ -542,7 +560,7 @@
     },
     "idle": {
         "customCommands": "[]",
-        "enabled": false,
+        "enabled": true,
         "fadeDuration": 5,
         "lockCommand": "",
         "lockTimeout": 660,
@@ -761,10 +779,6 @@
                 "id": "gtk"
             },
             {
-                "enabled": false,
-                "id": "kcolorscheme"
-            },
-            {
                 "enabled": true,
                 "id": "qt"
             }
@@ -777,7 +791,7 @@
         "fontDefaultScale": 1.1400000000000001,
         "fontFixed": "monospace",
         "fontFixedScale": 1.1400000000000001,
-        "panelBackgroundOpacity": 1,
+        "panelBackgroundOpacity": 0.84,
         "panelsAttachedToBar": false,
         "scrollbarAlwaysVisible": true,
         "settingsPanelMode": "centered",
@@ -800,7 +814,7 @@
         ],
         "overviewBlur": 0.4,
         "overviewEnabled": false,
-        "overviewTint": 0,
+        "overviewTint": 0.66,
         "panelPosition": "follow_bar",
         "randomIntervalSec": 600,
         "setWallpaperOnAllMonitors": true,

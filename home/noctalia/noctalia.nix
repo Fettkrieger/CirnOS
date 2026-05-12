@@ -19,6 +19,65 @@ let
           'const cmd = `cliphist decode ''${id} | wl-copy''${typeArg} && ''${pasteKeys}`;' \
           'const cmd = `cliphist decode ''${id} | wl-copy''${typeArg} && ''${isImage ? "sleep 0.12 && " : ""}''${pasteKeys}`;'
 
+      # Papirus-Dark ships Nautilus as `nautilus`, while GNOME Files exports
+      # the reverse-DNS icon name `org.gnome.Nautilus`. Teach Noctalia's shared
+      # icon resolver to retry with the theme-native alias so workspace icons,
+      # the dock, and other app surfaces all render it consistently.
+      oldThemeIconsIconFromName="$(cat <<'EOF'
+  function iconFromName(iconName, fallbackName) {
+    const fallback = fallbackName || "application-x-executable";
+    try {
+      if (iconName && typeof Quickshell !== 'undefined' && Quickshell.iconPath) {
+        const p = Quickshell.iconPath(iconName, fallback);
+        if (p && p !== "")
+          return p;
+      }
+    } catch (e) {}
+
+    try {
+      return Quickshell.iconPath ? (Quickshell.iconPath(fallback, true) || "") : "";
+    } catch (e2) {
+      return "";
+    }
+  }
+EOF
+)"
+      newThemeIconsIconFromName="$(cat <<'EOF'
+  function iconFromName(iconName, fallbackName) {
+    const fallback = fallbackName || "application-x-executable";
+    const normalizedIconName = (iconName || "").toLowerCase();
+    var aliasName = "";
+
+    if (normalizedIconName === "org.gnome.nautilus" || normalizedIconName === "org.gnome.files")
+      aliasName = "nautilus";
+
+    try {
+      if (iconName && typeof Quickshell !== 'undefined' && Quickshell.iconPath) {
+        const p = Quickshell.iconPath(iconName, fallback);
+        if (p && p !== "")
+          return p;
+
+        if (aliasName) {
+          const aliasPath = Quickshell.iconPath(aliasName, fallback);
+          if (aliasPath && aliasPath !== "")
+            return aliasPath;
+        }
+      }
+    } catch (e) {}
+
+    try {
+      return Quickshell.iconPath ? (Quickshell.iconPath(fallback, true) || "") : "";
+    } catch (e2) {
+      return "";
+    }
+  }
+EOF
+)"
+      substituteInPlace Commons/ThemeIcons.qml \
+        --replace-fail \
+          "$oldThemeIconsIconFromName" \
+          "$newThemeIconsIconFromName"
+
       # Let external color-sync services force a redraw when the wallpaper file
       # changed but the selected wallpaper path stayed the same.
       substituteInPlace Services/Control/IPCService.qml \
