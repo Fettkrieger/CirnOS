@@ -50,17 +50,17 @@
       "audio/flac" = "mpv.desktop";
       "audio/ogg" = "mpv.desktop";
       
-      # Archives - Ark (KDE archive manager)
-      "application/zip" = "org.kde.ark.desktop";
-      "application/x-tar" = "org.kde.ark.desktop";
-      "application/x-7z-compressed" = "org.kde.ark.desktop";
-      "application/x-rar" = "org.kde.ark.desktop";
-      "application/gzip" = "org.kde.ark.desktop";
-      "application/x-bzip2" = "org.kde.ark.desktop";
-      "application/x-xz" = "org.kde.ark.desktop";
+      # Archives - File Roller (GNOME archive manager)
+      "application/zip" = "org.gnome.FileRoller.desktop";
+      "application/x-tar" = "org.gnome.FileRoller.desktop";
+      "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
+      "application/x-rar" = "org.gnome.FileRoller.desktop";
+      "application/gzip" = "org.gnome.FileRoller.desktop";
+      "application/x-bzip2" = "org.gnome.FileRoller.desktop";
+      "application/x-xz" = "org.gnome.FileRoller.desktop";
 
-      # Directories - Dolphin (KDE file manager)
-      "inode/directory" = "org.kde.dolphin.desktop";
+      # Directories - Nautilus (GNOME file manager)
+      "inode/directory" = "org.gnome.Nautilus.desktop";
     };
   };
 }

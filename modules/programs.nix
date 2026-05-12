@@ -62,22 +62,19 @@ in
     claude-code                       #AI assistant
     ffmpeg                            #Multimedia framework
 
-    # === KDE / Dolphin file manager stack ===
-    # Dolphin replaces Nautilus. The KIO packages provide the trash
-    # backend (`trash:/` URL, "Empty Trash" + "Restore" context entries),
-    # remote-protocol support (sftp, smb, fish, mtp) and FUSE bridging so
-    # non-KDE apps see KIO mounts as regular paths.
-    kdePackages.dolphin               #KDE file manager (replaces Nautilus)
-    kdePackages.dolphin-plugins       #VCS / extra context-menu integrations
-    kdePackages.kio                   #KIO core (trash, file ops, IO slaves)
-    kdePackages.kio-extras            #Extra protocols (sftp, smb, mtp, fish, recentdocuments)
-    kdePackages.kio-fuse              #Mount KIO URLs as FUSE so non-KDE apps can read them
-    kdePackages.kio-admin             #Polkit-based privileged file ops (replaces Nautilus' "Open as root")
-    kdePackages.ark                   #KDE archive manager (replaces nautilus' built-in)
-    kdePackages.ffmpegthumbs          #Video thumbnails inside Dolphin
-    kdePackages.kdegraphics-thumbnailers #PDF / SVG / image thumbnails inside Dolphin
-    kdePackages.kimageformats         #Extra Qt image format plugins (HEIC, AVIF, etc.)
-    kdePackages.qtsvg                 #SVG support for Qt apps (icons in Dolphin/Ark)
+    # === GNOME / Nautilus file manager stack ===
+    # Nautilus is the user's file manager. The trash backend
+    # (`trash:///` URL, restore + empty-trash context entries) is
+    # provided by `gvfs` which is enabled at the system level in
+    # modules/common.nix; gvfs also implements the network protocols
+    # (sftp, smb, mtp, ftp, ...) Nautilus exposes under "Other
+    # Locations". Modern Nautilus has built-in archive extract
+    # (right-click -> Extract Here) via gnome-autoar, so file-roller
+    # is only needed for *opening* / browsing archives -- it owns
+    # `org.gnome.FileRoller.desktop` which the archive MIME types in
+    # home/default-apps.nix are routed to.
+    nautilus                          #GNOME file manager (trash + remote shares via gvfs)
+    file-roller                       #GNOME archive manager (registers org.gnome.FileRoller.desktop)
 
     # === Qt + GTK base libraries needed by Noctalia color templates ===
     # adw-gtk3 is required as the base GTK theme so the GTK template's
@@ -95,8 +92,10 @@ in
     # dock/launcher (which uses Quickshell -> QIcon::fromTheme) resolves icons
     # in this order:
     #   1. Papirus-Dark        ~5000+ third-party app icons (Discord, Spotify,
-    #                          Steam, Signal, WhatsApp, Chromium, VS Code, ...)
-    #   2. breeze-dark         KDE app icons (org.kde.dolphin, org.kde.ark, ...)
+    #                          Steam, Signal, WhatsApp, Chromium, VS Code,
+    #                          org.gnome.Nautilus, ...)
+    #   2. breeze-dark         Free byproduct of the Inherits chain; covers any
+    #                          stray KDE-named icons (e.g. gparted/qt apps).
     #   3. hicolor             per-app icons that ship in the package itself
     #                          (cursor, teamspeak6-client, footage, ...)
     #   4. Adwaita             still installed by home-manager as a sibling

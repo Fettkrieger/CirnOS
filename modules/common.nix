@@ -127,9 +127,10 @@ in
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.sddm.enableGnomeKeyring = true;
 
-  # GVFS — Dolphin uses KIO instead, but gvfs is still needed for the
-  # remaining GTK apps (gthumb thumbnails, Firefox "Save to" dialogs that
-  # show GVFS mounts, MTP-mounted phones from any GTK file picker, etc.).
+  # GVFS — backs Nautilus's trash bin (`trash:///`), the remote shares
+  # under "Other Locations" (sftp, smb, ftp, mtp, ...), MTP-mounted
+  # phones in any GTK file picker, and the GVFS mounts that show up in
+  # gthumb / Firefox "Save to" dialogs.
   services.gvfs.enable = true;
 
 

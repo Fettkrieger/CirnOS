@@ -9,9 +9,11 @@
 #   * Qt template -> writes ~/.config/qt{5,6}ct/colors/noctalia.conf. For
 #     Qt apps to actually consult that file the platform theme must be
 #     `qtct` (sets QT_QPA_PLATFORMTHEME=qt6ct), so that's set below.
-#   * KColorScheme template -> writes ~/.local/share/color-schemes/noctalia.colors.
-#     KDE apps (Dolphin, Ark, ...) read it once `ColorScheme=noctalia` is
-#     set in ~/.config/kdeglobals (do that manually if you want it).
+#   * KColorScheme template -> intentionally disabled in noctalia-settings.json
+#     (no KDE/Qt6 apps use ~/.local/share/color-schemes/noctalia.colors here).
+#     If you reintroduce Dolphin/Ark/Konsole, re-enable that template AND
+#     add a reload watcher that fires `org.kde.KGlobalSettings.notifyChange`
+#     on D-Bus, otherwise running KDE apps cache the old palette forever.
 { config, pkgs, ... }:
 
 let
@@ -51,12 +53,13 @@ in
     gtk4.theme = config.gtk.theme;
 
     # Papirus-Dark is the primary icon theme: ~5000 third-party app icons
-    # (Discord, Spotify, Signal, WhatsApp, Chromium, VS Code, ...) plus the
-    # KDE app icons we need (org.kde.dolphin, org.kde.ark, ...) via its
-    # `Inherits=breeze-dark,hicolor` chain. Hicolor stays as the final
-    # fallback so apps that ship their own icon (cursor, teamspeak6, etc.)
-    # still render. Adwaita is still installed system-wide as a sibling
-    # for any GTK widget that hardcodes Adwaita symbolic names.
+    # (Discord, Spotify, Signal, WhatsApp, Chromium, VS Code,
+    # org.gnome.Nautilus, ...) reachable directly, with `breeze-dark`
+    # and `hicolor` chained after it via the theme's
+    # `Inherits=breeze-dark,hicolor` line. Hicolor catches per-app
+    # icons that ship in the package itself (cursor, teamspeak6, ...).
+    # Adwaita is still installed system-wide as a sibling for any GTK
+    # widget that hardcodes Adwaita symbolic names.
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;

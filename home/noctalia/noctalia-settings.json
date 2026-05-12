@@ -22,7 +22,7 @@
             "discord",
             "discord-ptb",
             "discord-canary",
-            "org.kde.dolphin",
+            "org.gnome.Nautilus",
             "steam",
             "cursor",
             "spotify"
@@ -452,7 +452,7 @@
         "pinnedApps": [
             "firefox",
             "discord",
-            "org.kde.dolphin",
+            "org.gnome.Nautilus",
             "cursor",
             "spotify"
         ],
@@ -761,7 +761,7 @@
                 "id": "gtk"
             },
             {
-                "enabled": true,
+                "enabled": false,
                 "id": "kcolorscheme"
             },
             {
