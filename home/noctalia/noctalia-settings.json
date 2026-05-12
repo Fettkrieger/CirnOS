@@ -88,6 +88,21 @@
             "center": [
                 {
                     "defaultSettings": {
+                        "autoHeight": true,
+                        "cheatsheetData": [
+                        ],
+                        "columnCount": 3,
+                        "detectedCompositor": "",
+                        "hyprlandConfigPath": "~/.config/hypr/hyprland.conf",
+                        "modKeyVariable": "$mod",
+                        "niriConfigPath": "~/.config/niri/config.kdl",
+                        "windowHeight": 0,
+                        "windowWidth": 1400
+                    },
+                    "id": "plugin:keybind-cheatsheet"
+                },
+                {
+                    "defaultSettings": {
                         "batteryDevice": "/sys/class/power_supply/BAT0",
                         "chargeThreshold": 80
                     },
@@ -216,13 +231,26 @@
                     "usePadding": false
                 },
                 {
-                    "defaultSettings": {
-                        "connectedColor": "primary",
-                        "disableToastNotifications": false,
-                        "disconnectedColor": "none",
-                        "displayMode": "onhover"
-                    },
-                    "id": "plugin:network-manager-vpn"
+                    "colorizeSystemIcon": "secondary",
+                    "colorizeSystemText": "none",
+                    "customIconPath": "",
+                    "enableColorization": true,
+                    "icon": "apps",
+                    "iconColor": "none",
+                    "id": "Launcher",
+                    "useDistroLogo": false
+                },
+                {
+                    "displayMode": "alwaysHide",
+                    "iconColor": "primary",
+                    "id": "Bluetooth",
+                    "textColor": "primary"
+                },
+                {
+                    "displayMode": "onhover",
+                    "iconColor": "secondary",
+                    "id": "VPN",
+                    "textColor": "secondary"
                 },
                 {
                     "hideWhenZero": true,
@@ -246,12 +274,6 @@
                 },
                 {
                     "displayMode": "alwaysHide",
-                    "iconColor": "none",
-                    "id": "Bluetooth",
-                    "textColor": "secondary"
-                },
-                {
-                    "displayMode": "alwaysHide",
                     "iconColor": "primary",
                     "id": "Volume",
                     "middleClickCommand": "pwvucontrol || pavucontrol",
@@ -263,8 +285,8 @@
                     "hideIfIdle": false,
                     "hideIfNotDetected": true,
                     "id": "Battery",
-                    "showNoctaliaPerformance": false,
-                    "showPowerProfiles": false
+                    "showNoctaliaPerformance": true,
+                    "showPowerProfiles": true
                 },
                 {
                     "blacklist": [
