@@ -120,6 +120,19 @@ in
     };
   };
 
+  # Flatpak (Discord is installed from Flathub; see activation script below).
+  services.flatpak.enable = true;
+
+  # Flathub + Discord: idempotent on every switch; requires network on first install.
+  system.activationScripts.flatpak-flathub-discord = {
+    text = ''
+      ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub \
+        https://flathub.org/repo/flathub.flatpakrepo
+      ${pkgs.flatpak}/bin/flatpak install --noninteractive --system -y \
+        flathub com.discordapp.Discord
+    '';
+  };
+
   # Power management (can be overridden by hosts using TLP)
   services.power-profiles-daemon.enable = lib.mkDefault true;
 

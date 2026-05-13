@@ -48,7 +48,6 @@ in
     popsicle                          #USB image writer
     kicad                             #PCB design software
     dconf-editor                      #GNOME configuration editor
-    discord                           #Chat and communication platform
     spotify                           #Music streaming client (icon resolved via papirus-icon-theme: spotify-client)
     vscode                            #Source-code editor
     (lib.hiPrio cursorWithLibsecret)  #Cursor AI code editor, forced to use GNOME Keyring/libsecret
@@ -59,7 +58,6 @@ in
     jq                                #JSON processor used by Noctalia music search
     yt-dlp                            #YouTube downloader
     libreoffice-fresh                 #Office suite
-    claude-code                       #AI assistant
     ffmpeg                            #Multimedia framework
 
     # === GNOME / Nautilus file manager stack ===
