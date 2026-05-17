@@ -25,7 +25,8 @@
             "org.gnome.Nautilus",
             "steam",
             "cursor",
-            "spotify"
+            "spotify",
+            "com.discordapp.Discord"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",
@@ -255,7 +256,7 @@
                 {
                     "hideWhenZero": true,
                     "hideWhenZeroUnread": true,
-                    "iconColor": "tertiary",
+                    "iconColor": "error",
                     "id": "NotificationHistory",
                     "showUnreadBadge": true,
                     "unreadBadgeColor": "error"
@@ -472,7 +473,7 @@
         "deadOpacity": 1,
         "displayMode": "auto_hide",
         "dockType": "floating",
-        "enabled": true,
+        "enabled": false,
         "floatingRatio": 0.43,
         "groupApps": false,
         "groupClickAction": "cycle",
@@ -494,7 +495,8 @@
             "discord",
             "org.gnome.Nautilus",
             "cursor",
-            "spotify"
+            "spotify",
+            "com.discordapp.Discord"
         ],
         "pinnedStatic": true,
         "position": "bottom",

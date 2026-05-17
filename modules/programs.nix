@@ -59,6 +59,7 @@ in
     yt-dlp                            #YouTube downloader
     libreoffice-fresh                 #Office suite
     ffmpeg                            #Multimedia framework
+    
 
     # === GNOME / Nautilus file manager stack ===
     # Nautilus is the user's file manager. The trash backend
