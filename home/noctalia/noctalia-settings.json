@@ -636,20 +636,20 @@
         "disableWallpaper": false
     },
     "notifications": {
-        "backgroundOpacity": 1,
+        "backgroundOpacity": 0.44,
         "clearDismissed": true,
-        "criticalUrgencyDuration": 15,
-        "density": "default",
+        "criticalUrgencyDuration": 1,
+        "density": "compact",
         "enableBatteryToast": true,
         "enableKeyboardLayoutToast": true,
         "enableMarkdown": false,
         "enableMediaToast": false,
         "enabled": true,
         "location": "top_right",
-        "lowUrgencyDuration": 3,
+        "lowUrgencyDuration": 1,
         "monitors": [
         ],
-        "normalUrgencyDuration": 8,
+        "normalUrgencyDuration": 1,
         "overlayLayer": true,
         "respectExpireTimeout": false,
         "saveToHistory": {

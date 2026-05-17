@@ -7,9 +7,10 @@
     ./power.nix
   ];
 
-  # Use the default kernel instead of latest; rtw89/RTL8852CE currently fails
-  # firmware init on Linux 7.0.x, leaving Wi-Fi hardware unavailable.
-  boot.kernelPackages = pkgs.linuxPackages;
+  # CachyOS latest is typically 7.x. Stock linuxPackages avoided 7.0.x because
+  # rtw89/RTL8852CE firmware init failed there; Wi-Fi may still break — rollback
+  # to pkgs.linuxPackages if needed (see AGENTS.md).
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto;
 
   hardware.enableAllFirmware = true;
 

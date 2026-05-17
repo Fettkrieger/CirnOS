@@ -31,6 +31,7 @@ let
 in
 {
   imports = [
+    ./cachyos-kernel.nix
     ./firewall.nix
     ./logiops.nix
     ./programs.nix

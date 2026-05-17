@@ -8,7 +8,9 @@ in the repo.
 ## Quick facts
 
 - Flake inputs: `nixpkgs` (nixos-unstable), `home-manager`, `niri` (sodiboo/niri-flake),
-  `noctalia` (noctalia-dev/noctalia-shell).
+  `noctalia` (noctalia-dev/noctalia-shell), `nix-cachyos-kernel` (xddxdd/release).
+- Kernel (both hosts): `pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto` via
+  `modules/cachyos-kernel.nix` (not in official nixpkgs yet).
 - `nixosConfigurations`: `lenuwu-nix`, `hp-nix`. Both built via the `mkHost` helper in `flake.nix`.
 - Display manager: SDDM (Wayland) with `catppuccin-mocha-blue` theme over a black SVG.
 - Compositor: Niri (system module from niri-flake; user config from `home/niri.nix`).
@@ -27,6 +29,7 @@ in the repo.
 flake.nix                 entry point + mkHost
 flake.lock                pinned inputs
 modules/
+  cachyos-kernel.nix      CachyOS kernel flake overlay + lantian binary cache
   common.nix              shared system config (boot, locale, SDDM, Niri, portals, PipeWire, Tailscale, fwupd, battery_ctl udev, auto-upgrade, ssh, ...)
   programs.nix            system packages + fonts; wraps code-cursor with --password-store=gnome-libsecret; wraps footage with GDK_BACKEND=x11
   firewall.nix            host-aware firewall (laptop = roaming → SSH and dev ports closed)
@@ -68,8 +71,10 @@ possible improvements.txt      2026-02-15 review notes (open items)
 ### `lenuwu-nix` — Lenovo ThinkPad E16 Gen 2 AMD (21M5002DGE)
 
 - AMD CPU + Radeon iGPU. `enableGaming = true`.
-- Pinned to `pkgs.linuxPackages` (NOT `_latest`) because rtw89/RTL8852CE
-  firmware init fails on Linux 7.0.x.
+- `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto`
+  (CachyOS latest, typically 7.x). Stock `linuxPackages` was used previously
+  because rtw89/RTL8852CE firmware init failed on Linux 7.0.x — Wi-Fi may still
+  break; rollback to `pkgs.linuxPackages` if needed.
 - Wi-Fi/BT race workaround: `rtw89_8852ce` is blacklisted; a oneshot
   `rtw89-8852ce-delayed.service` waits for `bluetooth.service` then
   `modprobe`s it after a 10 s sleep.
@@ -95,7 +100,8 @@ possible improvements.txt      2026-02-15 review notes (open items)
 ### `hp-nix` — HP Envy x360 Convertible 13-bd0xxx (Intel 11th-gen Tiger Lake / Iris Xe)
 
 - `enableGaming = false` (toggleable in `flake.nix`).
-- `linuxPackages_latest`; `boot.initrd.kernelModules = [ "i915" ]` for early KMS.
+- `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto`;
+  `boot.initrd.kernelModules = [ "i915" ]` for early KMS.
 - Intel iGPU with `intel-media-driver` (VAAPI) + `vpl-gpu-rt` (Quick Sync).
 - Touchpad via libinput; Bluetooth on; blueman with applet.
 - libvirtd + virt-manager + spiceUSBRedirection (Windows VM for HP BIOS USB tooling). `krieger ∈ libvirtd`.
@@ -104,6 +110,9 @@ possible improvements.txt      2026-02-15 review notes (open items)
 
 ## System-level config (`modules/common.nix`)
 
+- CachyOS kernel: `modules/cachyos-kernel.nix` applies `nix-cachyos-kernel` overlay
+  (`overlays.default`) and the lantian Attic substituter. Per-host
+  `boot.kernelPackages` is set in `hosts/*/default.nix`.
 - Hostname injected from the flake via `specialArgs.hostname`.
 - systemd-boot, EFI vars writable.
 - NetworkManager (+ networkmanager-openvpn). Tailscale opens its firewall hole automatically.
@@ -261,6 +270,16 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 - **Insecure package allow-list**: `qtwebengine-5.15.19` is permitted with a comment about teamspeak3, but only `teamspeak6-client` is installed. May be removable.
 - **NVIDIA env vars** in `home/niri.nix` are applied to every host except `lenuwu-nix`. `hp-nix` is Intel — these are harmless there but are stale (the guard predates `hp-nix`).
 - **Always edit `hardware-configuration.nix` only via `nixos-generate-config`.** See `docs/lenuwu-nix-migration.md` for the full disk-transplant procedure on the ThinkPad.
+- **CachyOS kernel (`nix-cachyos-kernel`).** Do not add `inputs.nixpkgs.follows` on
+  the flake input. First deploy after adding the cache: run `rebuild` once (overlay +
+  substituter only if you staged that first), then `rebuild` again after
+  `boot.kernelPackages` points at `cachyosKernels`, then `reboot`. Expect
+  `uname -r` to contain `cachyos` and `lto`. LTO can break future DKMS/OOT modules;
+  CirnOS has none today. Rollback ThinkPad Wi-Fi: `boot.kernelPackages = pkgs.linuxPackages`
+  in `hosts/lenuwu-nix/default.nix`, rebuild, reboot. Boot failure: pick the previous
+  systemd-boot generation (`configurationLimit = 10` on lenuwu). Optional CPU tuning:
+  `linuxPackages-cachyos-latest-lto-x86_64-v3` if `/proc/cpuinfo` flags include `lm`
+  (Zen + Tiger Lake both qualify).
 
 ## Common workflows
 
@@ -269,3 +288,5 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 - Garbage-collect with `cleanup` (alias); the system also auto-GCs weekly with 30-day retention and runs `auto-optimise-store`.
 - Power profile from CLI: `pp` (get), `pp-perf` / `pp-bal` / `pp-save`. Game with `steam-perf` or `game-perf <cmd>`.
 - After Noctalia UI tweaks: just `git add home/noctalia/*.json` and commit.
+- After pulling CachyOS kernel changes: `rebuild` (applies cache if new), `rebuild`
+  + `reboot` if `boot.kernelPackages` changed; on lenuwu verify Wi-Fi after ~10 s.

@@ -8,8 +8,7 @@
     ./power.nix
   ];
 
-  # Use latest kernel for laptop hardware support
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto;
 
   # Early KMS for Intel graphics (prevents black screen on boot)
   boot.initrd.kernelModules = [ "i915" ];
