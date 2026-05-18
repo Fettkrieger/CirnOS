@@ -144,9 +144,11 @@ in
   # GVFS — backs Nautilus's trash bin (`trash:///`), the remote shares
   # under "Other Locations" (sftp, smb, ftp, mtp, ...), MTP-mounted
   # phones in any GTK file picker, and the GVFS mounts that show up in
-  # gthumb / Firefox "Save to" dialogs.
+  # Loupe / Firefox "Save to" dialogs.
   services.gvfs.enable = true;
 
+  # GNOME Boxes (and virt-manager on hp-nix) use libvirt/QEMU.
+  virtualisation.libvirtd.enable = true;
 
   # Configure keymap
   services.xserver.xkb = {
@@ -184,7 +186,7 @@ in
   users.users.krieger = {
     isNormalUser = true;
     description = "Krieger";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "kvm" "battery_ctl" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "kvm" "libvirtd" "battery_ctl" ];
     packages = with pkgs; [];
   };
 

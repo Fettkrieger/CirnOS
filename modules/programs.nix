@@ -51,6 +51,7 @@ in
     spotify                           #Music streaming client (icon resolved via papirus-icon-theme: spotify-client)
     vscode                            #Source-code editor
     (lib.hiPrio cursorWithLibsecret)  #Cursor AI code editor, forced to use GNOME Keyring/libsecret
+    nixd                              #Nix language server (Nix IDE / vscode-nix-ide in Cursor and VS Code)
     fastfetch                         #System information tool
     tree                              #Directory listing tool
     ripgrep                           #Search tool
@@ -59,7 +60,7 @@ in
     yt-dlp                            #YouTube downloader
     libreoffice-fresh                 #Office suite
     ffmpeg                            #Multimedia framework
-    
+    qt6Packages.qt6gtk2               #Qt6 gtk3 platform theme (qBittorrent)
 
     # === GNOME / Nautilus file manager stack ===
     # Nautilus is the user's file manager. The trash backend
@@ -73,7 +74,16 @@ in
     # `org.gnome.FileRoller.desktop` which the archive MIME types in
     # home/default-apps.nix are routed to.
     nautilus                          #GNOME file manager (trash + remote shares via gvfs)
+    evince                            #GNOME document viewer (PDF, DjVu, …)
     file-roller                       #GNOME archive manager (registers org.gnome.FileRoller.desktop)
+    gnome-calculator                  #GNOME Calculator
+    loupe                             #GNOME image viewer (org.gnome.Loupe.desktop)
+    snapshot                          #GNOME Camera / webcam (org.gnome.Snapshot.desktop)
+    gnome-disk-utility                #GNOME Disks (mount, format, SMART; org.gnome.DiskUtility.desktop)
+    dosfstools                        #FAT formatting for Disks (replaces gparted-full exfat/fat tooling)
+    exfatprogs                        #exFAT formatting for Disks
+    gnome-system-monitor              #GNOME System Monitor (org.gnome.SystemMonitor.desktop)
+    gnome-boxes                       #GNOME Boxes VMs (org.gnome.Boxes.desktop; needs libvirtd in common.nix)
 
     # === Qt + GTK base libraries needed by Noctalia color templates ===
     # adw-gtk3 is required as the base GTK theme so the GTK template's
@@ -94,7 +104,7 @@ in
     #                          Steam, Signal, WhatsApp, Chromium, VS Code,
     #                          org.gnome.Nautilus, ...)
     #   2. breeze-dark         Free byproduct of the Inherits chain; covers any
-    #                          stray KDE-named icons (e.g. gparted/qt apps).
+    #                          stray KDE-named icons (e.g. qt apps).
     #   3. hicolor             per-app icons that ship in the package itself
     #                          (cursor, teamspeak6-client, footage, ...)
     #   4. Adwaita             still installed by home-manager as a sibling
@@ -107,8 +117,7 @@ in
     unzip                             #Archive extractor
     zip                               #Archive creator
     p7zip                             #7z archive support
-    ffmpegthumbnailer                 #Thumbnail generator for video files (used by gthumb / GTK apps)
-    gthumb                            #Image viewer and organizer  
+    ffmpegthumbnailer                 #Thumbnail generator for video files (GTK file managers / Loupe)
     inkscape                          #Vector graphics editor
     networkmanagerapplet              #NetworkManager connection editor for VPN imports
     pavucontrol                       #PulseAudio volume control
@@ -117,7 +126,6 @@ in
     wl-clipboard                      #Wayland clipboard utilities
     teamspeak6-client                 #Voice communication software
     obsidian                          #Note-taking and knowledge management application
-    gparted-full                      #Graphical partition editor with extra filesystem tools (including exFAT)
     nodejs_20
     signal-desktop
     whatsapp-electron

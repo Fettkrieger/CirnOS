@@ -9,6 +9,7 @@ let
     "ELECTRON_OZONE_PLATFORM_HINT" = "wayland";
     "MOZ_ENABLE_WAYLAND" = "1";
     "QT_QPA_PLATFORM" = "wayland";
+    "QT_QPA_PLATFORMTHEME" = "gtk3";
     "SDL_VIDEODRIVER" = "wayland";
     "GDK_BACKEND" = "wayland";
   } // lib.optionalAttrs (!isLenuwu) {

@@ -14,7 +14,7 @@
 #     If you reintroduce Dolphin/Ark/Konsole, re-enable that template AND
 #     add a reload watcher that fires `org.kde.KGlobalSettings.notifyChange`
 #     on D-Bus, otherwise running KDE apps cache the old palette forever.
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   # Ship all mocha cursor variants so runtime switching can pick the closest color.
@@ -101,11 +101,42 @@ in
   # the file from scratch on each refresh.
   xdg.configFile."gtk-4.0/gtk.css".force = true;
 
-  # Qt: route through qt6ct so Noctalia's Qt color template lands. After
-  # the first rebuild, run `qt6ct` once and pick the "noctalia" color
-  # scheme from the dropdown — qt6ct persists the choice in qt6ct.conf.
+  # Qt: route through qt6ct/qt5ct so Noctalia's Qt template lands in
+  # ~/.config/qt{5,6}ct/colors/noctalia.conf. HM's qt.platformTheme only
+  # exports QT_QPA_PLATFORMTHEME=qt5ct; Qt 6 apps (e.g. qBittorrent 5.x)
+  # need qt6ct, and both need qt{5,6}ct.conf to select the noctalia scheme.
   qt = {
     enable = true;
     platformTheme.name = "qtct";
   };
+
+  # gtk3 platform theme (qt6gtk2) reads gtk-theme from gsettings — same path as
+  # Nautilus/adw-gtk3-dark + noctalia.css. qt6ct alone was not painting Qt6 apps.
+  home.sessionVariables = {
+    QT_QPA_PLATFORMTHEME = lib.mkForce "gtk3";
+  };
+
+  xdg.configFile."qt6ct/qt6ct.conf".text = ''
+    [Appearance]
+    icon_theme=${config.gtk.iconTheme.name}
+    style=Fusion
+    color_scheme=noctalia
+    custom_palette=true
+  '';
+
+  xdg.configFile."qt5ct/qt5ct.conf".text = ''
+    [Appearance]
+    icon_theme=${config.gtk.iconTheme.name}
+    style=Fusion
+    color_scheme=noctalia
+    custom_palette=true
+  '';
+
+  # qBittorrent's qt6ct-style widget ignores the gtk3 platform palette and stays light.
+  home.activation.fixQbittorrentQtStyle = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    conf="${config.home.homeDirectory}/.config/qBittorrent/qBittorrent.conf"
+    if [ -f "$conf" ] && ${pkgs.gnugrep}/bin/grep -q '^Style=qt6ct-style' "$conf"; then
+      ${pkgs.gnused}/bin/sed -i 's/^Style=qt6ct-style/Style=Fusion/' "$conf"
+    fi
+  '';
 }

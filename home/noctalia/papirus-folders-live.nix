@@ -86,8 +86,8 @@ let
     }
 
     reload_icon_theme() {
-      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface icon-theme '' 2>/dev/null || true
-      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface icon-theme '${overlayIconTheme}' 2>/dev/null || true
+      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface icon-theme "" 2>/dev/null || true
+      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface icon-theme "${overlayIconTheme}" 2>/dev/null || true
     }
 
     reload_gtk_appearance() {

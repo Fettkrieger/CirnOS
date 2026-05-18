@@ -26,13 +26,22 @@
       "x-scheme-handler/about" = "firefox.desktop";
       "x-scheme-handler/unknown" = "firefox.desktop";
       
-      # Images - gthumb
-      "image/jpeg" = "org.gnome.gThumb.desktop";
-      "image/png" = "org.gnome.gThumb.desktop";
-      "image/gif" = "org.gnome.gThumb.desktop";
-      "image/bmp" = "org.gnome.gThumb.desktop";
-      "image/webp" = "org.gnome.gThumb.desktop";
-      "image/svg+xml" = "org.gnome.gThumb.desktop";
+      # Images - Loupe (GNOME image viewer)
+      "image/jpeg" = "org.gnome.Loupe.desktop";
+      "image/png" = "org.gnome.Loupe.desktop";
+      "image/gif" = "org.gnome.Loupe.desktop";
+      "image/bmp" = "org.gnome.Loupe.desktop";
+      "image/webp" = "org.gnome.Loupe.desktop";
+      "image/svg+xml" = "org.gnome.Loupe.desktop";
+      "image/tiff" = "org.gnome.Loupe.desktop";
+      "image/avif" = "org.gnome.Loupe.desktop";
+      "image/heic" = "org.gnome.Loupe.desktop";
+      "image/jxl" = "org.gnome.Loupe.desktop";
+
+      # Disk images - GNOME Disks
+      "application/x-cd-image" = "gnome-disk-image-mounter.desktop";
+      "application/x-raw-disk-image" = "gnome-disk-image-mounter.desktop";
+      "application/x-raw-disk-image-xz-compressed" = "gnome-disk-image-writer.desktop";
       
       # Videos - mpv
       "video/mp4" = "mpv.desktop";
@@ -42,7 +51,7 @@
       "video/x-msvideo" = "mpv.desktop";
       "video/quicktime" = "mpv.desktop";
       "video/x-flv" = "mpv.desktop";
-      
+
       # Audio - mpv
       "audio/mpeg" = "mpv.desktop";
       "audio/mp4" = "mpv.desktop";
@@ -58,6 +67,11 @@
       "application/gzip" = "org.gnome.FileRoller.desktop";
       "application/x-bzip2" = "org.gnome.FileRoller.desktop";
       "application/x-xz" = "org.gnome.FileRoller.desktop";
+
+      # PDF / documents - Evince (GNOME document viewer)
+      "application/pdf" = "org.gnome.Evince.desktop";
+      "application/x-pdf" = "org.gnome.Evince.desktop";
+      "image/vnd.djvu" = "org.gnome.Evince.desktop";
 
       # Directories - Nautilus (GNOME file manager)
       "inode/directory" = "org.gnome.Nautilus.desktop";

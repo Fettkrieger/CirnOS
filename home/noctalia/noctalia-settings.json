@@ -19,14 +19,13 @@
         "overviewLayer": true,
         "pinnedApps": [
             "firefox",
-            "discord",
-            "discord-ptb",
-            "discord-canary",
             "org.gnome.Nautilus",
             "steam",
             "cursor",
             "spotify",
-            "com.discordapp.Discord"
+            "com.discordapp.Discord",
+            "org.gnome.Evince",
+            "org.gnome.DiskUtility"
         ],
         "position": "center",
         "screenshotAnnotationTool": "",
@@ -110,11 +109,7 @@
                     "id": "plugin:battery-threshold"
                 },
                 {
-                    "defaultSettings": {
-                        "precision": 8,
-                        "showBarValue": true
-                    },
-                    "id": "plugin:noctalia-calculator"
+                    "id": "plugin:color-scheme-creator"
                 },
                 {
                     "defaultSettings": {
@@ -232,26 +227,16 @@
                     "usePadding": false
                 },
                 {
-                    "colorizeSystemIcon": "secondary",
-                    "colorizeSystemText": "none",
-                    "customIconPath": "",
-                    "enableColorization": true,
-                    "icon": "apps",
-                    "iconColor": "none",
-                    "id": "Launcher",
-                    "useDistroLogo": false
-                },
-                {
                     "displayMode": "alwaysHide",
-                    "iconColor": "primary",
+                    "iconColor": "secondary",
                     "id": "Bluetooth",
                     "textColor": "primary"
                 },
                 {
-                    "displayMode": "onhover",
-                    "iconColor": "secondary",
+                    "displayMode": "alwaysHide",
+                    "iconColor": "error",
                     "id": "VPN",
-                    "textColor": "secondary"
+                    "textColor": "error"
                 },
                 {
                     "hideWhenZero": true,
@@ -342,7 +327,7 @@
         "manualSunrise": "06:30",
         "manualSunset": "18:30",
         "monitorForColors": "",
-        "predefinedScheme": "GitHub Dark",
+        "predefinedScheme": "Goy",
         "schedulingMode": "off",
         "syncGsettings": true,
         "useWallpaperColors": false
@@ -473,7 +458,7 @@
         "deadOpacity": 1,
         "displayMode": "auto_hide",
         "dockType": "floating",
-        "enabled": false,
+        "enabled": true,
         "floatingRatio": 0.43,
         "groupApps": false,
         "groupClickAction": "cycle",
@@ -492,7 +477,6 @@
         "onlySameOutput": true,
         "pinnedApps": [
             "firefox",
-            "discord",
             "org.gnome.Nautilus",
             "cursor",
             "spotify",
@@ -636,7 +620,7 @@
         "disableWallpaper": false
     },
     "notifications": {
-        "backgroundOpacity": 0.44,
+        "backgroundOpacity": 1,
         "clearDismissed": true,
         "criticalUrgencyDuration": 1,
         "density": "compact",
@@ -797,6 +781,18 @@
             {
                 "enabled": true,
                 "id": "btop"
+            },
+            {
+                "enabled": true,
+                "id": "gtk"
+            },
+            {
+                "enabled": true,
+                "id": "qt"
+            },
+            {
+                "enabled": false,
+                "id": "kcolorscheme"
             }
         ],
         "enableUserTheming": false
@@ -841,12 +837,7 @@
         "transitionDuration": 1500,
         "transitionEdgeSmoothness": 0.05,
         "transitionType": [
-            "disc",
-            "stripes",
-            "wipe",
-            "pixelate",
-            "honeycomb",
-            "fade"
+            "pixelate"
         ],
         "useOriginalImages": false,
         "useSolidColor": false,
