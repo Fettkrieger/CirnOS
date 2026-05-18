@@ -60,8 +60,10 @@ in
     # icons that ship in the package itself (cursor, teamspeak6, ...).
     # Adwaita is still installed system-wide as a sibling for any GTK
     # widget that hardcodes Adwaita symbolic names.
+    # Base Papirus-Dark is deployed from the package; folder tint is overridden at
+    # runtime by ~/.icons/Papirus-Dark-Noctalia (see papirus-folders-live.nix).
     iconTheme = {
-      name = "Papirus-Dark";
+      name = "Papirus-Dark-Noctalia";
       package = pkgs.papirus-icon-theme;
     };
 

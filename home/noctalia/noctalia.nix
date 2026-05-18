@@ -93,6 +93,7 @@ in
     inputs.noctalia.homeModules.default
     ./niri-focus-ring-live.nix
     ./nix-wallpaper-live.nix
+    ./papirus-folders-live.nix
   ];
 
   programs.noctalia-shell = {
