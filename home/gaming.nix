@@ -11,7 +11,6 @@
     mangohud
     vulkan-tools
     winetricks
-    heroic  # Epic Games / GOG launcher
     vintagestory
   ];
 }

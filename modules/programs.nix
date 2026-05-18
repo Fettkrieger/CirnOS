@@ -106,7 +106,7 @@ in
     #   2. breeze-dark         Free byproduct of the Inherits chain; covers any
     #                          stray KDE-named icons (e.g. qt apps).
     #   3. hicolor             per-app icons that ship in the package itself
-    #                          (cursor, teamspeak6-client, footage, ...)
+    #                          (cursor, footage, ...)
     #   4. Adwaita             still installed by home-manager as a sibling
     # so virtually every desktop app gets a real icon in the dock without
     # having to symlink anything per-app the way spotify used to need.
@@ -124,7 +124,6 @@ in
     tailscale                         #Tailscale CLI used by the Noctalia plugin
     wdisplays                         #Wayland display configuration tool
     wl-clipboard                      #Wayland clipboard utilities
-    teamspeak6-client                 #Voice communication software
     obsidian                          #Note-taking and knowledge management application
     nodejs_20
     signal-desktop

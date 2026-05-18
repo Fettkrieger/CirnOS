@@ -57,7 +57,7 @@ in
     # org.gnome.Nautilus, ...) reachable directly, with `breeze-dark`
     # and `hicolor` chained after it via the theme's
     # `Inherits=breeze-dark,hicolor` line. Hicolor catches per-app
-    # icons that ship in the package itself (cursor, teamspeak6, ...).
+    # icons that ship in the package itself (cursor, footage, ...).
     # Adwaita is still installed system-wide as a sibling for any GTK
     # widget that hardcodes Adwaita symbolic names.
     # Base Papirus-Dark is deployed from the package; folder tint is overridden at

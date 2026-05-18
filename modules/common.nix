@@ -204,11 +204,6 @@ in
   # Accept Android SDK licenses for declarative Android Studio/SDK installs.
   nixpkgs.config.android_sdk.accept_license = true;
 
-  # Allow insecure packages (qtwebengine-5 needed by teamspeak3)
-  nixpkgs.config.permittedInsecurePackages = [
-    "qtwebengine-5.15.19"
-  ];
-
   # Enable flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 

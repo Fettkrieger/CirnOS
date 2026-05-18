@@ -109,6 +109,9 @@
                     "id": "plugin:battery-threshold"
                 },
                 {
+                    "defaultSettings": {
+                        "iconColor": "none"
+                    },
                     "id": "plugin:color-scheme-creator"
                 },
                 {
@@ -395,25 +398,6 @@
                         "videoSource": "portal"
                     },
                     "id": "plugin:screen-recorder"
-                },
-                {
-                    "defaultSettings": {
-                        "colorHistory": [
-                        ],
-                        "detectedCompositor": "",
-                        "detectedRecorder": "",
-                        "filenameFormat": "",
-                        "installedLangs": [
-                            "eng"
-                        ],
-                        "paletteColors": [
-                        ],
-                        "screenshotPath": "",
-                        "selectedOcrLang": "eng",
-                        "transAvailable": false,
-                        "videoPath": ""
-                    },
-                    "id": "plugin:screen-toolkit"
                 }
             ],
             "right": [
