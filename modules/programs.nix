@@ -93,12 +93,11 @@ in
     iconic                            #icon editor
     icon-library                      #icon library 
     constrict                         #video compressor/converter
-    foliate                           #ebook reader 
     upscaler                          #image upscaler 
     cozy                              #audiobook player
     blanket                           #background noise payer
     metadata-cleaner                  #metadata cleaner
-    
+
     
 
     # === Qt + GTK base libraries needed by Noctalia color templates ===
