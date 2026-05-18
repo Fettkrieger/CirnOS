@@ -58,8 +58,9 @@ in
     fd                                #Find alternative
     jq                                #JSON processor used by Noctalia music search
     yt-dlp                            #YouTube downloader
-    libreoffice-fresh                 #Office suite
+    onlyoffice-desktopeditors         #Office suite
     ffmpeg                            #Multimedia framework
+    handbrake                         #DVD / video transcoder (fr.handbrake.ghb.desktop)
     qt6Packages.qt6gtk2               #Qt6 gtk3 platform theme (qBittorrent)
 
     # === GNOME / Nautilus file manager stack ===
@@ -77,13 +78,28 @@ in
     evince                            #GNOME document viewer (PDF, DjVu, …)
     file-roller                       #GNOME archive manager (registers org.gnome.FileRoller.desktop)
     gnome-calculator                  #GNOME Calculator
-    loupe                             #GNOME image viewer (org.gnome.Loupe.desktop)
+    eog                               #Eye of GNOME image viewer (org.gnome.eog.desktop)
     snapshot                          #GNOME Camera / webcam (org.gnome.Snapshot.desktop)
     gnome-disk-utility                #GNOME Disks (mount, format, SMART; org.gnome.DiskUtility.desktop)
     dosfstools                        #FAT formatting for Disks (replaces gparted-full exfat/fat tooling)
     exfatprogs                        #exFAT formatting for Disks
     gnome-system-monitor              #GNOME System Monitor (org.gnome.SystemMonitor.desktop)
     gnome-boxes                       #GNOME Boxes VMs (org.gnome.Boxes.desktop; needs libvirtd in common.nix)
+    bella                             #color picker
+    gradia                            #screenshot editor
+    switcheroo                        #image compressor/converter
+    vaults                            #encrypted file storage
+    exhibit                           #3d model viewer
+    iconic                            #icon editor
+    icon-library                      #icon library 
+    constrict                         #video compressor/converter
+    foliate                           #ebook reader 
+    upscaler                          #image upscaler 
+    cozy                              #audiobook player
+    blanket                           #background noise payer
+    metadata-cleaner                  #metadata cleaner
+    
+    
 
     # === Qt + GTK base libraries needed by Noctalia color templates ===
     # adw-gtk3 is required as the base GTK theme so the GTK template's
@@ -117,8 +133,9 @@ in
     unzip                             #Archive extractor
     zip                               #Archive creator
     p7zip                             #7z archive support
-    ffmpegthumbnailer                 #Thumbnail generator for video files (GTK file managers / Loupe)
+    ffmpegthumbnailer                 #Thumbnail generator for video files (GTK file managers / EOG)
     inkscape                          #Vector graphics editor
+    pinta                             #Raster image editor (Paint.NET-style)
     networkmanagerapplet              #NetworkManager connection editor for VPN imports
     pavucontrol                       #PulseAudio volume control
     tailscale                         #Tailscale CLI used by the Noctalia plugin
