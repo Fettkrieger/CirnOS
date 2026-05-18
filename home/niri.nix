@@ -140,6 +140,12 @@ in
           enable = false;
           max-scroll-amount = "0%";
         };
+      } // lib.optionalAttrs isLenuwu {
+        # Trackpoint is separate from `mouse` in Niri; defaults use accel-speed 0.2.
+        trackpoint = {
+          accel-profile = "flat";
+          accel-speed = -0.35;
+        };
       };
 
       # === Gestures ===

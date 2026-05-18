@@ -59,7 +59,7 @@ let
           checkForMillenniumUpdates: true,
           checkForPluginAndThemeUpdates: true,
           onMillenniumUpdate: 1,
-          millenniumUpdateChannel: "stable",
+          millenniumUpdateChannel: "beta",
           shouldShowThemePluginUpdateNotifications: true,
           accentColor: "DEFAULT_ACCENT_COLOR"
         },
@@ -129,6 +129,21 @@ let
   '';
 in
 {
+  # Noctalia spawns `steam` when the window is closed but Steam stays in the tray;
+  # cirnos-steam writes steam://open/library to ~/.steam/steam.pipe (no second process).
+  xdg.desktopEntries.steam = {
+    name = "Steam";
+    comment = "Application for managing and playing games on Steam";
+    exec = "/run/current-system/sw/bin/cirnos-steam %U";
+    icon = "steam";
+    terminal = false;
+    categories = [ "Network" "FileTransfer" "Game" ];
+    mimeType = [
+      "x-scheme-handler/steam"
+      "x-scheme-handler/steamlink"
+    ];
+  };
+
   home.activation = {
     syncSteamMaterialTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       $DRY_RUN_CMD ${syncMaterialTheme}

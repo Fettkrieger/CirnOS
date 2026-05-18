@@ -777,6 +777,10 @@
             {
                 "enabled": false,
                 "id": "kcolorscheme"
+            },
+            {
+                "enabled": true,
+                "id": "steam"
             }
         ],
         "enableUserTheming": false
