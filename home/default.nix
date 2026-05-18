@@ -10,7 +10,7 @@
     ./syncthing.nix
     ./niri.nix
     ./noctalia/noctalia.nix
-  ] ++ (if enableGaming then [ ./gaming.nix ] else [])
+  ] ++ (if enableGaming then [ ./gaming.nix ./steam-material-theme.nix ] else [])
     ++ (if builtins.elem hostname [ "hp-nix" "lenuwu-nix" ] then [ ./workspaces-hp.nix ] else []);
 
   home.username = "krieger";

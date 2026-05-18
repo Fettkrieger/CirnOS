@@ -5,6 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     ./power.nix
+    ../../modules/steam-millennium.nix
   ];
 
   # CachyOS latest is typically 7.x. Stock linuxPackages avoided 7.0.x because
@@ -50,6 +51,13 @@
       tapping = true;
       clickMethod = "clickfinger";
     };
+  };
+
+  # Kernel trackpoint tuning (0–255; lower = less sensitive / slower cursor).
+  hardware.trackpoint = {
+    enable = true;
+    sensitivity = 100;
+    speed = 75;
   };
 
   services.xserver.xkb.layout = lib.mkForce "de";
