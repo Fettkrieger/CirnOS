@@ -108,6 +108,13 @@ in
       spawn-at-startup = [
         { command = [ "noctalia-shell" ]; }
         { command = [ "xwayland-satellite" ]; }
+        {
+          command = [
+            "ghostty"
+            "--initial-window=false"
+            "--quit-after-last-window-closed=false"
+          ];
+        }
       ];
 
       # === Monitor Configuration ===
@@ -288,7 +295,7 @@ in
         "Super+C".action.center-column = [];
         
         # === Launchers ===
-        "Super+Return".action.spawn = ["ghostty"];
+        "Super+Return".action.spawn = ["ghostty" "+new-window"];
         "Super+D".action.spawn = ["noctalia-shell" "ipc" "call" "launcher" "toggle"];
         "Super+B".action.spawn = ["noctalia-shell" "ipc" "call" "controlCenter" "toggle"];
         "Super+N".action.spawn = ["noctalia-shell" "ipc" "call" "notifications" "toggleHistory"];

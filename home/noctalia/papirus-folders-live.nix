@@ -15,7 +15,26 @@ let
   storeThemeDir = "${pkgs.papirus-icon-theme}/share/icons/${baseIconTheme}";
   gtkRefreshScript =
     "${config.programs.noctalia-shell.package}/share/noctalia-shell/Scripts/python/src/theming/gtk-refresh.py";
-  iconSizes = [ "22x22" "24x24" "32x32" "48x48" "64x64" ];
+  # Nautilus grid medium+ zoom requests 96x96/128x128; missing sizes inherit Papirus-Dark blue folders.
+  iconSizeCandidates = [
+    "16x16"
+    "16x16@2x"
+    "22x22"
+    "22x22@2x"
+    "24x24"
+    "24x24@2x"
+    "32x32"
+    "32x32@2x"
+    "48x48"
+    "48x48@2x"
+    "64x64"
+    "64x64@2x"
+    "96x96"
+    "128x128"
+  ];
+  iconSizes = lib.filter (size:
+    lib.pathExists "${storeThemeDir}/${size}/places"
+  ) iconSizeCandidates;
 
   overlayIndexTheme = pkgs.writeText "${overlayIconTheme}-index.theme" ''
     [Icon Theme]
@@ -80,9 +99,69 @@ let
       done
     }
 
-    update_icon_cache() {
+    # Papirus-Dark aliases (inode-directory, folder-publicshare, …) point at other
+    # place icons. GTK resolves those inside the inherited theme and never sees
+    # overlay folder.svg / folder-image-people.svg unless we mirror the aliases.
+    link_place_aliases() {
+      local size store_places overlay_places link link_target base_name normalized
+
+      for size in ${lib.concatStringsSep " " iconSizes}; do
+        store_places="$store_theme/$size/places"
+        overlay_places="$overlay_theme/$size/places"
+
+        for link in "$store_places"/*.svg; do
+          [ -L "$link" ] || continue
+          link_target="$(${pkgs.coreutils}/bin/readlink "$link")"
+          [[ "$link_target" == *"/"* ]] && continue
+
+          base_name="''${link##*/}"
+          [ -e "$overlay_places/$base_name" ] && continue
+
+          normalized="$link_target"
+          case "$link_target" in
+            folder-blue*)
+              normalized="''${link_target/-blue/}"
+              ;;
+            user-blue*)
+              normalized="''${link_target/-blue/}"
+              ;;
+          esac
+
+          if [ -e "$overlay_places/$normalized" ]; then
+            ${pkgs.coreutils}/bin/ln -sf "$normalized" "$overlay_places/$base_name"
+          fi
+        done
+      done
+    }
+
+    delete_icon_caches() {
+      ${pkgs.coreutils}/bin/rm -f \
+        "${config.home.homeDirectory}/.cache/icon-cache.kcache" \
+        "/var/tmp/kdecache-$(${pkgs.coreutils}/bin/id -u)/icon-cache.kcache" \
+        2>/dev/null || true
+    }
+
+    update_icon_caches() {
+      local theme_dir
+
+      delete_icon_caches
+
       ${pkgs.coreutils}/bin/rm -f "$overlay_theme/icon-theme.cache"
       ${pkgs.gtk3}/bin/gtk-update-icon-cache -qf "$overlay_theme" 2>/dev/null || true
+
+      for theme_dir in \
+        "$store_theme" \
+        "${pkgs.papirus-icon-theme}/share/icons/Papirus-Light" \
+        "${config.home.homeDirectory}/.local/share/icons/${baseIconTheme}" \
+        "${config.home.homeDirectory}/.icons/${baseIconTheme}"
+      do
+        [ -d "$theme_dir" ] || continue
+        ${pkgs.gtk3}/bin/gtk-update-icon-cache -qf "$theme_dir" 2>/dev/null || true
+      done
+    }
+
+    nudge_nautilus() {
+      ${pkgs.procps}/bin/pkill -HUP -x nautilus 2>/dev/null || true
     }
 
     reload_icon_theme() {
@@ -205,12 +284,23 @@ let
       folder_changed=0
     fi
 
+    # Re-apply when large-size slots or place aliases are missing (post-upgrade).
+    if [ "$folder_changed" -eq 0 ] && {
+      [ ! -e "$overlay_theme/96x96/places/folder.svg" ] ||
+        [ ! -e "$overlay_theme/48x48/places/inode-directory.svg" ] ||
+        [ ! -e "$overlay_theme/48x48/places/folder-publicshare.svg" ];
+    }; then
+      folder_changed=1
+    fi
+
     if [ "$folder_changed" -eq 1 ]; then
       apply_folder_color "$best_color"
-      update_icon_cache
+      link_place_aliases
+      update_icon_caches
       mkdir -p "$(dirname "$state_file")"
       printf '%s\n' "$new_state" > "$state_file"
       reload_icon_theme
+      nudge_nautilus
     fi
 
     reload_gtk_appearance
