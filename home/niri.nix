@@ -158,10 +158,8 @@ in
 
       # === Layout Configuration ===
       layout = {
-        gaps = 3;  # Gap between windows and screen edges
-        
-        
-        
+        gaps = 3;
+
         center-focused-column = "never";
         
         # Preset column widths (cycle with Super+R)
@@ -215,9 +213,6 @@ in
 
       # === Window Rules ===
       window-rules = [
-        
-        
-        
         # Picture-in-picture
         {
           matches = [{ title = "Picture-in-Picture"; }];

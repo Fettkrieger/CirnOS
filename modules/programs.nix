@@ -78,7 +78,7 @@ in
     evince                            #GNOME document viewer (PDF, DjVu, …)
     file-roller                       #GNOME archive manager (registers org.gnome.FileRoller.desktop)
     gnome-calculator                  #GNOME Calculator
-    eog                               #Eye of GNOME image viewer (org.gnome.eog.desktop)
+    gthumb                            #GNOME photo manager (org.gnome.gThumb.desktop)
     snapshot                          #GNOME Camera / webcam (org.gnome.Snapshot.desktop)
     gnome-disk-utility                #GNOME Disks (mount, format, SMART; org.gnome.DiskUtility.desktop)
     dosfstools                        #FAT formatting for Disks (replaces gparted-full exfat/fat tooling)
