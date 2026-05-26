@@ -1,18 +1,6 @@
 # System-wide packages (available to all users)
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
-let
-  cursorWithLibsecret = pkgs.symlinkJoin {
-    name = "code-cursor-libsecret";
-    paths = [ pkgs.code-cursor ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      rm $out/bin/cursor
-      makeWrapper ${pkgs.code-cursor}/bin/cursor $out/bin/cursor \
-        --add-flags "--password-store=gnome-libsecret"
-    '';
-  };
-in
 {
   # Fonts (needed for Noctalia and other UI elements)
   fonts.packages = with pkgs; [
@@ -50,8 +38,7 @@ in
     dconf-editor                      #GNOME configuration editor
     spotify                           #Music streaming client (icon resolved via papirus-icon-theme: spotify-client)
     vscode                            #Source-code editor
-    (lib.hiPrio cursorWithLibsecret)  #Cursor AI code editor, forced to use GNOME Keyring/libsecret
-    nixd                              #Nix language server (Nix IDE / vscode-nix-ide in Cursor and VS Code)
+    nixd                              #Nix language server (vscode-nix-ide)
     fastfetch                         #System information tool
     tree                              #Directory listing tool
     ripgrep                           #Search tool

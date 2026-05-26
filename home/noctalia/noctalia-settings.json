@@ -21,7 +21,7 @@
             "firefox",
             "org.gnome.Nautilus",
             "steam",
-            "cursor",
+            "code",
             "spotify",
             "com.discordapp.Discord",
             "org.gnome.Evince",
@@ -86,28 +86,6 @@
         "widgetSpacing": 0,
         "widgets": {
             "center": [
-                {
-                    "defaultSettings": {
-                        "autoHeight": true,
-                        "cheatsheetData": [
-                        ],
-                        "columnCount": 3,
-                        "detectedCompositor": "",
-                        "hyprlandConfigPath": "~/.config/hypr/hyprland.conf",
-                        "modKeyVariable": "$mod",
-                        "niriConfigPath": "~/.config/niri/config.kdl",
-                        "windowHeight": 0,
-                        "windowWidth": 1400
-                    },
-                    "id": "plugin:keybind-cheatsheet"
-                },
-                {
-                    "defaultSettings": {
-                        "batteryDevice": "/sys/class/power_supply/BAT0",
-                        "chargeThreshold": 80
-                    },
-                    "id": "plugin:battery-threshold"
-                },
                 {
                     "defaultSettings": {
                         "iconColor": "none"
@@ -462,7 +440,7 @@
         "pinnedApps": [
             "firefox",
             "org.gnome.Nautilus",
-            "cursor",
+            "code",
             "spotify",
             "com.discordapp.Discord"
         ],
@@ -570,7 +548,7 @@
         "firstDayOfWeek": -1,
         "hideWeatherCityName": false,
         "hideWeatherTimezone": false,
-        "name": "Moudon",
+        "name": "Hanover",
         "showCalendarEvents": false,
         "showCalendarWeather": true,
         "showWeekNumberInCalendar": false,
