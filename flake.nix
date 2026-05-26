@@ -22,10 +22,6 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # CachyOS kernel packages (patches + tunings; not in nixpkgs yet)
-    # Do not add inputs.nixpkgs.follows — kernel version is defined in this flake.
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
   };
 
   outputs = { self, nixpkgs, home-manager, niri, ... }@inputs:

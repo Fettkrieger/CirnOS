@@ -8,7 +8,7 @@
     ./power.nix
   ];
 
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # Early KMS for Intel graphics (prevents black screen on boot)
   boot.initrd.kernelModules = [ "i915" ];
@@ -40,6 +40,15 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
   services.blueman.enable = true;
+  systemd.user.services.blueman-applet = {
+    description = "Blueman tray applet";
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.blueman}/bin/blueman-applet";
+      Restart = "on-failure";
+    };
+  };
 
   # Temporary tooling for a Windows VM (used to build HP BIOS USB media).
   # libvirtd is enabled in modules/common.nix for GNOME Boxes on all hosts.

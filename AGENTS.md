@@ -8,9 +8,9 @@ in the repo.
 ## Quick facts
 
 - Flake inputs: `nixpkgs` (nixos-unstable), `home-manager`, `niri` (sodiboo/niri-flake),
-  `noctalia` (noctalia-dev/noctalia-shell), `nix-cachyos-kernel` (xddxdd/release).
-- Kernel (both hosts): `pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto` via
-  `modules/cachyos-kernel.nix` (not in official nixpkgs yet).
+  `noctalia` (noctalia-dev/noctalia-shell).
+- Kernel (both hosts): official Nixpkgs latest kernel via `pkgs.linuxPackages_latest`.
+  Roll back a host to the default stock kernel with `pkgs.linuxPackages` if needed.
 - `nixosConfigurations`: `lenuwu-nix`, `hp-nix`. Both built via the `mkHost` helper in `flake.nix`.
 - Display manager: SDDM (Wayland) with `catppuccin-mocha-blue` theme over a black SVG.
 - Compositor: Niri (system module from niri-flake; user config from `home/niri.nix`).
@@ -29,7 +29,6 @@ in the repo.
 flake.nix                 entry point + mkHost
 flake.lock                pinned inputs
 modules/
-  cachyos-kernel.nix      CachyOS kernel flake overlay + lantian binary cache
   common.nix              shared system config (boot, locale, SDDM, Niri, portals, PipeWire, Tailscale, fwupd, battery_ctl udev, auto-upgrade, ssh, ...)
   programs.nix            system packages + fonts; wraps footage with GDK_BACKEND=x11
   firewall.nix            host-aware firewall (laptop = roaming → SSH and dev ports closed)
@@ -71,10 +70,8 @@ possible improvements.txt      2026-02-15 review notes (open items)
 ### `lenuwu-nix` — Lenovo ThinkPad E16 Gen 2 AMD (21M5002DGE)
 
 - AMD CPU + Radeon iGPU. `enableGaming = true`.
-- `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto`
-  (CachyOS latest, typically 7.x). Stock `linuxPackages` was used previously
-  because rtw89/RTL8852CE firmware init failed on Linux 7.0.x — Wi-Fi may still
-  break; rollback to `pkgs.linuxPackages` if needed.
+- `boot.kernelPackages = pkgs.linuxPackages_latest`. If RTL8852CE Wi-Fi regresses
+  on the latest stock kernel track, rollback to `pkgs.linuxPackages`.
 - Wi-Fi/BT race workaround: `rtw89_8852ce` is blacklisted; a oneshot
   `rtw89-8852ce-delayed.service` waits for `bluetooth.service` then
   `modprobe`s it after a 10 s sleep.
@@ -100,7 +97,7 @@ possible improvements.txt      2026-02-15 review notes (open items)
 ### `hp-nix` — HP Envy x360 Convertible 13-bd0xxx (Intel 11th-gen Tiger Lake / Iris Xe)
 
 - `enableGaming = false` (toggleable in `flake.nix`).
-- `boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto`;
+- `boot.kernelPackages = pkgs.linuxPackages_latest`;
   `boot.initrd.kernelModules = [ "i915" ]` for early KMS.
 - Intel iGPU with `intel-media-driver` (VAAPI) + `vpl-gpu-rt` (Quick Sync).
 - Touchpad via libinput; Bluetooth on; blueman with applet.
@@ -110,9 +107,8 @@ possible improvements.txt      2026-02-15 review notes (open items)
 
 ## System-level config (`modules/common.nix`)
 
-- CachyOS kernel: `modules/cachyos-kernel.nix` applies `nix-cachyos-kernel` overlay
-  (`overlays.default`) and the lantian Attic substituter. Per-host
-  `boot.kernelPackages` is set in `hosts/*/default.nix`.
+- Kernel packages are selected per host in `hosts/*/default.nix`; both hosts
+  currently use the official Nixpkgs latest kernel track, `pkgs.linuxPackages_latest`.
 - Hostname injected from the flake via `specialArgs.hostname`.
 - systemd-boot, EFI vars writable.
 - NetworkManager (+ networkmanager-openvpn). Tailscale opens its firewall hole automatically.
@@ -120,13 +116,15 @@ possible improvements.txt      2026-02-15 review notes (open items)
 - SDDM Wayland with `catppuccin-mocha-blue` theme; theme is a custom override (mocha/blue/Noto Sans/black SVG background).
 - Niri enabled (`programs.niri.enable`); the niri-flake polkit user service is disabled because Noctalia provides a polkit agent (multiple agents conflict).
 - xdg.portal: GTK + GNOME extra portals. Niri-specific portal ordering forces GTK for FileChooser, GNOME for ScreenCast/Screenshot/RemoteDesktop, gnome-keyring for Secret.
+- Flatpak enabled. Discord is installed from Flathub by an idempotent activation
+  script that warns and skips when Flathub/DNS is unavailable.
 - power-profiles-daemon defaulted on (laptop hosts override with `lib.mkForce`).
 - gnome-keyring + SDDM PAM integration; gvfs is enabled so Nautilus can mount network shares (sftp/smb/ftp/mtp under "Other Locations") and back the trash bin (`trash:///`).
 - Battery threshold: `users.groups.battery_ctl` + udev rules `chgrp battery_ctl` and `chmod g+w` the kernel `charge_control_{start,end}_threshold` files. The Noctalia plugin writes them as `krieger`.
 - Logitech MX Master 3S (USB receiver `046d:c548`) is owned by `modules/logiops.nix`: `pkgs.logiops` daemon (`logid.service`) reads a hand-written, heavily-commented `/etc/logid.cfg` rendered from a Nix heredoc; `hardware.logitech.wireless.{enable,enableGraphical}` pulls in Solaar + `logitech-udev-rules`. Starter mapping: DPI 1000, smart-shift on; gesture-button tap → `Super+X` (Niri overview), gesture drags → Niri focus column/window, wheel-mode button → `Super+F` (Niri maximize column), thumb wheel → `KEY_VOLUMEUP/DOWN` (forwarded to Noctalia by Niri's media-key bindings); thumb buttons (Back/Forward) and the vertical scroll wheel are intentionally undiverted so the kernel `hid-logitech-hidpp` driver handles them natively. The old `services.keyd` block on the receiver was removed.
 - CUPS printing on. PipeWire (alsa + 32-bit + pulse). pulseaudio off, rtkit on.
 - User `krieger` (normal, wheel/networkmanager/video/audio/input/kvm/battery_ctl).
-- Firefox enabled. Unfree allowed. Android SDK license auto-accepted.
+- Firefox enabled. Unfree allowed.
 - `permittedInsecurePackages = [ "qtwebengine-5.15.19" ]` — original justification was teamspeak3, but the package list now uses `teamspeak6-client`; possibly stale.
 - Flakes enabled. `nix.nixPath = [ "nixpkgs=/etc/channels/nixpkgs" ]`. Weekly GC, 30-day retention. `auto-optimise-store`.
 - OpenSSH on (overridden off on the laptop). PasswordAuthentication still true.
@@ -141,7 +139,7 @@ Fonts: nerd-fonts (jetbrains-mono, fira-code), noto-fonts + emoji, corefonts (St
 Notable wrappers:
 - `footage-x11` — `wrapProgram footage --set GDK_BACKEND x11` (Wayland + NVIDIA Vulkan crash workaround).
 
-Apps installed system-wide: git, wget, curl, jdk17, android-studio-full, android-tools, python3, chromium, qbittorrent, popsicle, kicad, dconf-editor, discord, spotify, vscode, fastfetch, tree, ripgrep, fd, jq, yt-dlp, libreoffice-fresh, claude-code, ffmpeg, the GNOME file-manager stack (`nautilus`, `file-roller`; trash + remote shares come from `gvfs` enabled in `common.nix`), the Noctalia color-template prerequisites (`adw-gtk3`, `qt6Packages.qt6ct`, `libsForQt5.qt5ct`), the icon-theme stack (`papirus-icon-theme` as the active GTK icon theme, with `adwaita-icon-theme` and `hicolor-icon-theme` as siblings/fallback), unzip/zip/p7zip, ffmpegthumbnailer, gthumb, inkscape, networkmanagerapplet, pavucontrol, tailscale, wdisplays, wl-clipboard, teamspeak6-client, obsidian, gparted-full, nodejs_20, signal-desktop, whatsapp-electron, full GStreamer plugin set, the footage X11 wrapper, evtest (used by the Noctalia Slow Bongo plugin), wev (used to verify logiops keypresses).
+Apps installed system-wide: git, wget, curl, python3, chromium, qbittorrent, popsicle, kicad, dconf-editor, spotify, vscode, fastfetch, tree, ripgrep, fd, jq, yt-dlp, libreoffice-fresh, claude-code, ffmpeg, the GNOME file-manager stack (`nautilus`, `file-roller`; trash + remote shares come from `gvfs` enabled in `common.nix`), the Noctalia color-template prerequisites (`adw-gtk3`, `qt6Packages.qt6ct`, `libsForQt5.qt5ct`), the icon-theme stack (`papirus-icon-theme` as the active GTK icon theme, with `adwaita-icon-theme` and `hicolor-icon-theme` as siblings/fallback), unzip/zip/p7zip, ffmpegthumbnailer, gthumb, inkscape, networkmanagerapplet, pavucontrol, tailscale, wdisplays, wl-clipboard, teamspeak6-client, obsidian, gparted-full, nodejs_24, signal-desktop, whatsapp-electron, full GStreamer plugin set, the footage X11 wrapper, evtest (used by the Noctalia Slow Bongo plugin), wev (used to verify logiops keypresses).
 
 ## Firewall (`modules/firewall.nix`)
 
@@ -268,16 +266,10 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 - **Insecure package allow-list**: `qtwebengine-5.15.19` is permitted with a comment about teamspeak3, but only `teamspeak6-client` is installed. May be removable.
 - **NVIDIA env vars** in `home/niri.nix` are applied to every host except `lenuwu-nix`. `hp-nix` is Intel — these are harmless there but are stale (the guard predates `hp-nix`).
 - **Always edit `hardware-configuration.nix` only via `nixos-generate-config`.** See `docs/lenuwu-nix-migration.md` for the full disk-transplant procedure on the ThinkPad.
-- **CachyOS kernel (`nix-cachyos-kernel`).** Do not add `inputs.nixpkgs.follows` on
-  the flake input. First deploy after adding the cache: run `rebuild` once (overlay +
-  substituter only if you staged that first), then `rebuild` again after
-  `boot.kernelPackages` points at `cachyosKernels`, then `reboot`. Expect
-  `uname -r` to contain `cachyos` and `lto`. LTO can break future DKMS/OOT modules;
-  CirnOS has none today. Rollback ThinkPad Wi-Fi: `boot.kernelPackages = pkgs.linuxPackages`
-  in `hosts/lenuwu-nix/default.nix`, rebuild, reboot. Boot failure: pick the previous
-  systemd-boot generation (`configurationLimit = 10` on lenuwu). Optional CPU tuning:
-  `linuxPackages-cachyos-latest-lto-x86_64-v3` if `/proc/cpuinfo` flags include `lm`
-  (Zen + Tiger Lake both qualify).
+- **Stock kernel track.** Both hosts use `pkgs.linuxPackages_latest`. Rollback
+  ThinkPad Wi-Fi or other kernel regressions by setting the affected host to
+  `pkgs.linuxPackages`, then rebuild and reboot. Boot failure: pick the previous
+  systemd-boot generation (`configurationLimit = 10` on lenuwu).
 
 ## Common workflows
 
@@ -286,5 +278,5 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 - Garbage-collect with `cleanup` (alias); the system also auto-GCs weekly with 30-day retention and runs `auto-optimise-store`.
 - Power profile from CLI: `pp` (get), `pp-perf` / `pp-bal` / `pp-save`. Game with `steam-perf` or `game-perf <cmd>`.
 - After Noctalia UI tweaks: just `git add home/noctalia/*.json` and commit.
-- After pulling CachyOS kernel changes: `rebuild` (applies cache if new), `rebuild`
-  + `reboot` if `boot.kernelPackages` changed; on lenuwu verify Wi-Fi after ~10 s.
+- After changing kernel tracks: `rebuild` + `reboot`; on lenuwu verify Wi-Fi after
+  ~10 s and confirm `uname -r` does not contain `cachyos` or `lto`.

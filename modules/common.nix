@@ -31,7 +31,6 @@ let
 in
 {
   imports = [
-    ./cachyos-kernel.nix
     ./firewall.nix
     ./logiops.nix
     ./programs.nix
@@ -124,13 +123,26 @@ in
   # Flatpak (Discord is installed from Flathub; see activation script below).
   services.flatpak.enable = true;
 
-  # Flathub + Discord: idempotent on every switch; requires network on first install.
+  # Flathub + Discord: idempotent on every switch; skips cleanly if Flathub is
+  # unreachable during activation.
   system.activationScripts.flatpak-flathub-discord = {
     text = ''
-      ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub \
-        https://flathub.org/repo/flathub.flatpakrepo
-      ${pkgs.flatpak}/bin/flatpak install --noninteractive --system -y \
-        flathub com.discordapp.Discord
+      flatpak=${pkgs.flatpak}/bin/flatpak
+
+      if ! "$flatpak" remotes --system --columns=name | ${pkgs.gnugrep}/bin/grep -qx flathub; then
+        if ! "$flatpak" remote-add --system --if-not-exists flathub \
+          https://flathub.org/repo/flathub.flatpakrepo; then
+          echo "warning: Flathub is unreachable; skipping Discord Flatpak setup" >&2
+          exit 0
+        fi
+      fi
+
+      if ! "$flatpak" info --system com.discordapp.Discord >/dev/null 2>&1; then
+        if ! "$flatpak" install --system --noninteractive -y \
+          flathub com.discordapp.Discord; then
+          echo "warning: Discord Flatpak install failed; continuing activation" >&2
+        fi
+      fi
     '';
   };
 
@@ -200,9 +212,6 @@ in
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
-  # Accept Android SDK licenses for declarative Android Studio/SDK installs.
-  nixpkgs.config.android_sdk.accept_license = true;
 
   # Enable flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

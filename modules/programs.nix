@@ -26,9 +26,6 @@
     wget                              #CLI downloader for files over HTTP/HTTPS
     curl                              #CLI tool for transferring data with URLs  
     git                               #Version control system
-    jdk17                             #Java runtime/toolchain for Android builds
-    android-studio-full               #Android Studio with bundled Android SDK/emulator components
-    android-tools                     #ADB and fastboot tools for Android devices
     python3                           #Python programming language interpreter  
     pywalfox-native                   #Native app/CLI used by the Pywalfox Firefox addon
     chromium                          #Web browser
@@ -128,7 +125,7 @@
     wdisplays                         #Wayland display configuration tool
     wl-clipboard                      #Wayland clipboard utilities
     obsidian                          #Note-taking and knowledge management application
-    nodejs_20
+    nodejs_24
     signal-desktop
     whatsapp-electron
     #GStreamer plugins (needed for Footage and video apps)

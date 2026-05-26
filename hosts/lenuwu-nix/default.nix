@@ -8,10 +8,9 @@
     ../../modules/steam-millennium.nix
   ];
 
-  # CachyOS latest is typically 7.x. Stock linuxPackages avoided 7.0.x because
-  # rtw89/RTL8852CE firmware init failed there; Wi-Fi may still break — rollback
-  # to pkgs.linuxPackages if needed (see AGENTS.md).
-  boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto;
+  # Official Nixpkgs latest kernel. If RTL8852CE Wi-Fi regresses on this track,
+  # rollback to pkgs.linuxPackages if needed (see AGENTS.md).
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   hardware.enableAllFirmware = true;
 
@@ -67,7 +66,6 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
   services.blueman.enable = true;
-  services.blueman.withApplet = false;
 
   services.upower.enable = true;
 
