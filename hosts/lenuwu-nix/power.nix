@@ -2,6 +2,48 @@
 { lib, pkgs, ... }:
 
 let
+  lenuwuWifiPowerPolicy = pkgs.writeShellScript "lenuwu-wifi-power-policy" ''
+    set -eu
+
+    export PATH=${lib.makeBinPath [
+      pkgs.coreutils
+      pkgs.iw
+      pkgs.tlp-pd
+    ]}
+
+    # TLP writes its profile state before all profile side effects have fully
+    # settled, so give tlp/tlp-pd a brief moment before applying our override.
+    sleep 0.2
+
+    profile=$(tlpctl get 2>/dev/null || true)
+    case "$profile" in
+      power-saver)
+        wifi_power_save=on
+        runtime_pm=auto
+        ;;
+      performance|balanced)
+        wifi_power_save=off
+        runtime_pm=on
+        ;;
+      *)
+        wifi_power_save=off
+        runtime_pm=on
+        ;;
+    esac
+
+    for iface_path in /sys/class/net/*; do
+      [ -d "$iface_path" ] || continue
+      [ -d "$iface_path/wireless" ] || continue
+
+      iface=''${iface_path##*/}
+      iw dev "$iface" set power_save "$wifi_power_save" >/dev/null 2>&1 || true
+
+      if [ -w "$iface_path/device/power/control" ]; then
+        (printf '%s\n' "$runtime_pm" > "$iface_path/device/power/control") || true
+      fi
+    done
+  '';
+
   lenuwuPowerPolicy = pkgs.writeShellScript "lenuwu-power-policy" ''
     set -eu
 
@@ -42,75 +84,129 @@ let
 
     state_dir=/run/lenuwu-power-policy
     ac_state_file="$state_dir/ac-online"
-
-    holds=$(tlpctl list-holds 2>/dev/null || true)
-    if [ -n "$holds" ]; then
-      exit 0
-    fi
-
-    if [ "$ac_online" = "1" ]; then
-      profile=balanced
-      brightness_cap=
-    elif [ "$battery_capacity" -le 30 ]; then
-      profile=power-saver
-      if [ "$battery_capacity" -le 15 ]; then
-        brightness_cap=30
-      else
-        brightness_cap=50
-      fi
-    elif [ "$battery_capacity" -le 60 ]; then
-      profile=balanced
-      brightness_cap=80
-    else
-      profile=balanced
-      brightness_cap=80
-    fi
+    battery_state_file="$state_dir/battery-capacity"
+    profile_state_file="$state_dir/tlp-profile"
 
     mkdir -p "$state_dir"
 
-    last_ac_online=
-    if [ -r "$ac_state_file" ]; then
-      last_ac_online=$(cat "$ac_state_file")
-      case "$last_ac_online" in
-        0|1) ;;
-        *) last_ac_online= ;;
-      esac
-    fi
-
-    # Manual profile changes should stick. Auto-switch only after the AC state
-    # actually changes; the first run just seeds the state for future checks.
-    if [ -z "$last_ac_online" ]; then
-      printf '%s\n' "$ac_online" > "$ac_state_file"
-    elif [ "$last_ac_online" != "$ac_online" ]; then
-      current_profile=$(tlpctl get 2>/dev/null || true)
-      if [ "$current_profile" != "$profile" ]; then
-        tlpctl set "$profile" >/dev/null || tlp "$profile" >/dev/null
+    read_state() {
+      file=$1
+      if [ -r "$file" ]; then
+        cat "$file"
       fi
-      printf '%s\n' "$ac_online" > "$ac_state_file"
-    fi
+    }
 
-    if [ -n "$brightness_cap" ]; then
+    set_brightness_percent() {
+      percent=$1
+
       for backlight in /sys/class/backlight/*; do
         [ -r "$backlight/max_brightness" ] || continue
-        [ -r "$backlight/brightness" ] || continue
         [ -w "$backlight/brightness" ] || continue
 
         max=$(cat "$backlight/max_brightness")
-        current=$(cat "$backlight/brightness")
-        case "$max:$current" in
+        case "$max:$percent" in
           *[!0-9:]*|:|*:|"") continue ;;
         esac
 
-        target=$((max * brightness_cap / 100))
+        target=$((max * percent / 100))
         if [ "$target" -lt 1 ]; then
           target=1
+        elif [ "$target" -gt "$max" ]; then
+          target=$max
         fi
 
-        if [ "$current" -gt "$target" ]; then
-          echo "$target" > "$backlight/brightness"
-        fi
+        printf '%s\n' "$target" > "$backlight/brightness"
       done
+    }
+
+    current_profile=$(tlpctl get 2>/dev/null || true)
+    case "$current_profile" in
+      performance|balanced|power-saver) ;;
+      *) current_profile=unknown ;;
+    esac
+
+    last_ac_online=$(read_state "$ac_state_file" || true)
+    case "$last_ac_online" in
+      0|1) ;;
+      *) last_ac_online= ;;
+    esac
+
+    last_battery_capacity=$(read_state "$battery_state_file" || true)
+    case "$last_battery_capacity" in
+      ""|*[!0-9]*) last_battery_capacity= ;;
+    esac
+
+    last_profile=$(read_state "$profile_state_file" || true)
+    case "$last_profile" in
+      performance|balanced|power-saver|unknown) ;;
+      *) last_profile= ;;
+    esac
+
+    first_run=0
+    if [ -z "$last_ac_online" ] || [ -z "$last_battery_capacity" ] || [ -z "$last_profile" ]; then
+      first_run=1
     fi
+
+    ac_changed=0
+    if [ -n "$last_ac_online" ] && [ "$last_ac_online" != "$ac_online" ]; then
+      ac_changed=1
+    fi
+
+    battery_changed=0
+    if [ -n "$last_battery_capacity" ] && [ "$last_battery_capacity" != "$battery_capacity" ]; then
+      battery_changed=1
+    fi
+
+    profile_changed=0
+    if [ -n "$last_profile" ] && [ "$last_profile" != "$current_profile" ]; then
+      profile_changed=1
+    fi
+
+    brightness_percent=
+    auto_profile_event=0
+    if [ "$first_run" = "1" ] || [ "$ac_changed" = "1" ] || [ "$battery_changed" = "1" ]; then
+      auto_profile_event=1
+    fi
+
+    holds=$(tlpctl list-holds 2>/dev/null || true)
+
+    if [ "$ac_online" = "1" ]; then
+      profile=balanced
+      if [ "$auto_profile_event" = "1" ]; then
+        brightness_percent=100
+      fi
+    elif [ "$battery_capacity" -le 40 ]; then
+      profile=power-saver
+      if [ "$auto_profile_event" = "1" ]; then
+        brightness_percent=40
+      fi
+    else
+      profile=balanced
+      if [ "$auto_profile_event" = "1" ]; then
+        brightness_percent=80
+      fi
+    fi
+
+    if [ "$auto_profile_event" = "1" ] && [ -z "$holds" ]; then
+      if [ "$current_profile" != "$profile" ]; then
+        tlpctl set "$profile" >/dev/null || tlp "$profile" >/dev/null
+        current_profile=$(tlpctl get 2>/dev/null || printf '%s\n' "$profile")
+      fi
+    fi
+
+    if [ "$profile_changed" = "1" ] && [ "$ac_online" = "0" ] && [ "$current_profile" = "power-saver" ]; then
+      brightness_percent=40
+    fi
+
+    if [ -n "$brightness_percent" ]; then
+      set_brightness_percent "$brightness_percent"
+    fi
+
+    printf '%s\n' "$ac_online" > "$ac_state_file"
+    printf '%s\n' "$battery_capacity" > "$battery_state_file"
+    printf '%s\n' "$current_profile" > "$profile_state_file"
+
+    ${lenuwuWifiPowerPolicy}
   '';
 in
 
@@ -184,28 +280,48 @@ in
       RUNTIME_PM_ON_BAT = "auto";
 
       WIFI_PWR_ON_AC = "off";
-      WIFI_PWR_ON_BAT = "on";
+      # TLP maps balanced and power-saver to WIFI_PWR_ON_BAT; a local service
+      # below re-enables Wi-Fi power saving only when the active profile is SAV.
+      WIFI_PWR_ON_BAT = "off";
 
       RUNTIME_PM_DRIVER_DENYLIST = "amdgpu rtw89_8852ce rtw89_pci btusb xhci_hcd";
     };
   };
 
   systemd.services.lenuwu-power-policy = {
-    description = "Apply lenuwu AC-transition power profile and brightness policy";
+    description = "Apply lenuwu event-based power profile and brightness policy";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "tlp.service" "tlp-pd.service" ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = lenuwuPowerPolicy;
     };
   };
 
-  systemd.timers.lenuwu-power-policy = {
-    description = "Re-apply lenuwu brightness policy and detect AC changes";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnBootSec = "30s";
-      OnUnitActiveSec = "30s";
-      AccuracySec = "5s";
+  systemd.services.lenuwu-wifi-power-policy = {
+    description = "Apply lenuwu Wi-Fi power policy for the active TLP profile";
+    after = [ "tlp.service" "tlp-pd.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = lenuwuWifiPowerPolicy;
+    };
+  };
+
+  systemd.paths.lenuwu-power-policy-profile = {
+    description = "Apply lenuwu brightness policy after TLP profile changes";
+    wantedBy = [ "multi-user.target" ];
+    pathConfig = {
+      PathChanged = "/run/tlp/last_pwr";
       Unit = "lenuwu-power-policy.service";
+    };
+  };
+
+  systemd.paths.lenuwu-wifi-power-policy = {
+    description = "Re-apply lenuwu Wi-Fi power policy after TLP profile changes";
+    wantedBy = [ "multi-user.target" ];
+    pathConfig = {
+      PathChanged = "/run/tlp/last_pwr";
+      Unit = "lenuwu-wifi-power-policy.service";
     };
   };
 

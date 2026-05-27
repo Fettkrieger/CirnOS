@@ -52,14 +52,6 @@ in
     ];
   };
 
-  # Tailscale mesh VPN. Client routing support keeps exit-node use working
-  # correctly when enabled from the Tailscale CLI or Noctalia plugin.
-  services.tailscale = {
-    enable = true;
-    openFirewall = true;
-    useRoutingFeatures = "client";
-  };
-
   # Firmware updates via LVFS (includes UEFI/BIOS when supported)
   services.fwupd.enable = true;
 
@@ -169,18 +161,6 @@ in
   };
   console.keyMap = "sg";
 
-  # Noctalia's battery-threshold plugin owns the charge limit value. This only
-  # grants the logged-in user write access to the kernel's threshold sysfs files.
-  users.groups.battery_ctl = {};
-  services.udev.extraRules = ''
-    SUBSYSTEM=="power_supply", KERNEL=="BAT*", TEST=="charge_control_end_threshold", \
-      RUN+="${pkgs.coreutils}/bin/chgrp battery_ctl /sys$devpath/charge_control_end_threshold", \
-      RUN+="${pkgs.coreutils}/bin/chmod g+w /sys$devpath/charge_control_end_threshold"
-    SUBSYSTEM=="power_supply", KERNEL=="BAT*", TEST=="charge_control_start_threshold", \
-      RUN+="${pkgs.coreutils}/bin/chgrp battery_ctl /sys$devpath/charge_control_start_threshold", \
-      RUN+="${pkgs.coreutils}/bin/chmod g+w /sys$devpath/charge_control_start_threshold"
-  '';
-
   # Enable CUPS printing
   services.printing.enable = true;
 
@@ -198,7 +178,7 @@ in
   users.users.krieger = {
     isNormalUser = true;
     description = "Krieger";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "kvm" "libvirtd" "battery_ctl" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "input" "kvm" "libvirtd" ];
     packages = with pkgs; [];
   };
 

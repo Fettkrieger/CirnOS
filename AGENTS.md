@@ -17,7 +17,7 @@ in the repo.
 - Shell: Noctalia (bar / notifications / control-center / launcher) — HM module from the noctalia flake.
 - Theme: Catppuccin Mocha Blue + Adwaita-dark GTK/Qt; cursor live-synced from Noctalia colors.
 - Audio: PipeWire (no PulseAudio); rtkit on. Audio control via Noctalia.
-- Network: NetworkManager (+ openvpn plugin) and Tailscale (`useRoutingFeatures = "client"`).
+- Network: NetworkManager (+ openvpn plugin).
 - Locale: `en_US.UTF-8` with `de_CH.UTF-8` formats. TZ Europe/Zurich. Console `sg`, XKB `ch` (overridden to `de` on `lenuwu-nix`).
 - `system.stateVersion = "24.11"`, `home.stateVersion = "24.11"`.
 - Git identity: Krieger / `leandro.tiziani@protonmail.com`, openpgp signing.
@@ -29,14 +29,14 @@ in the repo.
 flake.nix                 entry point + mkHost
 flake.lock                pinned inputs
 modules/
-  common.nix              shared system config (boot, locale, SDDM, Niri, portals, PipeWire, Tailscale, fwupd, battery_ctl udev, auto-upgrade, ssh, ...)
+  common.nix              shared system config (boot, locale, SDDM, Niri, portals, PipeWire, fwupd, auto-upgrade, ssh, ...)
   programs.nix            system packages + fonts; wraps footage with GDK_BACKEND=x11
   firewall.nix            host-aware firewall (laptop = roaming → SSH and dev ports closed)
   logiops.nix             Logitech MX Master 3S: logiops daemon + heavily-commented /etc/logid.cfg + Solaar (via hardware.logitech.wireless)
 hosts/
   lenuwu-nix/
     default.nix           ThinkPad E16 Gen 2 AMD specifics
-    power.nix             TLP + custom AC-transition policy + hibernate setup
+    power.nix             TLP + event-based brightness/profile policy + hibernate setup
     hardware-configuration.nix   generated, do not edit
   hp-nix/
     default.nix           HP Envy x360 13-bd0xxx (Intel Tiger Lake) specifics
@@ -54,13 +54,11 @@ home/
   workspaces-hp.nix       named workspaces A/B/C — imported on hp-nix and lenuwu-nix
   defaultwindows.nix      multi-monitor startup layout (NOT currently imported)
   noctalia/
-    noctalia.nix          imports HM module, sets up settings/plugin symlinks, patches clipboard + battery-threshold plugin
+    noctalia.nix          imports HM module, sets up settings/plugin symlinks, patches clipboard/wallpaper/icon handling
     niri-focus-ring-live.nix    live syncs niri focus-ring colors and cursor variant from Noctalia colors.json
     nix-wallpaper-live.nix      live syncs nix.svg wallpaper colors from Noctalia colors.json and reloads Noctalia wallpaper
     noctalia-settings.json      versioned UI settings (track UI edits in git)
     noctalia-plugins.json       enabled plugins
-    tailscale-settings.json     Tailscale plugin settings
-    battery-threshold/BatteryThresholdService.qml  local fork that also writes charge_control_start_threshold
 docs/lenuwu-nix-migration.md   disk-transplant checklist
 possible improvements.txt      2026-02-15 review notes (open items)
 ```
@@ -83,12 +81,15 @@ possible improvements.txt      2026-02-15 review notes (open items)
 - SSH force-disabled. `system.autoUpgrade` force-disabled.
 - Power management (`power.nix`):
   - TLP enabled with `tlp-pd`. `TLP_AUTO_SWITCH = 0` — the custom policy below
-    owns AC transitions. AC = performance/perf governor; battery = balanced/
-    powersave; SAV = low-power.
-  - `lenuwu-power-policy` shell script + 30 s timer + udev hook on
-    `power_supply` events. It only switches profiles when the AC state
-    actually flips (so manual `tlpctl set` sticks), and caps backlight by
-    battery %. Respects `tlpctl list-holds`.
+    owns event-based profile switching. `power-saver` is selected on battery
+    at <=40%; otherwise the policy targets `balanced`.
+  - `lenuwu-power-policy` shell script starts once at boot, reacts to
+    `power_supply` events, and watches `/run/tlp/last_pwr` for profile changes.
+    It sets brightness only on boot, AC changes, battery-level changes, or a
+    switch to `power-saver`; manual brightness changes are not periodically
+    overwritten. AC events set 100%, battery >40% sets 80%, battery <=40% or
+    battery-side `power-saver` sets 40%. TLP holds block automatic profile
+    switching but not brightness changes.
   - logind: lid/dock/idle (30 min) → hibernate. systemd-initrd hibernation
     via EFI `HibernateLocation`; 36 GiB swap file at
     `/var/lib/hibernate-swapfile`. ZRAM 25% zstd. Weekly fstrim.
@@ -111,7 +112,7 @@ possible improvements.txt      2026-02-15 review notes (open items)
   currently use the official Nixpkgs latest kernel track, `pkgs.linuxPackages_latest`.
 - Hostname injected from the flake via `specialArgs.hostname`.
 - systemd-boot, EFI vars writable.
-- NetworkManager (+ networkmanager-openvpn). Tailscale opens its firewall hole automatically.
+- NetworkManager (+ networkmanager-openvpn).
 - fwupd enabled (LVFS BIOS updates).
 - SDDM Wayland with `catppuccin-mocha-blue` theme; theme is a custom override (mocha/blue/Noto Sans/black SVG background).
 - Niri enabled (`programs.niri.enable`); the niri-flake polkit user service is disabled because Noctalia provides a polkit agent (multiple agents conflict).
@@ -120,10 +121,9 @@ possible improvements.txt      2026-02-15 review notes (open items)
   script that warns and skips when Flathub/DNS is unavailable.
 - power-profiles-daemon defaulted on (laptop hosts override with `lib.mkForce`).
 - gnome-keyring + SDDM PAM integration; gvfs is enabled so Nautilus can mount network shares (sftp/smb/ftp/mtp under "Other Locations") and back the trash bin (`trash:///`).
-- Battery threshold: `users.groups.battery_ctl` + udev rules `chgrp battery_ctl` and `chmod g+w` the kernel `charge_control_{start,end}_threshold` files. The Noctalia plugin writes them as `krieger`.
 - Logitech MX Master 3S (USB receiver `046d:c548`) is owned by `modules/logiops.nix`: `pkgs.logiops` daemon (`logid.service`) reads a hand-written, heavily-commented `/etc/logid.cfg` rendered from a Nix heredoc; `hardware.logitech.wireless.{enable,enableGraphical}` pulls in Solaar + `logitech-udev-rules`. Starter mapping: DPI 1000, smart-shift on; gesture-button tap → `Super+X` (Niri overview), gesture drags → Niri focus column/window, wheel-mode button → `Super+F` (Niri maximize column), thumb wheel → `KEY_VOLUMEUP/DOWN` (forwarded to Noctalia by Niri's media-key bindings); thumb buttons (Back/Forward) and the vertical scroll wheel are intentionally undiverted so the kernel `hid-logitech-hidpp` driver handles them natively. The old `services.keyd` block on the receiver was removed.
 - CUPS printing on. PipeWire (alsa + 32-bit + pulse). pulseaudio off, rtkit on.
-- User `krieger` (normal, wheel/networkmanager/video/audio/input/kvm/battery_ctl).
+- User `krieger` (normal, wheel/networkmanager/video/audio/input/kvm/libvirtd).
 - Firefox enabled. Unfree allowed.
 - `permittedInsecurePackages = [ "qtwebengine-5.15.19" ]` — original justification was teamspeak3, but the package list now uses `teamspeak6-client`; possibly stale.
 - Flakes enabled. `nix.nixPath = [ "nixpkgs=/etc/channels/nixpkgs" ]`. Weekly GC, 30-day retention. `auto-optimise-store`.
@@ -139,7 +139,7 @@ Fonts: nerd-fonts (jetbrains-mono, fira-code), noto-fonts + emoji, corefonts (St
 Notable wrappers:
 - `footage-x11` — `wrapProgram footage --set GDK_BACKEND x11` (Wayland + NVIDIA Vulkan crash workaround).
 
-Apps installed system-wide: git, wget, curl, python3, chromium, qbittorrent, popsicle, kicad, dconf-editor, spotify, vscode, fastfetch, tree, ripgrep, fd, jq, yt-dlp, libreoffice-fresh, claude-code, ffmpeg, the GNOME file-manager stack (`nautilus`, `file-roller`; trash + remote shares come from `gvfs` enabled in `common.nix`), the Noctalia color-template prerequisites (`adw-gtk3`, `qt6Packages.qt6ct`, `libsForQt5.qt5ct`), the icon-theme stack (`papirus-icon-theme` as the active GTK icon theme, with `adwaita-icon-theme` and `hicolor-icon-theme` as siblings/fallback), unzip/zip/p7zip, ffmpegthumbnailer, gthumb, inkscape, networkmanagerapplet, pavucontrol, tailscale, wdisplays, wl-clipboard, teamspeak6-client, obsidian, gparted-full, nodejs_24, signal-desktop, whatsapp-electron, full GStreamer plugin set, the footage X11 wrapper, evtest (used by the Noctalia Slow Bongo plugin), wev (used to verify logiops keypresses).
+Apps installed system-wide: git, wget, curl, python3, chromium, qbittorrent, popsicle, kicad, dconf-editor, spotify, vscode, fastfetch, tree, ripgrep, fd, jq, yt-dlp, libreoffice-fresh, claude-code, ffmpeg, the GNOME file-manager stack (`nautilus`, `file-roller`; trash + remote shares come from `gvfs` enabled in `common.nix`), the Noctalia color-template prerequisites (`adw-gtk3`, `qt6Packages.qt6ct`, `libsForQt5.qt5ct`), the icon-theme stack (`papirus-icon-theme` as the active GTK icon theme, with `adwaita-icon-theme` and `hicolor-icon-theme` as siblings/fallback), unzip/zip/p7zip, ffmpegthumbnailer, gthumb, inkscape, networkmanagerapplet, pavucontrol, wdisplays, wl-clipboard, teamspeak6-client, obsidian, gparted-full, nodejs_24, signal-desktop, whatsapp-electron, full GStreamer plugin set, the footage X11 wrapper, evtest (used by the Noctalia Slow Bongo plugin), wev (used to verify logiops keypresses).
 
 ## Firewall (`modules/firewall.nix`)
 
@@ -195,10 +195,9 @@ Apps installed system-wide: git, wget, curl, python3, chromium, qbittorrent, pop
 ### Noctalia (`home/noctalia/`)
 
 - HM module is imported from the `noctalia` flake input; the package is overridden via `postPatch` to fix a clipboard auto-paste focus race for image entries (adds a 0.12 s sleep before the paste keys).
-- Activation snippets (`noctaliaSettingsBootstrap`, `noctaliaTailscaleSettingsBootstrap`, `noctaliaBatteryThresholdPluginPatch`):
-  - Bootstraps `~/.config/noctalia/settings.json`, `~/.config/noctalia/plugins.json`, and `~/.config/noctalia/plugins/tailscale/settings.json` if they don't already exist (preserves any pre-existing legacy file).
+- Activation snippet (`noctaliaSettingsBootstrap`):
+  - Bootstraps `~/.config/noctalia/settings.json` and `~/.config/noctalia/plugins.json` if they don't already exist (preserves any pre-existing legacy file).
   - Then **symlinks** them to the repo-tracked files in `home/noctalia/`. Net effect: edits made via Noctalia's UI land in the git repo and can be committed naturally.
-  - On every switch, copies the local fork of `BatteryThresholdService.qml` over the upstream plugin file. The fork additionally writes `charge_control_start_threshold` (max - 5), so ThinkPads don't get stuck in pending-charge.
 - `niri-focus-ring-live.nix`:
   - Forces `xdg.configFile."niri-config".enable = lib.mkForce false` so the niri config file is writable at runtime (it's emitted from `programs.niri.finalConfig` once during activation, then mutated by the live sync).
   - On activation, runs `syncFocusRing`: an awk pass that reads `~/.config/noctalia/colors.json` (`mPrimary`/`mSecondary`/`mOutline`) and rewrites `focus-ring.active-color`, `focus-ring.inactive-color`, and `cursor.xcursor-theme` (picks the closest catppuccin-mocha-* variant by RGB squared distance to `mSecondary`).
@@ -207,7 +206,7 @@ Apps installed system-wide: git, wget, curl, python3, chromium, qbittorrent, pop
   - Watches `~/.config/noctalia/colors.json` with `inotifywait` and rewrites `/home/krieger/Pictures/Wallpapers/nix.svg`.
   - Maps the SVG background rect (`rect3019`) to `mSurface` (the Noctalia bar/panel background), the darker Nix logo paths (`path4260*`) to `mPrimary`, and the lighter logo paths (`path3336*`) to `mSecondary`.
   - The Noctalia package patch adds `noctalia-shell ipc call wallpaper reload [screen|all]`; the watcher calls it after recoloring because Noctalia otherwise ignores same-path wallpaper content changes.
-- Enabled Noctalia plugins (`noctalia-plugins.json`): battery-threshold, catwalk, network-manager-vpn, noctalia-calculator, polkit-agent, privacy-indicator, screen-recorder, screen-toolkit, slowbongo, tailscale, usb-drive-manager, weather-indicator. Disabled: notes-scratchpad, pomodoro.
+- Enabled Noctalia plugins (`noctalia-plugins.json`): catwalk, color-scheme-creator, plugin-manager, polkit-agent, privacy-indicator, screen-recorder, slowbongo, usb-drive-manager, weather-indicator. Disabled: notes-scratchpad, pomodoro.
 - `noctalia-settings.json` is large (~770 lines) and version-controlled. Top-level sections: appLauncher, audio, bar, brightness, calendar, colorSchemes, controlCenter, desktopWidgets, dock, general, hooks, idle, location, network, nightLight, noctaliaPerformance, notifications, osd, plugins, sessionMenu, systemMonitor, templates, ui, wallpaper. `settingsVersion = 59`.
 
 ### Default applications (`home/default-apps.nix`)
@@ -254,7 +253,7 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 - **Niri config is intentionally writable.** `niri-focus-ring-live.nix` sets `xdg.configFile."niri-config".enable = lib.mkForce false;` and bootstraps the file from `programs.niri.finalConfig` on activation. Don't try to "fix" this with `xdg.configFile` — it's load-bearing.
 - **Noctalia settings live in git.** Editing the JSON files in `home/noctalia/` is equivalent to editing the live config (and vice versa); commit the JSON to track UI changes.
 - **Don't add a second polkit agent.** The niri-flake polkit user service is explicitly disabled in `common.nix`. Noctalia's `polkit-agent` plugin owns this.
-- **Battery thresholds** require both `start` and `end` files; the patched QML service (`battery-threshold/BatteryThresholdService.qml`) is force-installed over the upstream plugin on every switch.
+- **Battery thresholds are unmanaged.** The Noctalia battery-threshold plugin and local sysfs write permissions were removed; stock charging behavior is expected.
 - **File manager is Nautilus.** `pkgs.nautilus` and `pkgs.file-roller` are installed in `modules/programs.nix`. Trash (`trash:///`, "Empty Trash", "Restore") and remote protocols (sftp/smb/ftp/mtp under "Other Locations") are provided by `gvfs` (enabled at the system level in `modules/common.nix`). Modern Nautilus has built-in archive extraction (`gnome-autoar`) for the right-click "Extract Here" action; `file-roller` registers `org.gnome.FileRoller.desktop` for opening archives, which is what `home/default-apps.nix` routes the archive MIME types to. The Noctalia app-launcher / dock pinned-apps reference `org.gnome.Nautilus` in `home/noctalia/noctalia-settings.json`.
 - **Noctalia color templates need NixOS prep.** Toggling Settings → Color Scheme → Templates → System → {GTK, Qt} only writes color files; for them to take effect: GTK base theme must be `adw-gtk3-dark` (`pkgs.adw-gtk3` installed, `gtk.theme.name = "adw-gtk3-dark"` in `home/themes.nix`, dconf `gtk-theme = "adw-gtk3-dark"`); Qt platform theme must be `qtct` (`pkgs.qt6ct` + `pkgs.libsForQt5.qt5ct` installed, `qt.platformTheme.name = "qtct"`, then `qt6ct` opened once to pick `noctalia` from Color Scheme). Don't revert the GTK/Qt theme choices without disabling the matching templates first or the override will silently no-op. The KColorScheme template is disabled by default — re-enable it only if you bring back KDE / Qt6 apps that read `kdeglobals` / `~/.local/share/color-schemes/noctalia.colors`, and remember to also add a reload mechanism (e.g. broadcasting `org.kde.KGlobalSettings.notifyChange(0,0)` on D-Bus) so already-running KDE apps repaint, which Plasma normally handles but Niri does not.
 - **`footage` is wrapped** to force GDK_BACKEND=x11 (Wayland + NVIDIA Vulkan crash). Wrapper lives inline in `programs.nix`.

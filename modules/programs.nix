@@ -121,7 +121,6 @@
     pinta                             #Raster image editor (Paint.NET-style)
     networkmanagerapplet              #NetworkManager connection editor for VPN imports
     pavucontrol                       #PulseAudio volume control
-    tailscale                         #Tailscale CLI used by the Noctalia plugin
     wdisplays                         #Wayland display configuration tool
     wl-clipboard                      #Wayland clipboard utilities
     obsidian                          #Note-taking and knowledge management application

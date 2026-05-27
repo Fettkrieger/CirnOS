@@ -8,9 +8,6 @@ let
   legacySettingsFile = "${config.home.homeDirectory}/.config/noctalia/settings.json";
   repoPluginsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia/noctalia-plugins.json";
   legacyPluginsFile = "${config.home.homeDirectory}/.config/noctalia/plugins.json";
-  repoTailscaleSettingsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia/tailscale-settings.json";
-  tailscaleSettingsFile = "${config.xdg.configHome}/noctalia/plugins/tailscale/settings.json";
-  batteryThresholdServiceFile = "${config.home.homeDirectory}/CirnOS/home/noctalia/battery-threshold/BatteryThresholdService.qml";
   patchedNoctaliaPackage = (inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default).overrideAttrs (old: {
     postPatch = (old.postPatch or "") + ''
       # Fix clipboard auto-paste focus race by waiting briefly before sending paste keys.
@@ -129,31 +126,5 @@ in
 
     ln -sfn "${repoSettingsFile}" "${legacySettingsFile}"
     ln -sfn "${repoPluginsFile}" "${legacyPluginsFile}"
-  '';
-
-  home.activation.noctaliaTailscaleSettingsBootstrap = lib.hm.dag.entryAfter [ "noctaliaSettingsBootstrap" ] ''
-    mkdir -p "$(dirname "${repoTailscaleSettingsFile}")"
-    mkdir -p "$(dirname "${tailscaleSettingsFile}")"
-
-    if [ ! -e "${repoTailscaleSettingsFile}" ]; then
-      if [ -e "${tailscaleSettingsFile}" ] && [ ! -L "${tailscaleSettingsFile}" ]; then
-        cp "${tailscaleSettingsFile}" "${repoTailscaleSettingsFile}"
-      else
-        printf '{}\n' > "${repoTailscaleSettingsFile}"
-      fi
-      chmod u+rw "${repoTailscaleSettingsFile}"
-    fi
-
-    ln -sfn "${repoTailscaleSettingsFile}" "${tailscaleSettingsFile}"
-  '';
-
-  # The upstream battery-threshold plugin only writes the stop threshold. On
-  # ThinkPads, the start threshold must be updated too or a 100% stop limit can
-  # still leave the battery stuck in pending-charge around the old start limit.
-  home.activation.noctaliaBatteryThresholdPluginPatch = lib.hm.dag.entryAfter [ "noctaliaSettingsBootstrap" ] ''
-    pluginService="${config.xdg.configHome}/noctalia/plugins/battery-threshold/BatteryThresholdService.qml"
-    if [ -f "$pluginService" ] && [ -f "${batteryThresholdServiceFile}" ]; then
-      ${pkgs.coreutils}/bin/install -m 0644 "${batteryThresholdServiceFile}" "$pluginService"
-    fi
   '';
 }
