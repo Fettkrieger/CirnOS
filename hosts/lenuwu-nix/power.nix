@@ -290,8 +290,11 @@ in
 
   systemd.services.lenuwu-power-policy = {
     description = "Apply lenuwu event-based power profile and brightness policy";
-    wantedBy = [ "multi-user.target" ];
     after = [ "tlp.service" "tlp-pd.service" ];
+    # tlp.service itself is ordered After=multi-user.target upstream, so
+    # binding this oneshot directly to multi-user.target creates a boot cycle.
+    # The initial run is instead triggered by the boot-time power_supply uevents
+    # below, and later reruns come from the /run/tlp/last_pwr path unit.
     serviceConfig = {
       Type = "oneshot";
       ExecStart = lenuwuPowerPolicy;
