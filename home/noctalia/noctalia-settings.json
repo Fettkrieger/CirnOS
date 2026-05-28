@@ -45,7 +45,7 @@
         "volumeFeedback": false,
         "volumeFeedbackSoundFile": "",
         "volumeOverdrive": true,
-        "volumeStep": 1
+        "volumeStep": 2
     },
     "bar": {
         "autoHideDelay": 500,

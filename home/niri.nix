@@ -8,6 +8,7 @@ let
     "NIXOS_OZONE_WL" = "1";
     "ELECTRON_OZONE_PLATFORM_HINT" = "wayland";
     "MOZ_ENABLE_WAYLAND" = "1";
+    "NOCTALIA_PAM_SERVICE" = "noctalia-lock";
     "QT_QPA_PLATFORM" = "wayland";
     "QT_QPA_PLATFORMTHEME" = "gtk3";
     "SDL_VIDEODRIVER" = "wayland";
@@ -80,6 +81,29 @@ let
       variable-refresh-rate = true;
     };
   };
+
+  noctaliaLockOnStartup = pkgs.writeShellScriptBin "noctalia-lock-on-startup" ''
+    set -eu
+
+    attempts=120
+    attempt=1
+
+    while [ "$attempt" -le "$attempts" ]; do
+      if noctalia-shell ipc call lockScreen lock >/dev/null 2>&1; then
+        exit 0
+      fi
+
+      attempt=$((attempt + 1))
+      sleep 0.1
+    done
+
+    echo "noctalia-lock-on-startup: Noctalia lock IPC did not become available; ending niri session" >&2
+
+    niri msg action quit --skip-confirmation >/dev/null 2>&1 || true
+    systemctl --user stop niri.service >/dev/null 2>&1 || true
+
+    exit 1
+  '';
 in
 
 {
@@ -107,6 +131,7 @@ in
       # === Startup Applications ===
       spawn-at-startup = [
         { command = [ "noctalia-shell" ]; }
+        { command = [ "${noctaliaLockOnStartup}/bin/noctalia-lock-on-startup" ]; }
         { command = [ "xwayland-satellite" ]; }
         {
           command = [

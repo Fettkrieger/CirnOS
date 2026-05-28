@@ -12,7 +12,9 @@ in the repo.
 - Kernel (both hosts): official Nixpkgs latest kernel via `pkgs.linuxPackages_latest`.
   Roll back a host to the default stock kernel with `pkgs.linuxPackages` if needed.
 - `nixosConfigurations`: `lenuwu-nix`, `hp-nix`. Both built via the `mkHost` helper in `flake.nix`.
-- Display manager: SDDM (Wayland) with `catppuccin-mocha-blue` theme over a black SVG.
+- Display manager: `greetd` on tty1. It auto-starts `krieger` into `niri-session`
+  once, then falls back to `agreety --cmd niri-session` if the session exits.
+  Noctalia is the first visible password prompt via its in-session lockscreen.
 - Compositor: Niri (system module from niri-flake; user config from `home/niri.nix`).
 - Shell: Noctalia (bar / notifications / control-center / launcher) — HM module from the noctalia flake.
 - Theme: Catppuccin Mocha Blue + Adwaita-dark GTK/Qt; cursor live-synced from Noctalia colors.
@@ -29,7 +31,7 @@ in the repo.
 flake.nix                 entry point + mkHost
 flake.lock                pinned inputs
 modules/
-  common.nix              shared system config (boot, locale, SDDM, Niri, portals, PipeWire, fwupd, auto-upgrade, ssh, ...)
+  common.nix              shared system config (boot, locale, greetd/Niri login, portals, PipeWire, fwupd, auto-upgrade, ssh, ...)
   programs.nix            system packages + fonts; wraps footage with GDK_BACKEND=x11
   firewall.nix            host-aware firewall (laptop = roaming → SSH and dev ports closed)
   logiops.nix             Logitech MX Master 3S: logiops daemon + heavily-commented /etc/logid.cfg + Solaar (via hardware.logitech.wireless)
@@ -114,13 +116,16 @@ possible improvements.txt      2026-02-15 review notes (open items)
 - systemd-boot, EFI vars writable.
 - NetworkManager (+ networkmanager-openvpn).
 - fwupd enabled (LVFS BIOS updates).
-- SDDM Wayland with `catppuccin-mocha-blue` theme; theme is a custom override (mocha/blue/Noto Sans/black SVG background).
+- greetd starts `niri-session` directly as `krieger` via `initial_session`;
+  `default_session` is `agreety --cmd niri-session` for fallback login on tty1.
 - Niri enabled (`programs.niri.enable`); the niri-flake polkit user service is disabled because Noctalia provides a polkit agent (multiple agents conflict).
 - xdg.portal: GTK + GNOME extra portals. Niri-specific portal ordering forces GTK for FileChooser, GNOME for ScreenCast/Screenshot/RemoteDesktop, gnome-keyring for Secret.
 - Flatpak enabled. Discord is installed from Flathub by an idempotent activation
   script that warns and skips when Flathub/DNS is unavailable.
 - power-profiles-daemon defaulted on (laptop hosts override with `lib.mkForce`).
-- gnome-keyring + SDDM PAM integration; gvfs is enabled so Nautilus can mount network shares (sftp/smb/ftp/mtp under "Other Locations") and back the trash bin (`trash:///`).
+- gnome-keyring + greetd/Noctalia PAM integration (`noctalia-lock`) best-effort;
+  gvfs is enabled so Nautilus can mount network shares (sftp/smb/ftp/mtp under
+  "Other Locations") and back the trash bin (`trash:///`).
 - Logitech MX Master 3S (USB receiver `046d:c548`) is owned by `modules/logiops.nix`: `pkgs.logiops` daemon (`logid.service`) reads a hand-written, heavily-commented `/etc/logid.cfg` rendered from a Nix heredoc; `hardware.logitech.wireless.{enable,enableGraphical}` pulls in Solaar + `logitech-udev-rules`. Starter mapping: DPI 1000, smart-shift on; gesture-button tap → `Super+X` (Niri overview), gesture drags → Niri focus column/window, wheel-mode button → `Super+F` (Niri maximize column), thumb wheel → `KEY_VOLUMEUP/DOWN` (forwarded to Noctalia by Niri's media-key bindings); thumb buttons (Back/Forward) and the vertical scroll wheel are intentionally undiverted so the kernel `hid-logitech-hidpp` driver handles them natively. The old `services.keyd` block on the receiver was removed.
 - CUPS printing on. PipeWire (alsa + 32-bit + pulse). pulseaudio off, rtkit on.
 - User `krieger` (normal, wheel/networkmanager/video/audio/input/kvm/libvirtd).
@@ -251,6 +256,11 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 ## Conventions and gotchas
 
 - **Niri config is intentionally writable.** `niri-focus-ring-live.nix` sets `xdg.configFile."niri-config".enable = lib.mkForce false;` and bootstraps the file from `programs.niri.finalConfig` on activation. Don't try to "fix" this with `xdg.configFile` — it's load-bearing.
+- **Noctalia is not the display manager.** greetd auto-logs `krieger` into
+  `niri-session`; `home/niri.nix` starts Noctalia and immediately asks it to
+  lock via `noctalia-shell ipc call lockScreen lock`. If that IPC never becomes
+  available, the startup guard exits Niri so greetd can fall back to `agreety`.
+  This is an in-session lockscreen, not a pre-session login greeter.
 - **Noctalia settings live in git.** Editing the JSON files in `home/noctalia/` is equivalent to editing the live config (and vice versa); commit the JSON to track UI changes.
 - **Don't add a second polkit agent.** The niri-flake polkit user service is explicitly disabled in `common.nix`. Noctalia's `polkit-agent` plugin owns this.
 - **Battery thresholds are unmanaged.** The Noctalia battery-threshold plugin and local sysfs write permissions were removed; stock charging behavior is expected.

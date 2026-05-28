@@ -2,23 +2,6 @@
 { config, pkgs, lib, inputs, hostname, ... }:
 
 let
-  sddmBlackBackground = pkgs.writeText "sddm-black-background.svg" ''
-    <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
-      <rect width="1920" height="1080" fill="#000000"/>
-    </svg>
-  '';
-
-  sddmTheme = pkgs.catppuccin-sddm.override {
-    flavor = "mocha";
-    accent = "blue";
-    font = "Noto Sans";
-    fontSize = "10";
-    background = sddmBlackBackground;
-    clockEnabled = false;
-    userIcon = false;
-    loginBackground = true;
-  };
-
   pywalfoxNativeMessagingHost = pkgs.writeTextDir "lib/mozilla/native-messaging-hosts/pywalfox.json" (
     builtins.toJSON {
       name = "pywalfox";
@@ -72,19 +55,28 @@ in
     LC_TIME = "de_CH.UTF-8";
   };
 
-  # SDDM Display Manager
+  # Keep xserver enabled for shared XKB/libinput plumbing while the desktop
+  # session itself is Wayland-only.
   services.xserver.enable = true;
-  services.displayManager = {
-    gdm.enable = false;
-    sddm = {
-      enable = true;
-      theme = "catppuccin-mocha-blue";
-      wayland.enable = true;
+
+  # greetd starts Niri directly for krieger, then falls back to a text greeter
+  # if that session exits or fails before Noctalia can lock it.
+  services.displayManager.gdm.enable = false;
+  services.greetd = {
+    enable = true;
+    restart = false;
+    useTextGreeter = true;
+    settings = {
+      initial_session = {
+        command = "${config.programs.niri.package}/bin/niri-session";
+        user = "krieger";
+      };
+      default_session = {
+        command = "${pkgs.greetd}/bin/agreety --cmd ${config.programs.niri.package}/bin/niri-session";
+        user = "greeter";
+      };
     };
   };
-
-  # Install the selected SDDM theme so it is available in ThemeDir.
-  environment.systemPackages = [ sddmTheme ];
 
   # Enable Niri compositor (niri-flake module handles session registration)
   programs.niri.enable = true;
@@ -143,7 +135,8 @@ in
 
   # GNOME Keyring for credential storage (used by apps like VS Code, browsers)
   services.gnome.gnome-keyring.enable = true;
-  security.pam.services.sddm.enableGnomeKeyring = true;
+  security.pam.services.greetd.enableGnomeKeyring = true;
+  security.pam.services.noctalia-lock.enableGnomeKeyring = true;
 
   # GVFS — backs Nautilus's trash bin (`trash:///`), the remote shares
   # under "Other Locations" (sftp, smb, ftp, mtp, ...), MTP-mounted
