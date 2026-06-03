@@ -1,12 +1,14 @@
-# Logitech MX Master 3S configuration via logiops + Solaar.
+# Logitech MX Master 4 for Business configuration via logiops + Solaar.
 #
 # This is the system-wide replacement for Logitech Options/Options+ on Linux.
-# It owns every remappable feature on the mouse (thumb buttons, gesture button,
-# thumb wheel, vertical wheel behavior, DPI, smart-shift) and runs alongside
-# Solaar for a GUI front-end (battery, scroll resolution, host switching, DPI
-# slider, pairing).
+# It owns every remappable feature on the mouse (Haptic Sense Panel, thumb
+# buttons, gesture button, thumb wheel, vertical wheel behavior, DPI,
+# smart-shift, haptic level) and runs alongside Solaar for a GUI front-end
+# (battery, scroll resolution, host switching, DPI slider, pairing).
 #
 # Architecture:
+#   * `logiopsWithHaptics` wraps `pkgs.logiops` with the pinned upstream PR
+#     that adds MX Master 4 haptic feedback support.
 #   * `pkgs.logiops` ships /bin/logid + /lib/systemd/system/logid.service
 #     (built with the Nix store paths baked into ExecStart). We register the
 #     unit with `systemd.packages` and pin it to graphical.target.
@@ -22,6 +24,18 @@
 { config, lib, pkgs, ... }:
 
 let
+  # logiops 0.3.5 supports the MX Master 4 as a HID++ device, but haptic
+  # feedback configuration is still an open upstream PR. Keep the patch pinned
+  # to a commit and hash so rebuilds are reproducible.
+  logiopsWithHaptics = pkgs.logiops.overrideAttrs (old: {
+    patches = (old.patches or []) ++ [
+      (pkgs.fetchpatch {
+        url = "https://github.com/kris7t/logiops/commit/4319de5cc17b1afcf2d89df2ebadec16eb11d4de.patch";
+        hash = "sha256-bgheLsxRZNgaKb7yzg3D+rcld2XyfLR+6Rr9TFFOpjk=";
+      })
+    ];
+  });
+
   # ----------------------------------------------------------------------
   # /etc/logid.cfg
   # ----------------------------------------------------------------------
@@ -57,17 +71,16 @@ let
     # Per-device configuration
     # ------------------------------------------------------------------
     # logiops matches devices by `name`. Get the exact string from
-    # `journalctl -u logid -b | grep -i 'detected device'`. The MX Master 3
-    # and 3S both report as "MX Master 3S" when paired via the Logi Bolt /
-    # Unifying receiver in HID++ mode.
+    # `journalctl -u logid -b | grep -i 'detected device'`. This MX Master 4
+    # for Business reports as the exact string below on the Bolt receiver.
     devices: (
     {
-      name: "MX Master 3S";
+      name: "MX Master 4 for Business";
 
       # ----------------------------------------------------------------
       # DPI / sensitivity
       # ----------------------------------------------------------------
-      # Integer between 200 and 4000 (MX Master 3S sensor range), in steps
+      # Integer between 200 and 8000 (MX Master 4 sensor range), in steps
       # of 50. Logitech Options defaults to 1000. Bump it to 1500 / 2400
       # on high-DPI displays if cursor travel feels short. To bind a
       # button to cycling DPIs instead, see the CycleDPI action below.
@@ -96,13 +109,33 @@ let
       };
 
       # ----------------------------------------------------------------
+      # Haptic feedback (MX Master 4 Haptic Sense Panel)
+      # ----------------------------------------------------------------
+      # This block comes from an unmerged logiops PR pinned in the Nix
+      # package override above. Solaar also exposes these controls as
+      # `haptic-level` and `haptic-play`.
+      #
+      # enabled:        global haptics on/off
+      # strength:       vibration strength, 1..100; Logitech/Solaar default 60
+      # battery_saving: let firmware suppress haptics at very low battery
+      #
+      # Linux-side limit: Logitech Options+ Actions Ring overlays and
+      # per-app haptic plugins are not available natively on this Niri setup.
+      haptic_feedback:
+      {
+        enabled: true;
+        strength: 60;
+        battery_saving: true;
+      };
+
+      # ----------------------------------------------------------------
       # Vertical scroll wheel — left to the kernel
       # ----------------------------------------------------------------
       # The kernel `hid-logitech-hidpp` driver already exposes the wheel
       # as REL_WHEEL + REL_WHEEL_HI_RES, including smooth/high-res mode,
       # which compositors and apps handle correctly out of the box. The
       # whole `hiresscroll` block below is therefore commented out — the
-      # MX Master 3S vertical wheel is undiverted and behaves exactly as
+      # MX Master 4 vertical wheel is undiverted and behaves exactly as
       # if logiops weren't running.
       #
       # If you ever want logiops in the path again (e.g. to scale the
@@ -159,13 +192,14 @@ let
       # SENSITIVITY KNOB
       # ----------------
       # `interval` in `OnInterval` mode = how many accumulated wheel-delta
-      # units must pass before the keypress fires once. On THIS firmware
-      # of the MX Master 3S the thumbwheel reports very small deltas, so
-      # practical values are tiny — `1` is the lowest and feels normal
-      # here; community configs that use `8` would translate to multiple
+      # units must pass before the keypress fires once. On this firmware
+      # of the MX Master 4 the thumbwheel reports very small deltas, so
+      # practical values are tiny — `2` is a little less sensitive than
+      # the lowest setting and feels controlled here; community configs
+      # that use `8` would translate to multiple
       # full rotations per keypress on this device.
-      #     1    -> one keypress per smallest wheel delta  (current setting)
-      #     2    -> half speed
+      #     1    -> one keypress per smallest wheel delta
+      #     2    -> half speed  (current setting)
       #     5    -> noticeably slow
       #     50+  -> effectively never fires
       #
@@ -194,7 +228,7 @@ let
         left:
         {
           mode: "OnInterval";
-          interval: 1;
+          interval: 2;
           action:
           {
             type: "Keypress";
@@ -204,7 +238,7 @@ let
         right:
         {
           mode: "OnInterval";
-          interval: 1;
+          interval: 2;
           action:
           {
             type: "Keypress";
@@ -216,15 +250,16 @@ let
       # ----------------------------------------------------------------
       # Buttons — per-CID action mappings
       # ----------------------------------------------------------------
-      # MX Master 3S Control IDs (CIDs):
+      # MX Master 4 Control IDs (CIDs):
       #   0x50  Left click          (left undiverted; you don't want logiops in this path)
       #   0x51  Right click         (left undiverted)
       #   0x52  Middle click        (wheel button; left undiverted)
       #   0x53  Back thumb button
       #   0x56  Forward thumb button
-      #   0xc3  Gesture button      (the flat one under your thumb)
+      #   0xc3  Mouse Gesture Button (small button near the thumb buttons)
       #   0xc4  Wheel-mode button   (under the scroll wheel)
-      #   0xd7  Top "Easy-Switch"   (reports through HID, not as a CID)
+      #   0x1a0 Haptic Sense Panel  (large thumbrest button / Actions Ring)
+      #   0xd7  Easy-Switch         (reports through HID, not as a CID)
       #
       # Action types you can use:
       #   None / Keypress / Gestures / ToggleSmartShift / ToggleHiresScroll /
@@ -243,7 +278,7 @@ let
         #         sudo logid -v
         #      Press each thumb button; note the CID it prints (typical
         #      values are around 0x53 and 0x56 but they vary per firmware
-        #      and aren't guaranteed across the MX Master 3 / 3S line).
+        #      and aren't guaranteed across the MX Master line).
         #   2. Restart the daemon: sudo systemctl start logid
         #   3. Add an entry like the template below using the real CIDs.
         # Template (uncomment + fill in YOUR cids to remap to Niri workspaces):
@@ -252,7 +287,7 @@ let
         #   { cid: 0xYY; action: {
         #       type: "Keypress"; keys: ["KEY_LEFTMETA","KEY_2"]; }; },
 
-        # ---- Gesture button (under the thumb) -------------------------
+        # ---- Haptic Sense Panel / thumbrest button --------------------
         # Tap (no drag)   -> Super+X (Niri overview, replaces the old
         #                    keyd `mouseback+mouseforward` chord).
         # Drag Up/Down    -> Super+Up/Down  (Niri focus window/workspace)
@@ -262,7 +297,7 @@ let
         # go. Swap to `mode: "OnInterval"; interval: 200;` to repeat the
         # keypress while you keep dragging (useful for workspace surfing).
         {
-          cid: 0xc3;
+          cid: 0x1a0;
           action:
           {
             type: "Gestures";
@@ -316,6 +351,18 @@ let
           };
         },
 
+        # ---- Mouse Gesture Button ------------------------------------
+        # The large thumbrest panel is now the gesture hub, so the smaller
+        # gesture button opens Noctalia's launcher.
+        {
+          cid: 0xc3;
+          action:
+          {
+            type: "Keypress";
+            keys: ["KEY_LEFTMETA", "KEY_D"];
+          };
+        },
+
         # ---- Wheel-mode button (under the scroll wheel) ---------------
         # Bound to Super+F (Niri "maximize column"). Other useful actions
         # you can drop in here:
@@ -349,12 +396,12 @@ let
 in
 {
   # logiops daemon: package + unit + config file -------------------------
-  environment.systemPackages = [ pkgs.logiops ];
+  environment.systemPackages = [ logiopsWithHaptics ];
 
   # `pkgs.logiops` installs logid.service into $out/lib/systemd/system.
   # systemd.packages copies it into /etc/systemd/system; wantedBy creates
   # the graphical.target.wants/ symlink so it actually starts on boot.
-  systemd.packages = [ pkgs.logiops ];
+  systemd.packages = [ logiopsWithHaptics ];
   systemd.services.logid = {
     wantedBy = [ "graphical.target" ];
     # Pick up /etc/logid.cfg edits without a stale state from a previous run.
