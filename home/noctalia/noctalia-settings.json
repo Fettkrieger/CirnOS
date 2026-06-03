@@ -162,7 +162,7 @@
                 },
                 {
                     "compactMode": true,
-                    "hideMode": "hidden",
+                    "hideMode": "idle",
                     "hideWhenIdle": false,
                     "id": "MediaMini",
                     "maxWidth": 400,
@@ -765,9 +765,9 @@
     },
     "ui": {
         "boxBorderEnabled": true,
-        "fontDefault": "Sans Serif",
+        "fontDefault": "JetBrainsMonoNL Nerd Font",
         "fontDefaultScale": 1.1400000000000001,
-        "fontFixed": "monospace",
+        "fontFixed": "JetBrainsMono Nerd Font",
         "fontFixedScale": 1.1400000000000001,
         "panelBackgroundOpacity": 0.8200000000000001,
         "panelsAttachedToBar": false,
