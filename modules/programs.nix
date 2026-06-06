@@ -26,6 +26,7 @@
     wget                              #CLI downloader for files over HTTP/HTTPS
     curl                              #CLI tool for transferring data with URLs  
     git                               #Version control system
+    codex                             #OpenAI Codex CLI coding agent
     python3                           #Python programming language interpreter  
     pywalfox-native                   #Native app/CLI used by the Pywalfox Firefox addon
     chromium                          #Web browser
