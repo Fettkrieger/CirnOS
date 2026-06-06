@@ -12,6 +12,13 @@
 #   * `pkgs.logiops` ships /bin/logid + /lib/systemd/system/logid.service
 #     (built with the Nix store paths baked into ExecStart). We register the
 #     unit with `systemd.packages` and pin it to graphical.target.
+#   * `logid-receiver-reset.service` resets the Bolt receiver on demand, then
+#     restarts logid. The MX Master 4 can otherwise keep stale HID++ state
+#     until the mouse is power-cycled; Linux cannot flip the mouse's physical
+#     power switch, so resetting the receiver is the closest software-side
+#     equivalent.
+#   * `logid-refresh.service` is the lighter udev-triggered path for ordinary
+#     Logitech hidraw/USB re-enumeration.
 #   * The daemon reads /etc/logid.cfg (libconfig format). We materialise that
 #     file from the heredoc below, so editing this Nix file is the only way to
 #     change behavior. Run `rebuild` then `sudo systemctl restart logid`.
@@ -408,7 +415,95 @@ in
     restartTriggers = [ logidConfig ];
   };
 
+  # Lightweight refresh for normal udev add/change events. The receiver reset
+  # service below can itself generate udev events; skip this helper while that
+  # service is active so the two do not race each other.
+  systemd.services.logid-refresh = {
+    description = "Refresh Logitech Configuration Daemon after device event";
+    wants = [ "logid.service" ];
+    after = [ "logid.service" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      if ${pkgs.systemd}/bin/systemctl -q is-active logid-receiver-reset.service; then
+        exit 0
+      fi
+
+      ${pkgs.systemd}/bin/systemctl restart logid.service
+    '';
+  };
+
+  # Noctalia's screenUnlock hook starts this after the lockscreen password is
+  # accepted. It only acts when the marker exists, so ordinary lock/unlock
+  # cycles do not reset the mouse unless the system booted or resumed first.
+  systemd.services.logid-receiver-reset = {
+    description = "Reset Logitech Bolt receiver and refresh logiops";
+    wants = [ "logid.service" ];
+    after = [ "logid.service" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      marker=/run/logid-receiver-reset-needed
+      [ -e "$marker" ] || exit 0
+      ${pkgs.coreutils}/bin/rm -f "$marker"
+
+      ${pkgs.systemd}/bin/systemctl stop logid.service || true
+
+      reset=0
+      for dev in /sys/bus/usb/devices/*; do
+        [ -r "$dev/idVendor" ] || continue
+        [ -r "$dev/idProduct" ] || continue
+        [ "$(${pkgs.coreutils}/bin/cat "$dev/idVendor")" = "046d" ] || continue
+        [ "$(${pkgs.coreutils}/bin/cat "$dev/idProduct")" = "c548" ] || continue
+
+        bus="$(${pkgs.coreutils}/bin/cat "$dev/busnum")"
+        num="$(${pkgs.coreutils}/bin/cat "$dev/devnum")"
+        target="$(${pkgs.coreutils}/bin/printf '%03d/%03d' "$bus" "$num")"
+
+        ${pkgs.usbutils}/bin/usbreset "$target" && reset=1
+      done
+
+      [ "$reset" -eq 1 ] || exit 0
+      ${pkgs.systemd}/bin/systemctl restart logid.service
+    '';
+  };
+
+  systemd.services.logid-resume-hook = {
+    description = "Mark Logitech receiver reset needed after sleep or hibernate";
+    wantedBy = [ "sleep.target" ];
+    before = [ "sleep.target" ];
+    unitConfig.StopWhenUnneeded = true;
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ":";
+    preStop = ''
+      ${pkgs.coreutils}/bin/touch /run/logid-receiver-reset-needed
+    '';
+  };
+
   environment.etc."logid.cfg".text = logidConfig;
+
+  systemd.tmpfiles.rules = [
+    "f /run/logid-receiver-reset-needed 0644 root root - -"
+  ];
+
+  services.udev.extraRules = ''
+    ACTION=="add|change", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="046d", ATTR{idProduct}=="c548", TAG+="systemd", ENV{SYSTEMD_WANTS}+="logid-refresh.service"
+    ACTION=="add|change", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", TAG+="systemd", ENV{SYSTEMD_WANTS}+="logid-refresh.service"
+  '';
+
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (
+        action.id == "org.freedesktop.systemd1.manage-units" &&
+        subject.user == "krieger" &&
+        action.lookup("unit") == "logid-receiver-reset.service" &&
+        action.lookup("verb") == "start"
+      ) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
 
   # Solaar GUI + canonical udev rules ------------------------------------
   # `hardware.logitech.wireless.enable` installs `pkgs.ltunify` and the

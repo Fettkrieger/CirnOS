@@ -275,6 +275,9 @@
                     "icon": "noctalia",
                     "id": "ControlCenter",
                     "useDistroLogo": true
+                },
+                {
+                    "id": "plugin:timer"
                 }
             ]
         }
@@ -523,7 +526,7 @@
         "performanceModeDisabled": "",
         "performanceModeEnabled": "",
         "screenLock": "",
-        "screenUnlock": "",
+        "screenUnlock": "/run/current-system/sw/bin/systemctl start --no-block logid-receiver-reset.service",
         "session": "",
         "startup": "",
         "wallpaperChange": ""
@@ -548,7 +551,7 @@
         "firstDayOfWeek": -1,
         "hideWeatherCityName": false,
         "hideWeatherTimezone": false,
-        "name": "Hanover",
+        "name": "",
         "showCalendarEvents": false,
         "showCalendarWeather": true,
         "showWeekNumberInCalendar": false,
@@ -766,9 +769,9 @@
     "ui": {
         "boxBorderEnabled": true,
         "fontDefault": "JetBrainsMonoNL Nerd Font",
-        "fontDefaultScale": 1.1400000000000001,
+        "fontDefaultScale": 1.25,
         "fontFixed": "JetBrainsMono Nerd Font",
-        "fontFixedScale": 1.1400000000000001,
+        "fontFixedScale": 1.25,
         "panelBackgroundOpacity": 0.8200000000000001,
         "panelsAttachedToBar": false,
         "scrollbarAlwaysVisible": true,

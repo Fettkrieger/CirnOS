@@ -104,6 +104,241 @@ let
 
     exit 1
   '';
+
+  internalPointerToggle = pkgs.writeShellScriptBin "niri-toggle-internal-pointer" ''
+    set -eu
+
+    config_home="''${XDG_CONFIG_HOME:-''${HOME:-/home/krieger}/.config}"
+    config_file="$config_home/niri/config.kdl"
+
+    notify() {
+      ${pkgs.libnotify}/bin/notify-send "Niri" "$1" >/dev/null 2>&1 || true
+    }
+
+    if [ ! -f "$config_file" ]; then
+      notify "Internal pointer toggle failed: Niri config not found"
+      exit 1
+    fi
+
+    action="$(
+      ${pkgs.gawk}/bin/awk '
+        function trim(s) {
+          sub(/^[ \t]+/, "", s)
+          sub(/[ \t]+$/, "", s)
+          return s
+        }
+
+        function brace_delta(s,    open_count, close_count, i, ch) {
+          open_count = 0
+          close_count = 0
+
+          for (i = 1; i <= length(s); i++) {
+            ch = substr(s, i, 1)
+
+            if (ch == "{") {
+              open_count++
+            } else if (ch == "}") {
+              close_count++
+            }
+          }
+
+          return open_count - close_count
+        }
+
+        BEGIN {
+          depth = 0
+        }
+
+        {
+          line = $0
+          stripped = trim(line)
+          previous_depth = depth
+
+          if (!in_input && stripped ~ /^input[ \t]*\{/) {
+            in_input = 1
+            input_depth = previous_depth + brace_delta(line)
+          } else if (in_input && !in_target && previous_depth == input_depth && stripped ~ /^(touchpad|trackpoint)[ \t]*\{/) {
+            target = stripped
+            sub(/[ \t]*\{.*/, "", target)
+            seen[target] = 1
+            in_target = 1
+            target_depth = previous_depth + brace_delta(line)
+          } else if (in_target && previous_depth == target_depth && stripped == "off") {
+            has_off[target] = 1
+          }
+
+          depth += brace_delta(line)
+
+          if (in_target && depth < target_depth) {
+            in_target = 0
+            target = ""
+          }
+
+          if (in_input && depth < input_depth) {
+            in_input = 0
+          }
+        }
+
+        END {
+          if (seen["touchpad"] && seen["trackpoint"] && has_off["touchpad"] && has_off["trackpoint"]) {
+            print "enable"
+          } else {
+            print "disable"
+          }
+        }
+      ' "$config_file"
+    )"
+
+    tmp="$(${pkgs.coreutils}/bin/mktemp)"
+    trap '${pkgs.coreutils}/bin/rm -f "$tmp"' EXIT
+
+    ${pkgs.gawk}/bin/awk -v action="$action" '
+      function trim(s) {
+        sub(/^[ \t]+/, "", s)
+        sub(/[ \t]+$/, "", s)
+        return s
+      }
+
+      function indent_of(s) {
+        match(s, /^[ \t]*/)
+        return substr(s, RSTART, RLENGTH)
+      }
+
+      function brace_delta(s,    open_count, close_count, i, ch) {
+        open_count = 0
+        close_count = 0
+
+        for (i = 1; i <= length(s); i++) {
+          ch = substr(s, i, 1)
+
+          if (ch == "{") {
+            open_count++
+          } else if (ch == "}") {
+            close_count++
+          }
+        }
+
+        return open_count - close_count
+      }
+
+      function print_missing_target(name) {
+        print input_indent "    " name " {"
+        print input_indent "        off"
+        print input_indent "    }"
+      }
+
+      BEGIN {
+        depth = 0
+      }
+
+      {
+        line = $0
+        stripped = trim(line)
+        previous_depth = depth
+
+        if (!in_input && stripped ~ /^input[ \t]*\{/) {
+          in_input = 1
+          input_indent = indent_of(line)
+          input_depth = previous_depth + brace_delta(line)
+          print line
+          depth += brace_delta(line)
+          next
+        }
+
+        if (in_input && !in_target && previous_depth == input_depth && stripped ~ /^(touchpad|trackpoint)[ \t]*\{/) {
+          target = stripped
+          sub(/[ \t]*\{.*/, "", target)
+          seen[target] = 1
+          target_indent = indent_of(line)
+          target_has_off = 0
+          in_target = 1
+          target_depth = previous_depth + brace_delta(line)
+          print line
+          depth += brace_delta(line)
+          next
+        }
+
+        if (in_target && previous_depth == target_depth && stripped == "off") {
+          target_has_off = 1
+
+          if (action == "enable") {
+            depth += brace_delta(line)
+            next
+          }
+        }
+
+        if (in_target && previous_depth == target_depth && stripped ~ /^\}/) {
+          if (action == "disable" && !target_has_off) {
+            print target_indent "    off"
+          }
+
+          print line
+          depth += brace_delta(line)
+
+          if (depth < target_depth) {
+            in_target = 0
+            target = ""
+          }
+
+          next
+        }
+
+        if (in_input && !in_target && previous_depth == input_depth && stripped ~ /^\}/) {
+          if (action == "disable") {
+            if (!seen["touchpad"]) {
+              print_missing_target("touchpad")
+            }
+
+            if (!seen["trackpoint"]) {
+              print_missing_target("trackpoint")
+            }
+          }
+
+          print line
+          depth += brace_delta(line)
+
+          if (depth < input_depth) {
+            in_input = 0
+          }
+
+          next
+        }
+
+        print line
+        depth += brace_delta(line)
+
+        if (in_target && depth < target_depth) {
+          in_target = 0
+          target = ""
+        }
+
+        if (in_input && depth < input_depth) {
+          in_input = 0
+        }
+      }
+    ' "$config_file" > "$tmp"
+
+    if ! ${lib.getExe pkgs.niri} validate -c "$tmp" >/dev/null 2>&1; then
+      notify "Internal pointer toggle failed: generated config is invalid"
+      exit 1
+    fi
+
+    ${pkgs.coreutils}/bin/mv "$tmp" "$config_file"
+    trap - EXIT
+
+    runtime_dir="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}"
+    socket="$(${pkgs.findutils}/bin/find "$runtime_dir" -maxdepth 1 -type s -name 'niri*.sock' | ${pkgs.coreutils}/bin/head -n 1 || true)"
+
+    if [ -n "$socket" ]; then
+      NIRI_SOCKET="$socket" ${lib.getExe pkgs.niri} msg action load-config-file >/dev/null 2>&1 || true
+    fi
+
+    if [ "$action" = "disable" ]; then
+      notify "Internal pointers disabled"
+    else
+      notify "Internal pointers enabled"
+    fi
+  '';
 in
 
 {
@@ -119,6 +354,9 @@ in
 
     # === XWayland ===
     xwayland-satellite        # XWayland support for Niri
+
+    # === Internal pointer toggle ===
+    internalPointerToggle     # Toggle touchpad + TrackPoint buttons through Niri
   ];
   # Niri compositor configuration using niri-flake settings
   programs.niri = {
@@ -256,6 +494,7 @@ in
         "Super+Q".action.close-window = [];
         "Super+F".action.maximize-column = [];
         "Super+T".action.toggle-window-floating = [];  # Toggle floating mode
+        "Super+Ctrl+T".action.spawn = ["${internalPointerToggle}/bin/niri-toggle-internal-pointer"];
         
         
         
