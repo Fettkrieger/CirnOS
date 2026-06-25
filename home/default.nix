@@ -92,12 +92,12 @@
   # template overrides accent colors at runtime via gtk.css imports.
   # `icon-theme` matches home/themes.nix so GNOME/portal hosts and any
   # toolkit that consults gsettings (instead of gtkrc) get the same
-  # Papirus-Dark-Noctalia overlay resolution chain as Quickshell-based Noctalia.
+  # Papirus-Dark resolution chain as Noctalia's dock/launcher.
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
       gtk-theme = "adw-gtk3-dark";
-      icon-theme = "Papirus-Dark-Noctalia";
+      icon-theme = "Papirus-Dark";
       cursor-theme = "catppuccin-mocha-blue-cursors";
       cursor-size = 24;
       enable-hot-corners = false;

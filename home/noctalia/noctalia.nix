@@ -1,130 +1,76 @@
-# Noctalia shell - desktop bar, notifications, and control center
+# Noctalia v5 shell - desktop bar, notifications, control center, and dock.
 #
-# Settings are stored in a git-tracked file so UI edits are versioned.
-{ config, inputs, lib, pkgs, ... }:
-
-let
-  repoSettingsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia/noctalia-settings.json";
-  legacySettingsFile = "${config.home.homeDirectory}/.config/noctalia/settings.json";
-  repoPluginsFile = "${config.home.homeDirectory}/CirnOS/home/noctalia/noctalia-plugins.json";
-  legacyPluginsFile = "${config.home.homeDirectory}/.config/noctalia/plugins.json";
-  patchedNoctaliaPackage = (inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default).overrideAttrs (old: {
-    postPatch = (old.postPatch or "") + ''
-      # Fix clipboard auto-paste focus race by waiting briefly before sending paste keys.
-      substituteInPlace Services/Keyboard/ClipboardService.qml \
-        --replace-fail \
-          'const cmd = `cliphist decode ''${id} | wl-copy''${typeArg} && ''${pasteKeys}`;' \
-          'const cmd = `cliphist decode ''${id} | wl-copy''${typeArg} && ''${isImage ? "sleep 0.12 && " : ""}''${pasteKeys}`;'
-
-      # Papirus-Dark ships Nautilus as `nautilus`, while GNOME Files exports
-      # the reverse-DNS icon name `org.gnome.Nautilus`. Teach Noctalia's shared
-      # icon resolver to retry with the theme-native alias so workspace icons,
-      # the dock, and other app surfaces all render it consistently.
-      oldThemeIconsIconFromName="$(cat <<'EOF'
-  function iconFromName(iconName, fallbackName) {
-    const fallback = fallbackName || "application-x-executable";
-    try {
-      if (iconName && typeof Quickshell !== 'undefined' && Quickshell.iconPath) {
-        const p = Quickshell.iconPath(iconName, fallback);
-        if (p && p !== "")
-          return p;
-      }
-    } catch (e) {}
-
-    try {
-      return Quickshell.iconPath ? (Quickshell.iconPath(fallback, true) || "") : "";
-    } catch (e2) {
-      return "";
-    }
-  }
-EOF
-)"
-      newThemeIconsIconFromName="$(cat <<'EOF'
-  function iconFromName(iconName, fallbackName) {
-    const fallback = fallbackName || "application-x-executable";
-    const normalizedIconName = (iconName || "").toLowerCase();
-    var aliasName = "";
-
-    if (normalizedIconName === "org.gnome.nautilus" || normalizedIconName === "org.gnome.files")
-      aliasName = "nautilus";
-
-    try {
-      if (iconName && typeof Quickshell !== 'undefined' && Quickshell.iconPath) {
-        const p = Quickshell.iconPath(iconName, fallback);
-        if (p && p !== "")
-          return p;
-
-        if (aliasName) {
-          const aliasPath = Quickshell.iconPath(aliasName, fallback);
-          if (aliasPath && aliasPath !== "")
-            return aliasPath;
-        }
-      }
-    } catch (e) {}
-
-    try {
-      return Quickshell.iconPath ? (Quickshell.iconPath(fallback, true) || "") : "";
-    } catch (e2) {
-      return "";
-    }
-  }
-EOF
-)"
-      substituteInPlace Commons/ThemeIcons.qml \
-        --replace-fail \
-          "$oldThemeIconsIconFromName" \
-          "$newThemeIconsIconFromName"
-
-      # Let external color-sync services force a redraw when the wallpaper file
-      # changed but the selected wallpaper path stayed the same.
-      substituteInPlace Services/Control/IPCService.qml \
-        --replace-fail \
-          '    function toggleAutomation() {' \
-          $'    function reload(screen: string) {\n      if (!screen || screen === "all" || screen.trim().length === 0) {\n        for (var i = 0; i < Quickshell.screens.length; i++) {\n          var name = Quickshell.screens[i].name;\n          WallpaperService.wallpaperChanged(name, WallpaperService.getWallpaper(name) ?? "");\n        }\n        return;\n      }\n\n      var found = Quickshell.screens.find(s => s.name === screen);\n      if (!found) {\n        Logger.w("IPC", "wallpaper reload: unknown screen: " + screen);\n        return;\n      }\n\n      WallpaperService.wallpaperChanged(screen, WallpaperService.getWallpaper(screen) ?? "");\n    }\n\n    function toggleAutomation() {'
-    '';
-  });
-in
+# v5 uses declarative TOML at ~/.config/noctalia/config.toml. Runtime edits made
+# from Noctalia's UI are stored under ~/.local/state/noctalia and are no longer
+# symlinked back into this repository.
+{ config, inputs, pkgs, ... }:
 
 {
   imports = [
     inputs.noctalia.homeModules.default
-    ./niri-focus-ring-live.nix
-    ./nix-wallpaper-live.nix
-    ./papirus-folders-live.nix
   ];
 
-  programs.noctalia-shell = {
+  programs.noctalia = {
     enable = true;
-    package = patchedNoctaliaPackage;
+    systemd.enable = false;
+    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
+    settings = {
+      shell = {
+        ui_scale = 1.05;
+        telemetry_enabled = false;
+        setup_wizard_enabled = false;
+        polkit_agent = true;
+        clipboard_auto_paste = "auto";
+        avatar_path = "${config.home.homeDirectory}/Pictures/cirnos.gif";
+      };
+
+      theme = {
+        mode = "dark";
+        source = "builtin";
+        builtin = "Catppuccin";
+        templates = {
+          enable_builtin_templates = true;
+          builtin_ids = [
+            "ghostty"
+            "gtk3"
+            "gtk4"
+            "qt"
+            "btop"
+          ];
+          enable_community_templates = false;
+          community_ids = [ ];
+        };
+      };
+
+      wallpaper = {
+        enabled = true;
+        fill_mode = "crop";
+        transition_on_startup = false;
+        directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+        automation.enabled = false;
+      };
+
+      dock = {
+        enabled = true;
+        position = "bottom";
+        active_monitor_only = true;
+        icon_size = 48;
+        background_opacity = 0.88;
+        margin_edge = 8;
+        show_running = true;
+        auto_hide = false;
+        reserve_space = false;
+        magnification = true;
+        launcher_position = "end";
+        pinned = [
+          "firefox"
+          "org.gnome.Nautilus"
+          "code"
+          "spotify"
+          "com.discordapp.Discord"
+        ];
+      };
+    };
   };
-
-  # Keep Noctalia on default config paths, but point them to repository-tracked
-  # files so UI edits are committed naturally.
-  home.activation.noctaliaSettingsBootstrap = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p "$(dirname "${repoSettingsFile}")"
-    mkdir -p "$(dirname "${legacySettingsFile}")"
-    mkdir -p "$(dirname "${repoPluginsFile}")"
-    mkdir -p "$(dirname "${legacyPluginsFile}")"
-
-    if [ ! -e "${repoSettingsFile}" ]; then
-      if [ -e "${legacySettingsFile}" ] && [ ! -L "${legacySettingsFile}" ]; then
-        cp "${legacySettingsFile}" "${repoSettingsFile}"
-      else
-        printf '{}\n' > "${repoSettingsFile}"
-      fi
-      chmod u+rw "${repoSettingsFile}"
-    fi
-
-    if [ ! -e "${repoPluginsFile}" ]; then
-      if [ -e "${legacyPluginsFile}" ] && [ ! -L "${legacyPluginsFile}" ]; then
-        cp "${legacyPluginsFile}" "${repoPluginsFile}"
-      else
-        printf '{"version":2,"sources":[],"states":{}}\n' > "${repoPluginsFile}"
-      fi
-      chmod u+rw "${repoPluginsFile}"
-    fi
-
-    ln -sfn "${repoSettingsFile}" "${legacySettingsFile}"
-    ln -sfn "${repoPluginsFile}" "${legacyPluginsFile}"
-  '';
 }

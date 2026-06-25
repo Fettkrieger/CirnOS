@@ -9,7 +9,8 @@
 #   * Qt template -> writes ~/.config/qt{5,6}ct/colors/noctalia.conf. For
 #     Qt apps to actually consult that file the platform theme must be
 #     `qtct` (sets QT_QPA_PLATFORMTHEME=qt6ct), so that's set below.
-#   * KColorScheme template -> intentionally disabled in noctalia-settings.json
+#   * KColorScheme template -> intentionally not enabled in Noctalia's
+#     declarative config
 #     (no KDE/Qt6 apps use ~/.local/share/color-schemes/noctalia.colors here).
 #     If you reintroduce Dolphin/Ark/Konsole, re-enable that template AND
 #     add a reload watcher that fires `org.kde.KGlobalSettings.notifyChange`
@@ -60,10 +61,8 @@ in
     # icons that ship in the package itself (cursor, footage, ...).
     # Adwaita is still installed system-wide as a sibling for any GTK
     # widget that hardcodes Adwaita symbolic names.
-    # Base Papirus-Dark is deployed from the package; folder tint is overridden at
-    # runtime by ~/.icons/Papirus-Dark-Noctalia (see papirus-folders-live.nix).
     iconTheme = {
-      name = "Papirus-Dark-Noctalia";
+      name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
 

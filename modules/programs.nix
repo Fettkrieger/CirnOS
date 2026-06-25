@@ -63,6 +63,7 @@
     evince                            #GNOME document viewer (PDF, DjVu, …)
     file-roller                       #GNOME archive manager (registers org.gnome.FileRoller.desktop)
     gnome-calculator                  #GNOME Calculator
+    loupe                             #GNOME image viewer (org.gnome.Loupe.desktop; WebP/AVIF/JXL/etc.)
     gthumb                            #GNOME photo manager (org.gnome.gThumb.desktop)
     snapshot                          #GNOME Camera / webcam (org.gnome.Snapshot.desktop)
     gnome-disk-utility                #GNOME Disks (mount, format, SMART; org.gnome.DiskUtility.desktop)
@@ -98,7 +99,7 @@
     # === Icon themes (resolution chain for app icons in dock/launcher/notifications) ===
     # The active GTK icon theme is set in home/themes.nix to `Papirus-Dark`,
     # which inherits `breeze-dark, hicolor`. With Papirus active, Noctalia's
-    # dock/launcher (which uses Quickshell -> QIcon::fromTheme) resolves icons
+    # dock/launcher resolves icons
     # in this order:
     #   1. Papirus-Dark        ~5000+ third-party app icons (Discord, Spotify,
     #                          Steam, Signal, WhatsApp, Chromium, VS Code,
@@ -120,6 +121,7 @@
     ffmpegthumbnailer                 #Thumbnail generator for video files (GTK file managers / EOG)
     inkscape                          #Vector graphics editor
     pinta                             #Raster image editor (Paint.NET-style)
+    filezilla                         #SFTP/FTP desktop client
     networkmanagerapplet              #NetworkManager connection editor for VPN imports
     pavucontrol                       #PulseAudio volume control
     wdisplays                         #Wayland display configuration tool

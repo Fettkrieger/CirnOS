@@ -26,17 +26,17 @@
       "x-scheme-handler/about" = "firefox.desktop";
       "x-scheme-handler/unknown" = "firefox.desktop";
       
-      # Images - gThumb
-      "image/jpeg" = "org.gnome.gThumb.desktop";
-      "image/png" = "org.gnome.gThumb.desktop";
-      "image/gif" = "org.gnome.gThumb.desktop";
-      "image/bmp" = "org.gnome.gThumb.desktop";
-      "image/webp" = "org.gnome.gThumb.desktop";
-      "image/svg+xml" = "org.gnome.gThumb.desktop";
-      "image/tiff" = "org.gnome.gThumb.desktop";
-      "image/avif" = "org.gnome.gThumb.desktop";
-      "image/heic" = "org.gnome.gThumb.desktop";
-      "image/jxl" = "org.gnome.gThumb.desktop";
+      # Images - Loupe
+      "image/jpeg" = "org.gnome.Loupe.desktop";
+      "image/png" = "org.gnome.Loupe.desktop";
+      "image/gif" = "org.gnome.Loupe.desktop";
+      "image/bmp" = "org.gnome.Loupe.desktop";
+      "image/webp" = "org.gnome.Loupe.desktop";
+      "image/svg+xml" = "org.gnome.Loupe.desktop";
+      "image/tiff" = "org.gnome.Loupe.desktop";
+      "image/avif" = "org.gnome.Loupe.desktop";
+      "image/heic" = "org.gnome.Loupe.desktop";
+      "image/jxl" = "org.gnome.Loupe.desktop";
 
       # Disk images - GNOME Disks
       "application/x-cd-image" = "gnome-disk-image-mounter.desktop";

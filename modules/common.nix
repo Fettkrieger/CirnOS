@@ -37,6 +37,19 @@ in
 
   # Firmware updates via LVFS (includes UEFI/BIOS when supported)
   services.fwupd.enable = true;
+  # Upstream's fwupd-refresh timer runs as the restricted fwupd-refresh user.
+  # It needs non-interactive permission to hand freshly downloaded LVFS metadata
+  # to the fwupd daemon; otherwise nixos-rebuild fails when the timer is marked
+  # failed after "Failed to obtain auth".
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if ((action.id == "org.freedesktop.fwupd.get-remotes" ||
+           action.id == "org.freedesktop.fwupd.refresh-remote") &&
+          subject.user == "fwupd-refresh") {
+        return polkit.Result.YES;
+      }
+    });
+  '';
 
   # Set your time zone
   time.timeZone = "Europe/Zurich";

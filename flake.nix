@@ -18,11 +18,8 @@
     };
 
     # Noctalia desktop shell (bar, notifications, control center)
-    # Pinned to the v4-era Quickshell implementation. The current upstream
-    # default moved to v5 alpha, which has a different HM option, binary,
-    # IPC surface, TOML config, and no longer matches home/noctalia.
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell/2461f871a602f9a5688b5b01dc19c6309dd0d519";
+      url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

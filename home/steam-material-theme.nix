@@ -1,7 +1,7 @@
-# Material-Theme for Steam (Millennium) + Noctalia matugen.css sync.
+# Material-Theme for Steam (Millennium).
 #
-# Deploys the full Material-Theme skin, preserves Noctalia's matugen.css under steamui/skins,
-# and sets Millennium to use Material-Theme with Color = Matugen.
+# Deploys the full Material-Theme skin, preserves any existing matugen.css under
+# steamui/skins, and sets Millennium to use Material-Theme with Color = Matugen.
 { config, lib, pkgs, ... }:
 
 let
@@ -16,7 +16,6 @@ let
   millenniumThemeDir = "${steamPath}/millennium/themes/Material-Theme";
   matugenCss = "${steamPath}/steamui/skins/Material-Theme/css/main/colors/matugen.css";
   millenniumConfig = "${config.xdg.configHome}/millennium/config.json";
-  noctaliaColors = "${config.xdg.configHome}/noctalia/colors.json";
 
   syncMaterialTheme = pkgs.writeShellScript "sync-steam-material-theme" ''
     set -eu
@@ -90,35 +89,6 @@ let
     fi
   '';
 
-  verifyMatugenSync = pkgs.writeShellScript "verify-noctalia-steam-matugen" ''
-    set -eu
-
-    colors_file="${noctaliaColors}"
-    matugen_file="${matugenCss}"
-
-    if [ ! -f "$colors_file" ] || [ ! -f "$matugen_file" ]; then
-      echo "steam-matugen: skip verify (colors or matugen.css missing)" >&2
-      exit 0
-    fi
-
-    hex="$(${pkgs.jq}/bin/jq -r '.mPrimary // empty' "$colors_file" | ${pkgs.coreutils}/bin/tr '[:upper:]' '[:lower:]' | ${pkgs.gnused}/bin/sed 's/^#//')"
-    if [ -z "$hex" ] || [ "$(printf '%s' "$hex" | wc -c)" -ne 6 ]; then
-      echo "steam-matugen: skip verify (invalid mPrimary)" >&2
-      exit 0
-    fi
-
-    r=$((16#''${hex:0:2}))
-    g=$((16#''${hex:2:2}))
-    b=$((16#''${hex:4:2}))
-    expected="rgb($r, $g, $b)"
-
-    if ${pkgs.gnugrep}/bin/grep -qF -- "--md-sys-color-primary: $expected;" "$matugen_file"; then
-      echo "steam-matugen: verified mPrimary matches matugen.css ($expected)" >&2
-    else
-      echo "steam-matugen: warning — matugen.css primary does not match Noctalia mPrimary ($expected); toggle a color scheme in Noctalia and restart Steam" >&2
-    fi
-  '';
-
   restartSteam = pkgs.writeShellScript "restart-steam-after-millennium" ''
     set -eu
     if ${pkgs.procps}/bin/pgrep -x steam >/dev/null 2>&1; then
@@ -151,10 +121,7 @@ in
     configureMillenniumMaterialTheme = lib.hm.dag.entryAfter [ "syncSteamMaterialTheme" ] ''
       $DRY_RUN_CMD ${configureMillennium}
     '';
-    verifyNoctaliaSteamMatugen = lib.hm.dag.entryAfter [ "configureMillenniumMaterialTheme" ] ''
-      $DRY_RUN_CMD ${verifyMatugenSync}
-    '';
-    restartSteamAfterMillennium = lib.hm.dag.entryAfter [ "verifyNoctaliaSteamMatugen" ] ''
+    restartSteamAfterMillennium = lib.hm.dag.entryAfter [ "configureMillenniumMaterialTheme" ] ''
       $DRY_RUN_CMD ${restartSteam}
     '';
   };

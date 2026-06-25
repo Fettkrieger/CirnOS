@@ -17,7 +17,7 @@ in the repo.
   Noctalia is the first visible password prompt via its in-session lockscreen.
 - Compositor: Niri (system module from niri-flake; user config from `home/niri.nix`).
 - Shell: Noctalia (bar / notifications / control-center / launcher) — HM module from the noctalia flake.
-- Theme: Catppuccin Mocha Blue + Adwaita-dark GTK/Qt; cursor live-synced from Noctalia colors.
+- Theme: Noctalia v5 Catppuccin + Adwaita-dark GTK/Qt; static Catppuccin Mocha Blue cursor.
 - Audio: PipeWire (no PulseAudio); rtkit on. Audio control via Noctalia.
 - Network: NetworkManager (+ openvpn plugin).
 - Locale: `en_US.UTF-8` with `de_CH.UTF-8` formats. TZ Europe/Zurich. Console `sg`, XKB `ch` (overridden to `de` on `lenuwu-nix`).
@@ -56,11 +56,7 @@ home/
   workspaces-hp.nix       named workspaces A/B/C — imported on hp-nix and lenuwu-nix
   defaultwindows.nix      multi-monitor startup layout (NOT currently imported)
   noctalia/
-    noctalia.nix          imports HM module, sets up settings/plugin symlinks, patches clipboard/wallpaper/icon handling
-    niri-focus-ring-live.nix    live syncs niri focus-ring colors and cursor variant from Noctalia colors.json
-    nix-wallpaper-live.nix      live syncs nix.svg wallpaper colors from Noctalia colors.json and reloads Noctalia wallpaper
-    noctalia-settings.json      versioned UI settings (track UI edits in git)
-    noctalia-plugins.json       enabled plugins
+    noctalia.nix          imports the v5 HM module and declares the core TOML-backed shell config
 docs/lenuwu-nix-migration.md   disk-transplant checklist
 possible improvements.txt      2026-02-15 review notes (open items)
 ```
@@ -173,14 +169,14 @@ Apps installed system-wide: git, wget, curl, python3, chromium, qbittorrent, pop
 ### Niri (`home/niri.nix`)
 
 - Wayland env vars set globally; NVIDIA-specific vars (`LIBVA_DRIVER_NAME=nvidia`, `GBM_BACKEND=nvidia-drm`, `__GLX_VENDOR_LIBRARY_NAME=nvidia`, `WLR_NO_HARDWARE_CURSORS=1`) are added when `hostname != "lenuwu-nix"` — note this currently applies on the *Intel* `hp-nix` too (see `possible improvements.txt`).
-- Spawn at startup: `noctalia-shell`, `xwayland-satellite`, `swayidle`.
-- swayidle: lock at 5 min (`noctalia-shell ipc call lockScreen lock`), power off monitors at 10 min, on lenuwu also hibernate at 30 min, lock on `before-sleep`.
+- Spawn at startup: `noctalia`, `xwayland-satellite`, `ghostty` daemon window.
+- swayidle: lock at 5 min (`noctalia msg session lock`), power off monitors at 10 min, on lenuwu also hibernate at 30 min, lock on `before-sleep`.
 - Outputs:
   - lenuwu → laptop `eDP-1` 1920×1200@60.
   - everywhere else → dock layout: `DP-5` (rotated 90° / vertical), `DP-4` (center, focus-at-startup), `DP-6` (right). All 2560×1440 with VRR.
 - Input: keyboard layout `de` on lenuwu else `ch`; flat mouse accel; touchpad tap + natural scroll; focus-follows-mouse off; hot-corners off.
-- Layout: gaps 3, preset column widths 1/3, 1/2, 2/3 (default 1/2). Focus ring enabled (3 px, runtime-overridden by Noctalia colors), borders off.
-- Cursor: `catppuccin-mocha-blue-cursors` size 24 (also runtime-overridden).
+- Layout: gaps 3, preset column widths 1/3, 1/2, 2/3 (default 1/2). Focus ring enabled (3 px), borders off.
+- Cursor: `catppuccin-mocha-blue-cursors` size 24.
 - `prefer-no-csd = true`. Screenshots → `~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png`.
 - Window rules: PiP floats; xdg-desktop-portal-gtk dialogs float.
 - Keybinds (Super = Mod):
@@ -199,20 +195,12 @@ Apps installed system-wide: git, wget, curl, python3, chromium, qbittorrent, pop
 
 ### Noctalia (`home/noctalia/`)
 
-- HM module is imported from the `noctalia` flake input; the package is overridden via `postPatch` to fix a clipboard auto-paste focus race for image entries (adds a 0.12 s sleep before the paste keys).
-- Activation snippet (`noctaliaSettingsBootstrap`):
-  - Bootstraps `~/.config/noctalia/settings.json` and `~/.config/noctalia/plugins.json` if they don't already exist (preserves any pre-existing legacy file).
-  - Then **symlinks** them to the repo-tracked files in `home/noctalia/`. Net effect: edits made via Noctalia's UI land in the git repo and can be committed naturally.
-- `niri-focus-ring-live.nix`:
-  - Forces `xdg.configFile."niri-config".enable = lib.mkForce false` so the niri config file is writable at runtime (it's emitted from `programs.niri.finalConfig` once during activation, then mutated by the live sync).
-  - On activation, runs `syncFocusRing`: an awk pass that reads `~/.config/noctalia/colors.json` (`mPrimary`/`mSecondary`/`mOutline`) and rewrites `focus-ring.active-color`, `focus-ring.inactive-color`, and `cursor.xcursor-theme` (picks the closest catppuccin-mocha-* variant by RGB squared distance to `mSecondary`).
-  - User systemd service `noctalia-niri-focus-ring-live` watches `~/.config/noctalia/colors.json` with `inotifywait`, re-runs `syncFocusRing`, updates `org.gnome.desktop.interface cursor-theme` via gsettings, and asks niri to `load-config-file` on its socket.
-- `nix-wallpaper-live.nix`:
-  - Watches `~/.config/noctalia/colors.json` with `inotifywait` and rewrites `/home/krieger/Pictures/Wallpapers/nix.svg`.
-  - Maps the SVG background rect (`rect3019`) to `mSurface` (the Noctalia bar/panel background), the darker Nix logo paths (`path4260*`) to `mPrimary`, and the lighter logo paths (`path3336*`) to `mSecondary`.
-  - The Noctalia package patch adds `noctalia-shell ipc call wallpaper reload [screen|all]`; the watcher calls it after recoloring because Noctalia otherwise ignores same-path wallpaper content changes.
-- Enabled Noctalia plugins (`noctalia-plugins.json`): catwalk, color-scheme-creator, plugin-manager, polkit-agent, privacy-indicator, screen-recorder, slowbongo, usb-drive-manager, weather-indicator. Disabled: notes-scratchpad, pomodoro.
-- `noctalia-settings.json` is large (~770 lines) and version-controlled. Top-level sections: appLauncher, audio, bar, brightness, calendar, colorSchemes, controlCenter, desktopWidgets, dock, general, hooks, idle, location, network, nightLight, noctaliaPerformance, notifications, osd, plugins, sessionMenu, systemMonitor, templates, ui, wallpaper. `settingsVersion = 59`.
+- Noctalia v5 is imported from the `noctalia` flake input via `inputs.noctalia.homeModules.default`.
+- `programs.noctalia` writes `~/.config/noctalia/config.toml` from the Nix attrset in `home/noctalia/noctalia.nix`.
+- Runtime UI overrides are owned by Noctalia under `~/.local/state/noctalia/`; they are not symlinked back into the repo.
+- `home/niri.nix` starts `noctalia` directly so the existing greetd/Niri lock-on-startup flow remains in one place.
+- Core v5 settings kept declarative: telemetry/setup wizard off, Noctalia polkit agent on, dark Catppuccin builtin palette, GTK/Qt/Ghostty/Btop templates, wallpaper directory, and dock pins.
+- v5 IPC examples used by Niri: `noctalia msg session lock`, `noctalia msg panel-toggle launcher`, `noctalia msg panel-toggle control-center`, `noctalia msg panel-toggle clipboard`, `noctalia msg volume-up`, `noctalia msg media toggle`, `noctalia msg brightness-up`.
 
 ### Default applications (`home/default-apps.nix`)
 
@@ -227,9 +215,9 @@ Apps installed system-wide: git, wget, curl, python3, chromium, qbittorrent, pop
 
 - GTK: `adw-gtk3-dark` (`pkgs.adw-gtk3`) for both gtk3 and gtk4. The `adw-gtk3` base is mandatory — Noctalia's GTK color template (Settings → Color Scheme → Templates → System → GTK) writes `~/.config/gtk-{3,4}.0/noctalia.css` and appends `@import url("noctalia.css");` to gtk.css; the import only layers correctly on top of `adw-gtk3`/`adw-gtk3-dark`.
 - Qt: `qt.platformTheme.name = "qtct"` so `QT_QPA_PLATFORMTHEME=qt6ct` and Qt apps consult `~/.config/qt6ct/colors/noctalia.conf` written by Noctalia's Qt template. After enabling the template, run `qt6ct` once and pick `noctalia` from the Color Scheme dropdown.
-- Icons: `Papirus-Dark` (`pkgs.papirus-icon-theme`) is the active GTK icon theme (mirrored in dconf `org.gnome.desktop.interface icon-theme`). It pulls in `breeze-icons` and `hicolor` via `Inherits=breeze-dark,hicolor`, giving Noctalia's Quickshell-based dock/launcher coverage of ~5000 third-party app icons (Discord, Spotify, org.gnome.Nautilus, ...) without per-app symlink hacks. `adwaita-icon-theme` and `hicolor-icon-theme` are kept installed as fallbacks for apps that hardcode Adwaita symbolic names or ship icons only under `hicolor/`.
-- KColorScheme template (Noctalia Settings → Color Scheme → Templates → System → KColorScheme) is **disabled** in `noctalia-settings.json` (`templates.activeTemplates[id="kcolorscheme"].enabled = false`) because the desktop has no KDE / Qt6 apps that consume `~/.local/share/color-schemes/noctalia.colors` — re-enable it (and add the matching reload watcher) only if you reintroduce KDE apps like Dolphin/Ark/Konsole. `~/.config/kdeglobals` and `~/.local/share/color-schemes/noctalia.colors` may exist on disk from when the template was active; they are now inert and safe to delete.
-- Cursor: `catppuccin-mocha-blue-cursors` size 24, but the package is a `symlinkJoin` of every catppuccin-mocha cursor variant so the live focus-ring service can switch between them at runtime without rebuilding.
+- Icons: `Papirus-Dark` (`pkgs.papirus-icon-theme`) is the active GTK icon theme (mirrored in dconf `org.gnome.desktop.interface icon-theme`). It pulls in `breeze-icons` and `hicolor` via `Inherits=breeze-dark,hicolor`, giving Noctalia's dock/launcher coverage of ~5000 third-party app icons (Discord, Spotify, org.gnome.Nautilus, ...) without per-app symlink hacks. `adwaita-icon-theme` and `hicolor-icon-theme` are kept installed as fallbacks for apps that hardcode Adwaita symbolic names or ship icons only under `hicolor/`.
+- KColorScheme template is intentionally not enabled in `home/noctalia/noctalia.nix` because the desktop has no KDE / Qt6 apps that consume `~/.local/share/color-schemes/noctalia.colors`. Re-enable it only if you bring back KDE apps like Dolphin/Ark/Konsole.
+- Cursor: `catppuccin-mocha-blue-cursors` size 24, with all Catppuccin Mocha cursor variants still installed for easy manual switching.
 - gtk3/gtk4 `extraConfig`: `gtk-application-prefer-dark-theme = true`.
 - gtk-4.0 gotcha: `xdg.configFile."gtk-4.0/gtk.css".force = true;` is set in `home/themes.nix`. Noctalia's GTK template's `gtk-refresh.py` post-hook appends `@import url("noctalia.css");` to `gtk.css` after activation, turning HM's symlink into a regular file. Without `force = true` HM tries to back the file up to `gtk.css.backup` on the next rebuild, fails the second time around because `.backup` already exists, and breaks `home-manager-krieger.service`. Noctalia re-appends its import on every theme refresh so HM-generated content has no value to preserve.
 
@@ -255,17 +243,17 @@ Multi-monitor desktop startup choreography for a 3-monitor dock (DP-5 / DP-4 / D
 
 ## Conventions and gotchas
 
-- **Niri config is intentionally writable.** `niri-focus-ring-live.nix` sets `xdg.configFile."niri-config".enable = lib.mkForce false;` and bootstraps the file from `programs.niri.finalConfig` on activation. Don't try to "fix" this with `xdg.configFile` — it's load-bearing.
+- **Niri config is Home Manager-managed.** The old runtime focus-ring mutation service was removed during the Noctalia v5 migration.
 - **Noctalia is not the display manager.** greetd auto-logs `krieger` into
   `niri-session`; `home/niri.nix` starts Noctalia and immediately asks it to
-  lock via `noctalia-shell ipc call lockScreen lock`. If that IPC never becomes
+  lock via `noctalia msg session lock`. If that IPC never becomes
   available, the startup guard exits Niri so greetd can fall back to `agreety`.
   This is an in-session lockscreen, not a pre-session login greeter.
-- **Noctalia settings live in git.** Editing the JSON files in `home/noctalia/` is equivalent to editing the live config (and vice versa); commit the JSON to track UI changes.
-- **Don't add a second polkit agent.** The niri-flake polkit user service is explicitly disabled in `common.nix`. Noctalia's `polkit-agent` plugin owns this.
+- **Noctalia runtime settings are not tracked automatically.** Promote stable UI changes from Noctalia's state files into `home/noctalia/noctalia.nix` manually.
+- **Don't add a second polkit agent.** The niri-flake polkit user service is explicitly disabled in `common.nix`. Noctalia v5 owns this via `shell.polkit_agent = true`.
 - **Battery thresholds are unmanaged.** The Noctalia battery-threshold plugin and local sysfs write permissions were removed; stock charging behavior is expected.
-- **File manager is Nautilus.** `pkgs.nautilus` and `pkgs.file-roller` are installed in `modules/programs.nix`. Trash (`trash:///`, "Empty Trash", "Restore") and remote protocols (sftp/smb/ftp/mtp under "Other Locations") are provided by `gvfs` (enabled at the system level in `modules/common.nix`). Modern Nautilus has built-in archive extraction (`gnome-autoar`) for the right-click "Extract Here" action; `file-roller` registers `org.gnome.FileRoller.desktop` for opening archives, which is what `home/default-apps.nix` routes the archive MIME types to. The Noctalia app-launcher / dock pinned-apps reference `org.gnome.Nautilus` in `home/noctalia/noctalia-settings.json`.
-- **Noctalia color templates need NixOS prep.** Toggling Settings → Color Scheme → Templates → System → {GTK, Qt} only writes color files; for them to take effect: GTK base theme must be `adw-gtk3-dark` (`pkgs.adw-gtk3` installed, `gtk.theme.name = "adw-gtk3-dark"` in `home/themes.nix`, dconf `gtk-theme = "adw-gtk3-dark"`); Qt platform theme must be `qtct` (`pkgs.qt6ct` + `pkgs.libsForQt5.qt5ct` installed, `qt.platformTheme.name = "qtct"`, then `qt6ct` opened once to pick `noctalia` from Color Scheme). Don't revert the GTK/Qt theme choices without disabling the matching templates first or the override will silently no-op. The KColorScheme template is disabled by default — re-enable it only if you bring back KDE / Qt6 apps that read `kdeglobals` / `~/.local/share/color-schemes/noctalia.colors`, and remember to also add a reload mechanism (e.g. broadcasting `org.kde.KGlobalSettings.notifyChange(0,0)` on D-Bus) so already-running KDE apps repaint, which Plasma normally handles but Niri does not.
+- **File manager is Nautilus.** `pkgs.nautilus` and `pkgs.file-roller` are installed in `modules/programs.nix`. Trash (`trash:///`, "Empty Trash", "Restore") and remote protocols (sftp/smb/ftp/mtp under "Other Locations") are provided by `gvfs` (enabled at the system level in `modules/common.nix`). Modern Nautilus has built-in archive extraction (`gnome-autoar`) for the right-click "Extract Here" action; `file-roller` registers `org.gnome.FileRoller.desktop` for opening archives, which is what `home/default-apps.nix` routes the archive MIME types to. The Noctalia dock pins reference `org.gnome.Nautilus` in `home/noctalia/noctalia.nix`.
+- **Noctalia color templates need NixOS prep.** The v5 declarative config enables GTK, Qt, Ghostty, and Btop templates. GTK base theme must be `adw-gtk3-dark` (`pkgs.adw-gtk3` installed, `gtk.theme.name = "adw-gtk3-dark"` in `home/themes.nix`, dconf `gtk-theme = "adw-gtk3-dark"`). Qt platform theme must be `qtct` (`pkgs.qt6ct` + `pkgs.libsForQt5.qt5ct` installed, `qt.platformTheme.name = "qtct"`). Don't revert those theme choices without also changing Noctalia's template list.
 - **`footage` is wrapped** to force GDK_BACKEND=x11 (Wayland + NVIDIA Vulkan crash). Wrapper lives inline in `programs.nix`.
 - **MX Master 4 for Business = patched logiops + Solaar.** `modules/logiops.nix` owns the receiver `046d:c548` end-to-end (Haptic Sense Panel, gesture button, thumb wheel, smart-shift, DPI, haptic level, per-button). The old `services.keyd` Logitech-mouse block is gone — don't reintroduce it; logiops "diverts" the relevant buttons before evdev, so keyd would never see them anyway. Edit `/etc/logid.cfg` by editing the Nix heredoc in `modules/logiops.nix`, then `rebuild` and `sudo systemctl restart logid`. Discover CIDs with `sudo systemctl stop logid && sudo logid -v`.
 - **Gaming on `lenuwu-nix`**: Steam etc. are configured at the system level here, not in `home/gaming.nix`. `enableGaming` only toggles the user-level extras.

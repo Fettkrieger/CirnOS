@@ -89,7 +89,7 @@ let
     attempt=1
 
     while [ "$attempt" -le "$attempts" ]; do
-      if noctalia-shell ipc call lockScreen lock >/dev/null 2>&1; then
+      if noctalia msg session lock >/dev/null 2>&1; then
         exit 0
       fi
 
@@ -342,6 +342,11 @@ let
 in
 
 {
+  # The old Noctalia v4 live focus-ring service intentionally kept this file
+  # writable. After moving back to HM-managed static Niri config, overwrite any
+  # leftover runtime-mutated file instead of tripping on stale config.kdl.backup.
+  xdg.configFile."niri-config".force = true;
+
   # Niri packages and tools
   home.packages = with pkgs; [
     # === Clipboard (Noctalia launcher) ===
@@ -368,7 +373,7 @@ in
 
       # === Startup Applications ===
       spawn-at-startup = [
-        { command = [ "noctalia-shell" ]; }
+        { command = [ "noctalia" ]; }
         { command = [ "${noctaliaLockOnStartup}/bin/noctalia-lock-on-startup" ]; }
         { command = [ "xwayland-satellite" ]; }
         {
@@ -435,7 +440,7 @@ in
         # Default window width
         default-column-width = { proportion = 1.0 / 2.0; };
         
-        # Focus ring (live-updated at runtime from Noctalia colors.json)
+        # Focus ring
         focus-ring = {
           enable = true;
           width = 3;
@@ -561,9 +566,9 @@ in
         
         # === Launchers ===
         "Super+Return".action.spawn = ["ghostty" "+new-window"];
-        "Super+D".action.spawn = ["noctalia-shell" "ipc" "call" "launcher" "toggle"];
-        "Super+B".action.spawn = ["noctalia-shell" "ipc" "call" "controlCenter" "toggle"];
-        "Super+N".action.spawn = ["noctalia-shell" "ipc" "call" "notifications" "toggleHistory"];
+        "Super+D".action.spawn = ["noctalia" "msg" "panel-toggle" "launcher"];
+        "Super+B".action.spawn = ["noctalia" "msg" "panel-toggle" "control-center"];
+        "Super+N".action.spawn = ["noctalia" "msg" "panel-toggle" "control-center" "notifications"];
         
         # === Screenshots ===
         "Super+Shift+S".action.spawn = ["sh" "-c" "grim -g \"$(slurp)\" - | wl-copy --type image/png"];
@@ -572,24 +577,24 @@ in
         "Super+Print".action.screenshot-window = [];
         
         # === System ===
-        "Super+Escape".action.spawn = ["noctalia-shell" "ipc" "call" "lockScreen" "lock"];
+        "Super+Escape".action.spawn = ["noctalia" "msg" "session" "lock"];
         "Super+Shift+E".action.quit = [];
         "Super+Shift+R".action.spawn = ["sh" "-c" "niri msg action reload-config"];
         
         # === Media Keys ===
-        "XF86AudioRaiseVolume".action.spawn = ["noctalia-shell" "ipc" "call" "volume" "increase"];
-        "XF86AudioLowerVolume".action.spawn = ["noctalia-shell" "ipc" "call" "volume" "decrease"];
-        "XF86AudioMute".action.spawn = ["noctalia-shell" "ipc" "call" "volume" "muteOutput"];
-        "XF86AudioPlay".action.spawn = ["noctalia-shell" "ipc" "call" "media" "playPause"];
-        "XF86AudioNext".action.spawn = ["noctalia-shell" "ipc" "call" "media" "next"];
-        "XF86AudioPrev".action.spawn = ["noctalia-shell" "ipc" "call" "media" "previous"];
+        "XF86AudioRaiseVolume".action.spawn = ["noctalia" "msg" "volume-up"];
+        "XF86AudioLowerVolume".action.spawn = ["noctalia" "msg" "volume-down"];
+        "XF86AudioMute".action.spawn = ["noctalia" "msg" "volume-mute"];
+        "XF86AudioPlay".action.spawn = ["noctalia" "msg" "media" "toggle"];
+        "XF86AudioNext".action.spawn = ["noctalia" "msg" "media" "next"];
+        "XF86AudioPrev".action.spawn = ["noctalia" "msg" "media" "previous"];
         
         # === Brightness ===
-        "XF86MonBrightnessUp".action.spawn = ["noctalia-shell" "ipc" "call" "brightness" "increase"];
-        "XF86MonBrightnessDown".action.spawn = ["noctalia-shell" "ipc" "call" "brightness" "decrease"];
+        "XF86MonBrightnessUp".action.spawn = ["noctalia" "msg" "brightness-up"];
+        "XF86MonBrightnessDown".action.spawn = ["noctalia" "msg" "brightness-down"];
         
         # === Noctalia Clipboard ===
-        "Super+V".action.spawn = ["noctalia-shell" "ipc" "call" "launcher" "clipboard"];
+        "Super+V".action.spawn = ["noctalia" "msg" "panel-toggle" "clipboard"];
         
       };
     };

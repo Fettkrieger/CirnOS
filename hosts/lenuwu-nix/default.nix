@@ -1,6 +1,11 @@
 # Lenovo ThinkPad E16 Gen 2 AMD configuration
 { config, lib, pkgs, ... }:
 
+let
+  localFactorioSpaceAge = import ../../pkgs/factorio-space-age-local.nix {
+    inherit pkgs;
+  };
+in
 {
   imports = [
     ./hardware-configuration.nix
@@ -83,6 +88,12 @@
     capSysNice = true;
   };
   programs.gpu-screen-recorder.enable = true;
+
+  # Keep the selected local Factorio Space Age installer alive after it has been
+  # imported into the Nix store by scripts/use-factorio-space-age.
+  system.extraDependencies = lib.optionals localFactorioSpaceAge.enable [
+    localFactorioSpaceAge.package.src
+  ];
 
   environment.systemPackages = with pkgs; [
     brightnessctl
