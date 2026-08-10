@@ -38,7 +38,7 @@ let
     patches = (old.patches or []) ++ [
       (pkgs.fetchpatch {
         url = "https://github.com/kris7t/logiops/commit/4319de5cc17b1afcf2d89df2ebadec16eb11d4de.patch";
-        hash = "sha256-bgheLsxRZNgaKb7yzg3D+rcld2XyfLR+6Rr9TFFOpjk=";
+        hash = "sha256-GzLquZkDI6xGR4psQgJ1xdb7If0JStDUz7k8VZD2dLg=";
       })
     ];
   });

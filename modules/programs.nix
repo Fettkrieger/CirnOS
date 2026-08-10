@@ -45,7 +45,6 @@
     yt-dlp                            #YouTube downloader
     onlyoffice-desktopeditors         #Office suite
     ffmpeg                            #Multimedia framework
-    handbrake                         #DVD / video transcoder (fr.handbrake.ghb.desktop)
     qt6Packages.qt6gtk2               #Qt6 gtk3 platform theme (qBittorrent)
 
     # === GNOME / Nautilus file manager stack ===
@@ -74,8 +73,6 @@
     bella                             #color picker
     gradia                            #screenshot editor
     switcheroo                        #image compressor/converter
-    vaults                            #encrypted file storage
-    exhibit                           #3d model viewer
     iconic                            #icon editor
     icon-library                      #icon library 
     constrict                         #video compressor/converter
@@ -83,6 +80,7 @@
     cozy                              #audiobook player
     blanket                           #background noise payer
     metadata-cleaner                  #metadata cleaner
+    telegram-desktop                  #Telegram desktop client
 
     
 
@@ -120,6 +118,7 @@
     p7zip                             #7z archive support
     ffmpegthumbnailer                 #Thumbnail generator for video files (GTK file managers / EOG)
     inkscape                          #Vector graphics editor
+    gimp                              #Raster image editor
     pinta                             #Raster image editor (Paint.NET-style)
     filezilla                         #SFTP/FTP desktop client
     networkmanagerapplet              #NetworkManager connection editor for VPN imports
