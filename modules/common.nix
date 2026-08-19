@@ -91,8 +91,14 @@ in
     };
   };
 
-  # Enable Niri compositor (niri-flake module handles session registration)
-  programs.niri.enable = true;
+  # Enable Niri compositor (niri-flake module handles session registration).
+  # Use Nixpkgs' package so its dependencies stay compatible with the pinned
+  # Nixpkgs revision; niri-flake's 25.08 package still requires the removed
+  # libdisplay-info_0_2 attribute.
+  programs.niri = {
+    enable = true;
+    package = pkgs.niri;
+  };
   # niri-flake also starts a KDE polkit agent by default; disable it because
   # Noctalia provides the polkit agent and multiple agents conflict.
   systemd.user.services.niri-flake-polkit.enable = false;
