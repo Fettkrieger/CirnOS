@@ -109,12 +109,6 @@ in
     platformTheme.name = "qtct";
   };
 
-  # gtk3 platform theme (qt6gtk2) reads gtk-theme from gsettings — same path as
-  # Nautilus/adw-gtk3-dark + noctalia.css. qt6ct alone was not painting Qt6 apps.
-  home.sessionVariables = {
-    QT_QPA_PLATFORMTHEME = lib.mkForce "gtk3";
-  };
-
   xdg.configFile."qt6ct/qt6ct.conf".text = ''
     [Appearance]
     icon_theme=${config.gtk.iconTheme.name}
@@ -131,7 +125,7 @@ in
     custom_palette=true
   '';
 
-  # qBittorrent's qt6ct-style widget ignores the gtk3 platform palette and stays light.
+  # Keep qBittorrent on Fusion so it uses the Noctalia palette selected by qt6ct.
   home.activation.fixQbittorrentQtStyle = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     conf="${config.home.homeDirectory}/.config/qBittorrent/qBittorrent.conf"
     if [ -f "$conf" ] && ${pkgs.gnugrep}/bin/grep -q '^Style=qt6ct-style' "$conf"; then

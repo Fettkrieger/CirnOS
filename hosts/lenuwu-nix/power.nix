@@ -212,9 +212,9 @@ in
 
 {
   # systemd 260 records the selected swap file and resume offset in the EFI
-  # HibernateLocation variable before hibernating; systemd initrd reads it back
-  # during the next boot, so no static resume_offset is needed here.
-  boot.initrd.systemd.enable = true;
+  # HibernateLocation variable before hibernating; the (now-unconditional)
+  # systemd initrd reads it back during the next boot, so no static
+  # resume_offset is needed here.
 
   swapDevices = [
     {

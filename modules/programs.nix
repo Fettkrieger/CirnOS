@@ -45,8 +45,6 @@
     yt-dlp                            #YouTube downloader
     onlyoffice-desktopeditors         #Office suite
     ffmpeg                            #Multimedia framework
-    qt6Packages.qt6gtk2               #Qt6 gtk3 platform theme (qBittorrent)
-
     # === GNOME / Nautilus file manager stack ===
     # Nautilus is the user's file manager. The trash backend
     # (`trash:///` URL, restore + empty-trash context entries) is
@@ -59,6 +57,7 @@
     # `org.gnome.FileRoller.desktop` which the archive MIME types in
     # home/default-apps.nix are routed to.
     nautilus                          #GNOME file manager (trash + remote shares via gvfs)
+    doublecmd                         #Dual-pane file manager with recursive Flat View (Ctrl+B)
     evince                            #GNOME document viewer (PDF, DjVu, …)
     file-roller                       #GNOME archive manager (registers org.gnome.FileRoller.desktop)
     gnome-calculator                  #GNOME Calculator
@@ -116,6 +115,8 @@
     unzip                             #Archive extractor
     zip                               #Archive creator
     p7zip                             #7z archive support
+    unrar                             #RAR5 and multipart RAR extractor
+    peazip                            #Graphical archive manager with multipart RAR support
     ffmpegthumbnailer                 #Thumbnail generator for video files (GTK file managers / EOG)
     inkscape                          #Vector graphics editor
     gimp                              #Raster image editor
